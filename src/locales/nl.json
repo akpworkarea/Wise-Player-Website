@@ -130,6 +130,41 @@
     "payment_failed": "Betaling mislukt",
     "something_wrong": "Er is iets misgegaan",
     "plans_error": "Kan plannen niet laden"
+  },
+  "navbar": {
+    "logo": {
+      "title": "WISE PLAYER",
+      "subtitle": "Premium Ervaring"
+    },
+
+    "nav_home": "Home",
+    "nav_upload_list": "Downloadlijst",
+    "nav_activation": "Activatie",
+    "nav_reseller": "Wederverkoper",
+    "nav_contact": "Contact",
+
+    "buttons": {
+      "reseller": "Wederverkoper"
+    },
+
+    "language": {
+      "select": "Taal kiezen"
+    },
+
+    "languages": {
+      "en": "Engels",
+      "fr": "Frans",
+      "es": "Spaans",
+      "de": "Duits",
+      "it": "Italiaans",
+      "pt": "Portugees",
+      "nl": "Nederlands",
+      "ar": "Arabisch"
+    },
+
+    "aria": {
+      "toggle_menu": "Menu schakelen"
+    }
   }
- 
+
 }

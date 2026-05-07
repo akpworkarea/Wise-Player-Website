@@ -406,5 +406,41 @@
     "payment_failed": "Payment failed",
     "something_wrong": "Something went wrong",
      "plans_error": "Unable to load plans"
+  },
+
+   "navbar": {
+    "logo": {
+      "title": "WISE PLAYER",
+      "subtitle": "Premium Experience"
+    },
+
+    "nav_home": "Home",
+    "nav_upload_list": "Upload List",
+    "nav_activation": "Activation",
+    "nav_reseller": "Reseller",
+    "nav_contact": "Contact",
+
+    "buttons": {
+      "reseller": "Reseller"
+    },
+
+    "language": {
+      "select": "Select Language"
+    },
+
+    "languages": {
+      "en": "English",
+      "fr": "French",
+      "es": "Spanish",
+      "de": "German",
+      "it": "Italian",
+      "pt": "Portuguese",
+      "nl": "Dutch",
+      "ar": "Arabic"
+    },
+
+    "aria": {
+      "toggle_menu": "Toggle menu"
+    }
   }
 }

@@ -128,7 +128,41 @@
     "payment_failed": "فشل الدفع",
     "something_wrong": "خطأ",
     "plans_error": "فشل تحميل الخطط"
-  }
+  },
+  "navbar": {
+    "logo": {
+      "title": "WISE PLAYER",
+      "subtitle": "تجربة مميزة"
+    },
 
+    "nav_home": "الرئيسية",
+    "nav_upload_list": "قائمة التحميل",
+    "nav_activation": "التفعيل",
+    "nav_reseller": "الموزع",
+    "nav_contact": "اتصال",
+
+    "buttons": {
+      "reseller": "الموزع"
+    },
+
+    "language": {
+      "select": "اختر اللغة"
+    },
+
+    "languages": {
+      "en": "الإنجليزية",
+      "fr": "الفرنسية",
+      "es": "الإسبانية",
+      "de": "الألمانية",
+      "it": "الإيطالية",
+      "pt": "البرتغالية",
+      "nl": "الهولندية",
+      "ar": "العربية"
+    },
+
+    "aria": {
+      "toggle_menu": "تبديل القائمة"
+    }
+  }
 
 }

@@ -17,7 +17,7 @@ import TransitionHistory from "../pages/TransactionHistory";
 import PaymentStatus from "../pages/PaymentStatus";
 import RegisterSuccess from "../pages/ragistersuccess";
 import WisePlayerActivation from "../pages/Activation";
-import WisePlayerUploadList from "../pages/UploadList/UploadList";
+import WisePlayerUploadList from "../pages/UploadList";
 import WisePlayerUploadPlayList from "../pages/UploadPlayList";
 
 const AppRoutes = () => {

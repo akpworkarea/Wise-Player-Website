@@ -395,6 +395,43 @@
     "payment_failed": "Échec du paiement",
     "something_wrong": "Une erreur s'est produite",
     "plans_error": "Impossible de charger les offres"
+  },
+
+  "navbar": {
+    "logo": {
+      "title": "WISE PLAYER",
+      "subtitle": "Expérience Premium"
+    },
+
+    "nav_home": "Accueil",
+    "nav_upload_list": "Liste de téléchargement",
+    "nav_activation": "Activation",
+    "nav_reseller": "Revendeur",
+    "nav_contact": "Contact",
+
+    "buttons": {
+      "reseller": "Revendeur"
+    },
+
+    "language": {
+      "select": "Choisir la langue"
+    },
+
+    "languages": {
+      "en": "Anglais",
+      "fr": "Français",
+      "es": "Espagnol",
+      "de": "Allemand",
+      "it": "Italien",
+      "pt": "Portugais",
+      "nl": "Néerlandais",
+      "ar": "Arabe"
+    },
+
+    "aria": {
+      "toggle_menu": "Basculer le menu"
+    }
   }
+
 
 }
