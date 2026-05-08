@@ -3,32 +3,24 @@
     "appName": "WISE ",
     "appName2": "PLAYER",
     "tagline": "Schnell · Sicher · Premium · Aktivierung",
-
     "stepEnterMac": "MAC eingeben",
     "stepGenerateKey": "Schlüssel generieren",
     "stepActivate": "Aktivieren",
-
     "macLabel": "MAC-Adresse",
-
     "generateKey": "Schlüssel generieren",
     "generating": "Wird generiert...",
     "keyGenerated": "Schlüssel generiert",
-
     "agreement": "Ich bestätige, dass ich meine eigenen Inhalte habe und bezahle für",
     "terms": "Wise Player lebenslange Lizenz",
     "activateDevice": "Gerät aktivieren",
     "verifying": "Überprüfung...",
-
     "successTitle": "Verifiziert & aktiv!",
     "successDesc": "Ihr Gerät ist jetzt Premium-lizenziert.",
     "activatedDevice": "Aktiviertes Gerät",
-
     "lifetime": "Lebenslanger Zugriff",
     "secured": "Gesichert",
-
     "activateAnother": "Anderes Gerät aktivieren",
     "goToDashboard": "Zum Dashboard",
-
     "keyGeneratedSuccess": "Aktivierungsschlüssel generiert",
     "keyGenerateFailed": "Schlüssel konnte nicht generiert werden",
     "deviceActivated": "Gerät erfolgreich aktiviert",
@@ -37,79 +29,71 @@
     "footer": "Wise Player · Alle Rechte vorbehalten",
     "goToHome": "Zur Startseite"
   },
-  
- 
   "home": {
     "headExperienceText": "Premium Medienwiedergabe ohne Buffering. Optimiert für High-End Smart TVs.",
     "features": [
-      { "title": "Hohe Geschwindigkeit", "desc": "C++ Engine für ultraschnelles Laden optimiert." },
-      { "title": "Sicheres Streaming", "desc": "Verwaltung verschlüsselter Playlists für private Nutzung." },
-      { "title": "Native 4K", "desc": "Unterstützt echtes 4K und 8K für OLED-Bildschirme." }
+      {
+        "title": "Hohe Geschwindigkeit",
+        "desc": "C++ Engine für ultraschnelles Laden optimiert."
+      },
+      {
+        "title": "Sicheres Streaming",
+        "desc": "Verwaltung verschlüsselter Playlists für private Nutzung."
+      },
+      {
+        "title": "Native 4K",
+        "desc": "Unterstützt echtes 4K und 8K für OLED-Bildschirme."
+      }
     ],
     "system_online": "SYSTEM ONLINE V2.0",
-
     "type_ultra_fast": "Ultra Schnell",
     "type_crystal_clear": "Kristallklar",
     "type_wise_player": "Wise Player",
-
     "brand_name": "Wise Player",
     "ready_to_stream": "Bereit zum Streamen",
-
     "brand_small": "Wise",
     "brand_big": "Player",
     "brand_upper": "WISEPLAYER",
-
     "plans": "PLÄNE",
     "choose_access": "Zugang wählen",
     "days_access": "Tage Zugriff",
     "instant_activation": "Sofortige Aktivierung",
-
     "faq_title": "Häufige Fragen",
     "still_questions": "Noch Fragen?",
     "still_questions_desc": "Tausende Nutzer nutzen bereits das beste Streaming.",
     "contact_support": "Support kontaktieren",
-
     "instagram": "Instagram",
     "twitter": "Twitter",
-
     "mac_placeholder": "00:1A:79:XX:XX:XX",
     "futureIs": "Die Zukunft ist",
     "experienceText": "Streaming der nächsten Generation mit hoher Leistung.",
     "freeTrial": "Kostenlos testen",
     "tutorial": "Anleitung",
-
     "disclaimerHeading": "Hinweis",
     "disclaimerText1": "Wise Player hostet keine Inhalte.",
     "disclaimerPoint1": "Keine Verantwortung für Inhalte",
     "disclaimerPoint2": "Gesetze müssen eingehalten werden",
     "disclaimerPoint3": "Nur Drittanbieter",
     "disclaimerPoint4": "Keine geschützten Inhalte gespeichert",
-
     "featureHeadingParent": "FEATURES",
     "featureHeadingChild": "Warum uns wählen",
-
     "cta_dive_in": "Bereit?",
     "cta_trial_text": "Starte deinen Test heute",
-
     "check_status": "Status prüfen",
     "proceed_payment": "Zur Zahlung",
     "activate_now": "Jetzt aktivieren",
     "cancel": "Abbrechen",
     "try_another_mac": "Andere MAC versuchen",
-
     "device_activation": "Geräteaktivierung",
     "enter_mac_desc": "Gib deine MAC Adresse ein",
     "enter_mac": "MAC Adresse eingeben",
     "invalid_mac": "Ungültiges MAC Format",
-
     "status_active": "Status: AKTIV",
     "status_inactive": "Status: INAKTIV",
-
     "faq_mac_title": "Was ist eine MAC Adresse?",
     "faq_mac_answer": "Eine eindeutige Gerätekennung.",
     "faq_transfer_title": "Plan übertragbar?",
     "faq_transfer_answer": "Nein, gerätegebunden.",
-
     "footerBrandText": "Beste Streaming Plattform.",
     "support": "Support",
     "reseller": "Reseller",
@@ -118,10 +102,12 @@
     "refundPolicy": "Rückerstattung",
     "socialMedia": "Social Media",
     "beyondTheScreen": "Mehr als Bildschirm",
-  "headFreeTrial": "7 TAGE GRATIS TEST",
-  "headTutorial": "Anleitung"
+    "headFreeTrial": "7 TAGE GRATIS TEST",
+    "headTutorial": "Anleitung"
   },
-  "common": { "something_wrong": "Etwas ist schiefgelaufen" },
+  "common": {
+    "something_wrong": "Etwas ist schiefgelaufen"
+  },
   "api": {
     "device_not_found": "Gerät nicht gefunden",
     "invalid_device": "Ungültiges Gerät",
@@ -129,27 +115,22 @@
     "something_wrong": "Fehler aufgetreten",
     "plans_error": "Pläne konnten nicht geladen werden"
   },
-  
   "navbar": {
     "logo": {
       "title": "WISE PLAYER",
       "subtitle": "Premium-Erlebnis"
     },
-
     "nav_home": "Startseite",
     "nav_upload_list": "Download-Liste",
     "nav_activation": "Aktivierung",
     "nav_reseller": "Wiederverkäufer",
     "nav_contact": "Kontakt",
-
     "buttons": {
       "reseller": "Wiederverkäufer"
     },
-
     "language": {
       "select": "Sprache auswählen"
     },
-
     "languages": {
       "en": "Englisch",
       "fr": "Französisch",
@@ -160,7 +141,6 @@
       "nl": "Niederländisch",
       "ar": "Arabisch"
     },
-
     "aria": {
       "toggle_menu": "Menü umschalten"
     }
@@ -197,7 +177,55 @@
     "bonus_msg": "Bonuscodes können bei großen Bestellungen enthalten sein",
     "whatsapp_msg": "Bestellungen über 1000 Codes erfordern WhatsApp Kontakt",
     "login": "Anmelden"
-  }
+  },
 
 
+  "contact_Page": {
+    "contact_support_center": "SUPPORT CENTER",
+    "contact_header_1": "Wie können wir",
+    "contact_header_2": "helfen?",
+    "contact_sub": "Wir sind hier, um Ihnen bei technischen Problemen, Abrechnungsanfragen oder Feedback zu helfen.",
+    "contact_247_title": "24/7 Support",
+    "contact_247_desc": "Unser Team ist immer online.",
+    "contact_secure_title": "Sicher verschlüsselt",
+    "contact_secure_desc": "Ihre Daten sind bei uns sicher.",
+    "contact_visit_site": "Website besuchen",
+    "contact_brand_msg": "Verbessern Sie Ihr Streaming-Erlebnis mit unseren Premium-Diensten.",
+    "contact_fname": "Vorname",
+    "contact_lname": "Nachname",
+    "contact_email": "E-Mail-Adresse",
+    "contact_mac": "MAC-Adresse",
+    "contact_inquiry": "Anfragetyp",
+    "contact_tech_issue": "Technisches Problem",
+    "contact_billing": "Abrechnung / Rückerstattung",
+    "contact_general": "Allgemeine Frage",
+    "contact_message": "Nachrichtendetails",
+    "contact_msg_placeholder": "Wie können wir Ihnen heute helfen?",
+    "contact_attachments": "Anhänge",
+    "contact_upload_text": "Dateien hier ablegen oder",
+    "contact_browse": "Durchsuchen",
+    "contact_upload_hint": "Bilder oder Videos (Max. 5MB)",
+    "contact_btn_submit": "Ticket senden",
+    "contact_success_title": "Nachricht gesendet!",
+    "contact_success_msg": "Wir melden uns bald bei Ihnen."
+  },
+  "playlist": {
+    "upload_playlist": "Lade deine Playlist hoch",
+    "mac_address": "MAC-Adresse",
+    "source": "Quelle",
+    "link": "Link",
+    "file": "Datei",
+    "put_link": "Füge deinen Link ein",
+    "name": "Name",
+    "mac_not_found": "MAC-Adresse nicht gefunden. Bitte gehe zurück und überprüfe es erneut.",
+    "enter_name_link": "Bitte Name und Link eingeben",
+    "saved": "Gespeichert!",
+    "save_playlist": "Playlist speichern",
+    "delete_playlist": "Lösche deine Playlist",
+    "your_mac": "Deine MAC-Adresse",
+    "required": "Erforderlich",
+    "delete": "Löschen"
+  },
+  "footer_terms": "Bedingungen",
+  "footer_privacy": "Datenschutz"
 }
