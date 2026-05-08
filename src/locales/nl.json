@@ -3,32 +3,24 @@
     "appName": "WISE ",
     "appName2": "PLAYER",
     "tagline": "Snel · Veilig · Premium · Activatie",
-
     "stepEnterMac": "MAC invoeren",
     "stepGenerateKey": "Sleutel genereren",
     "stepActivate": "Activeren",
-
     "macLabel": "MAC-adres",
-
     "generateKey": "Sleutel genereren",
     "generating": "Bezig met genereren...",
     "keyGenerated": "Sleutel gegenereerd",
-
     "agreement": "Ik bevestig dat ik mijn eigen inhoud heb en betaal voor",
     "terms": "Wise Player levenslange licentie",
     "activateDevice": "Apparaat activeren",
     "verifying": "Controleren...",
-
     "successTitle": "Geverifieerd en actief!",
     "successDesc": "Uw apparaat heeft nu een premium licentie.",
     "activatedDevice": "Geactiveerd apparaat",
-
     "lifetime": "Levenslange toegang",
     "secured": "Beveiligd",
-
     "activateAnother": "Ander apparaat activeren",
     "goToDashboard": "Ga naar dashboard",
-
     "keyGeneratedSuccess": "Activatiesleutel gegenereerd",
     "keyGenerateFailed": "Genereren van sleutel mislukt",
     "deviceActivated": "Apparaat succesvol geactiveerd",
@@ -37,78 +29,71 @@
     "footer": "Wise Player · Alle rechten voorbehouden",
     "goToHome": "Ga naar startpagina"
   },
-  
   "home": {
     "headExperienceText": "Ervaar premium media zonder buffering. Geoptimaliseerd voor high-end Smart TV's.",
     "features": [
-      { "title": "Hoge Snelheid", "desc": "C++ engine geoptimaliseerd voor ultrasnel laden." },
-      { "title": "Veilig Streamen", "desc": "Beheer van versleutelde playlists voor privégebruik." },
-      { "title": "Native 4K", "desc": "Ondersteunt echte 4K en 8K voor OLED-schermen." }
+      {
+        "title": "Hoge Snelheid",
+        "desc": "C++ engine geoptimaliseerd voor ultrasnel laden."
+      },
+      {
+        "title": "Veilig Streamen",
+        "desc": "Beheer van versleutelde playlists voor privégebruik."
+      },
+      {
+        "title": "Native 4K",
+        "desc": "Ondersteunt echte 4K en 8K voor OLED-schermen."
+      }
     ],
     "system_online": "SYSTEM ONLINE V2.0",
-
     "type_ultra_fast": "Ultra Snel",
     "type_crystal_clear": "Kristalhelder",
     "type_wise_player": "Wise Player",
-
     "brand_name": "Wise Player",
     "ready_to_stream": "Klaar om te streamen",
-
     "brand_small": "Wise",
     "brand_big": "Player",
     "brand_upper": "WISEPLAYER",
-
     "plans": "PLANNEN",
     "choose_access": "Kies je toegang",
     "days_access": "Dagen toegang",
     "instant_activation": "Directe activatie",
-
     "faq_title": "Veelgestelde vragen",
     "still_questions": "Nog vragen?",
     "still_questions_desc": "Sluit je aan bij duizenden gebruikers.",
     "contact_support": "Contacteer support",
-
     "instagram": "Instagram",
     "twitter": "Twitter",
-
     "mac_placeholder": "00:1A:79:XX:XX:XX",
     "futureIs": "De toekomst is",
     "experienceText": "Streaming van de volgende generatie met hoge prestaties.",
     "freeTrial": "Gratis proefperiode",
     "tutorial": "Handleiding",
-
     "disclaimerHeading": "Disclaimer",
     "disclaimerText1": "Wise Player host geen content.",
     "disclaimerPoint1": "Wij zijn niet verantwoordelijk voor inhoud",
     "disclaimerPoint2": "Gebruikers moeten wetten naleven",
     "disclaimerPoint3": "Alleen externe bronnen",
     "disclaimerPoint4": "Geen auteursrechtelijk materiaal opgeslagen",
-
     "featureHeadingParent": "FEATURES",
     "featureHeadingChild": "Waarom voor ons kiezen",
-
     "cta_dive_in": "Klaar om te beginnen?",
     "cta_trial_text": "Start vandaag je gratis proefperiode",
-
     "check_status": "Status controleren",
     "proceed_payment": "Ga naar betaling",
     "activate_now": "Nu activeren",
     "cancel": "Annuleren",
     "try_another_mac": "Probeer een andere MAC",
-
     "device_activation": "Apparaat activeren",
     "enter_mac_desc": "Voer je MAC adres in om door te gaan",
     "enter_mac": "Voer MAC adres in",
     "invalid_mac": "Ongeldig MAC formaat (AA:BB:CC:DD:EE:FF)",
-
     "status_active": "Status: ACTIEF",
     "status_inactive": "Status: INACTIEF",
-
     "faq_mac_title": "Wat is een MAC adres?",
     "faq_mac_answer": "Een unieke apparaat identificatie.",
     "faq_transfer_title": "Kan ik mijn plan overzetten?",
     "faq_transfer_answer": "Nee, plannen zijn apparaatgebonden.",
-
     "footerBrandText": "Beste streaming platform.",
     "support": "Support",
     "reseller": "Reseller",
@@ -117,9 +102,8 @@
     "refundPolicy": "Terugbetalingsbeleid",
     "socialMedia": "Social media",
     "beyondTheScreen": "Meer dan het scherm",
-     "headFreeTrial": "7 DAGEN GRATIS PROEF",
-  "headTutorial": "Handleiding"
-
+    "headFreeTrial": "7 DAGEN GRATIS PROEF",
+    "headTutorial": "Handleiding"
   },
   "common": {
     "something_wrong": "Er is iets misgegaan"
@@ -136,21 +120,17 @@
       "title": "WISE PLAYER",
       "subtitle": "Premium Ervaring"
     },
-
     "nav_home": "Home",
     "nav_upload_list": "Downloadlijst",
     "nav_activation": "Activatie",
     "nav_reseller": "Wederverkoper",
     "nav_contact": "Contact",
-
     "buttons": {
       "reseller": "Wederverkoper"
     },
-
     "language": {
       "select": "Taal kiezen"
     },
-
     "languages": {
       "en": "Engels",
       "fr": "Frans",
@@ -161,10 +141,56 @@
       "nl": "Nederlands",
       "ar": "Arabisch"
     },
-
     "aria": {
       "toggle_menu": "Menu schakelen"
     }
-  }
-
+  },
+  "contact_Page": {
+    "contact_support_center": "SUPPORTCENTRUM",
+    "contact_header_1": "Hoe kunnen wij",
+    "contact_header_2": "helpen?",
+    "contact_sub": "Wij zijn er om u te helpen met technische problemen, factureringsvragen of feedback.",
+    "contact_247_title": "24/7 Ondersteuning",
+    "contact_247_desc": "Ons team is altijd online.",
+    "contact_secure_title": "Veilig Versleuteld",
+    "contact_secure_desc": "Uw gegevens zijn veilig bij ons.",
+    "contact_visit_site": "Bezoek Website",
+    "contact_brand_msg": "Verbeter uw streamingervaring met onze premium diensten.",
+    "contact_fname": "Voornaam",
+    "contact_lname": "Achternaam",
+    "contact_email": "E-mailadres",
+    "contact_mac": "MAC-adres",
+    "contact_inquiry": "Type Vraag",
+    "contact_tech_issue": "Technisch Probleem",
+    "contact_billing": "Facturatie / Terugbetaling",
+    "contact_general": "Algemene Vraag",
+    "contact_message": "Berichtdetails",
+    "contact_msg_placeholder": "Hoe kunnen wij u vandaag helpen?",
+    "contact_attachments": "Bijlagen",
+    "contact_upload_text": "Sleep uw bestanden hierheen of",
+    "contact_browse": "Bladeren",
+    "contact_upload_hint": "Afbeeldingen of Video's (Max 5MB)",
+    "contact_btn_submit": "Ticket Verzenden",
+    "contact_success_title": "Bericht Verzonden!",
+    "contact_success_msg": "We nemen binnenkort contact met u op."
+  },
+  "playlist": {
+    "upload_playlist": "Upload je afspeellijst",
+    "mac_address": "MAC-adres",
+    "source": "Bron",
+    "link": "Link",
+    "file": "Bestand",
+    "put_link": "Voer je link in",
+    "name": "Naam",
+    "mac_not_found": "MAC-adres niet gevonden. Ga terug en controleer opnieuw.",
+    "enter_name_link": "Voer naam en link in",
+    "saved": "Opgeslagen!",
+    "save_playlist": "Afspeellijst opslaan",
+    "delete_playlist": "Verwijder je afspeellijst",
+    "your_mac": "Jouw MAC-adres",
+    "required": "Vereist",
+    "delete": "Verwijderen"
+  },
+  "footer_terms": "Voorwaarden",
+  "footer_privacy": "Privacy"
 }

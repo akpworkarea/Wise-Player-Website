@@ -6,10 +6,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaPlus, FaTrash, FaChevronLeft, FaChevronRight, FaExclamationCircle } from 'react-icons/fa';
 import { saveM3uPlaylist } from '../auth/apiservice';
+import { useTranslation } from 'react-i18next';
 const PlaylistManager = () => {
   const location = useLocation();
   const uploadMac = location.state?.uploadMac;
   const [macAddress, setMacAddress] = useState("");
+  const { t } = useTranslation();
   useEffect(() => {
     // Priority 1: Navigation state se MAC lo
     const macFromState = location.state?.mac;
@@ -91,20 +93,21 @@ const PlaylistManager = () => {
       padding: '40px 20px',
       color: 'black',
       fontFamily: "'Segoe UI', Roboto, sans-serif'"
-    }}>      <motion.div
-      className="container"
-      style={{ maxWidth: '900px' }}
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
+    }}>
+      <motion.div
+        className="container"
+        style={{ maxWidth: '900px' }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
 
         {/* Header Section */}
         <motion.div
           variants={itemVariants}
           className="bg-white text-dark p-3 rounded-3 mb-4 shadow-lg border-0"
         >
-          <h4 className="m-0 fw-bold" style={{ letterSpacing: '-0.5px' }}>Upload your playlist</h4>
+          <h4 className="m-0 fw-bold" style={{ letterSpacing: '-0.5px' }}>{t('playlist.upload_playlist')}</h4>
 
         </motion.div>
 
@@ -114,7 +117,7 @@ const PlaylistManager = () => {
           className="bg-white text-dark p-4 rounded-3 mb-4 shadow-lg position-relative border-0"
         >
           <div className="mb-4">
-            <label className="fw-bold mb-2 small text-uppercase text-muted" style={{ letterSpacing: '1px' }}>MAC Address</label>
+            <label className="fw-bold mb-2 small text-uppercase text-muted" style={{ letterSpacing: '1px' }}>{t('playlist.mac_address')}</label>
             <div>
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
@@ -128,7 +131,6 @@ const PlaylistManager = () => {
             </div>
           </div>
 
-          {/* Plus Button with Rotate Animation */}
           <motion.button
             variants={buttonHover}
             whileHover="hover"
@@ -147,7 +149,7 @@ const PlaylistManager = () => {
               {links.map((link, index) => (
                 <motion.div
                   key={link.id}
-                  layout // Isse baaki rows smoothly move karengi jab ek delete hogi
+                  layout
                   variants={rowVariants}
                   initial="hidden"
                   animate="visible"
@@ -155,20 +157,20 @@ const PlaylistManager = () => {
                   className="row g-3 mb-3 align-items-end"
                 >
                   <div className="col-md-2">
-                    <label className="small fw-bold text-muted d-block mb-1">Source</label>
+                    <label className="small fw-bold text-muted d-block mb-1">{t('playlist.source')}</label>
                     <select className="form-select border-0 bg-light shadow-sm" style={{ height: '45px' }}>
-                      <option>Link</option>
-                      <option>File</option>
+                      <option>{t('playlist.link')}</option>
+                      <option>{t('playlist.file')}</option>
                     </select>
                   </div>
                   <div className="col-md-6">
-                    <label className="small fw-bold text-muted d-block mb-1">Link</label>
+                    <label className="small fw-bold text-muted d-block mb-1">{t('playlist.link')}</label>
                     <input
                       type="text"
                       className="form-control border-0 bg-light shadow-sm"
-                      placeholder="Put your link"
+                      placeholder={t('playlist.put_link')}
                       style={{ height: '45px' }}
-                      value={link.url} // bind to state
+                      value={link.url}
                       onChange={(e) => {
                         const newLinks = [...links];
                         newLinks[index].url = e.target.value;
@@ -177,13 +179,13 @@ const PlaylistManager = () => {
                     />
                   </div>
                   <div className="col-md-3">
-                    <label className="small fw-bold text-muted d-block mb-1">Name</label>
+                    <label className="small fw-bold text-muted d-block mb-1">{t('playlist.name')}</label>
                     <input
                       type="text"
                       className="form-control border-0 bg-light shadow-sm"
-                      placeholder="Name"
+                      placeholder={t('playlist.name')}
                       style={{ height: '45px' }}
-                      value={link.name} // bind to state
+                      value={link.name}
                       onChange={(e) => {
                         const newLinks = [...links];
                         newLinks[index].name = e.target.value;
@@ -215,36 +217,32 @@ const PlaylistManager = () => {
               whileTap="tap"
               className="btn px-4 py-2 d-flex align-items-center border-0"
               style={{ backgroundColor: '#1B2631', color: 'white', borderRadius: '10px' }}
-              // PlaylistManager.js mein "Save Playlist" button ka onClick check karein:
-
               onClick={async () => {
                 const firstLink = links[0];
 
-                // 1. Pehle check karein ki kya macAddress state mein value hai?
                 if (!macAddress) {
-                  toast.error("MAC Address not found. Please go back and validate again.");
+                  toast.error(t('playlist.mac_not_found'));
                   return;
                 }
 
                 if (!firstLink.url || !firstLink.name) {
-                  toast.error("Please enter Name and Link");
+                  toast.error(t('playlist.enter_name_link'));
                   return;
                 }
 
-                // 2. Yahan 'macAddress' variable pass karein (jo state upar define ki hai)
                 const result = await saveM3uPlaylist(macAddress, {
                   name: firstLink.name,
                   m3uUrl: firstLink.url
                 });
 
                 if (result.success) {
-                  toast.success(result.message || "Saved!");
+                  toast.success(result.message || t('playlist.saved'));
                 } else {
                   toast.error(result.message);
                 }
               }}
             >
-              Save Playlist
+              {t('playlist.save_playlist')}
             </motion.button>
           </div>
         </motion.div>
@@ -254,16 +252,16 @@ const PlaylistManager = () => {
           variants={itemVariants}
           className="bg-white text-dark p-4 rounded-3 shadow-lg border-0"
         >
-          <h5 className="fw-bold mb-4">Delete your playlist</h5>
+          <h5 className="fw-bold mb-4">{t('playlist.delete_playlist')}</h5>
           <div className="mb-4">
             <div className="d-flex justify-content-between mb-1">
-              <label className="small fw-bold text-muted">Your MAC address</label>
+              <label className="small fw-bold text-muted">{t('playlist.your_mac')}</label>
               <motion.span
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ repeat: Infinity, duration: 1.5 }}
                 className="text-danger small fw-bold"
               >
-                Required
+                {t('playlist.required')}
               </motion.span>
             </div>
             <div className="position-relative">
@@ -290,7 +288,7 @@ const PlaylistManager = () => {
               className="btn px-4 py-1 fw-bold border-0"
               style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)', borderRadius: '10px' }}
             >
-              Delete <FaChevronRight className="ms-2" size={12} />
+              {t('playlist.delete')} <FaChevronRight className="ms-2" size={12} />
             </motion.button>
           </div>
         </motion.div>
@@ -302,16 +300,16 @@ const PlaylistManager = () => {
         toastStyle={{ fontSize: '12px', padding: '5px 12px', minHeight: 'auto' }}
       />
       <style jsx>{`
-        .form-control:focus, .form-select:focus {
-          box-shadow: 0 0 0 3px rgba(255, 213, 79, 0.25) !important;
-          border-color: #FFD54F !important;
-          outline: none;
-        }
-        input::placeholder {
-          color: #adb5bd !important;
-          font-size: 0.9rem;
-        }
-      `}</style>
+    .form-control:focus, .form-select:focus {
+      box-shadow: 0 0 0 3px rgba(255, 213, 79, 0.25) !important;
+      border-color: #FFD54F !important;
+      outline: none;
+    }
+    input::placeholder {
+      color: #adb5bd !important;
+      font-size: 0.9rem;
+    }
+  `}</style>
     </div>
   );
 };

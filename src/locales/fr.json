@@ -241,7 +241,7 @@
   "requests": "Demandes",
   "subreseller": "Sous-revendeur",
   "are_you_sure_logout": "Êtes-vous sûr de vouloir vous déconnecter ?",
-    "subreseller_management": "Gestion des sous-revendeurs",
+  "subreseller_management": "Gestion des sous-revendeurs",
   "manage_subreseller": "Gérer les sous-revendeurs",
   "create_subreseller": "Créer un sous-revendeur",
   "user_details": "Détails de l'utilisateur",
@@ -253,51 +253,42 @@
   "transfer": "Transférer",
   "full_name": "Nom complet",
   "submit": "Soumettre",
-   "edit": "Modifier",
+  "edit": "Modifier",
   "update": "Mettre à jour",
   "prev": "Précédent",
   "next": "Suivant",
   "page_of": "Page {{current}} sur {{total}}",
   "username_label": "Nom d'utilisateur",
   "id_label": "ID",
-   "transfer_credits": "Transférer des crédits",
+  "transfer_credits": "Transférer des crédits",
   "enter_amount": "Entrer le montant",
   "user": "Utilisateur",
   "available_credits": "Crédits disponibles",
   "enter_valid_amount": "Entrez un montant valide",
   "not_enough_credits": "Crédits insuffisants",
   "transfer_failed": "Échec du transfert",
-  
   "activation": {
     "appName": "WISE ",
     "appName2": "PLAYER",
     "tagline": "Rapide · Sécurisé · Premium · Activation",
-
     "stepEnterMac": "Entrer MAC",
     "stepGenerateKey": "Générer la clé",
     "stepActivate": "Activer",
-
     "macLabel": "Adresse MAC",
-
     "generateKey": "Générer la clé",
     "generating": "Génération...",
     "keyGenerated": "Clé générée",
-
     "agreement": "Je confirme que j'ai mon propre contenu et que je paie pour",
     "terms": "licence à vie Wise Player",
     "activateDevice": "Activer l'appareil",
     "verifying": "Vérification...",
-
     "successTitle": "Vérifié et actif !",
     "successDesc": "Votre appareil est maintenant sous licence premium.",
     "activatedDevice": "Appareil activé",
-
     "lifetime": "Accès à vie",
     "secured": "Sécurisé",
-
     "activateAnother": "Activer un autre appareil",
     "goToDashboard": "Aller au tableau de bord",
-
     "keyGeneratedSuccess": "Clé d'activation générée",
     "keyGenerateFailed": "Échec de la génération de la clé",
     "deviceActivated": "Appareil activé avec succès",
@@ -307,76 +298,70 @@
     "goToHome": "Aller à l'accueil"
   },
   "home": {
-     "headExperienceText": "Profitez d’une lecture multimédia premium sans mise en mémoire tampon. Optimisé pour tous les Smart TV haut de gamme.",
+    "headExperienceText": "Profitez d’une lecture multimédia premium sans mise en mémoire tampon. Optimisé pour tous les Smart TV haut de gamme.",
     "features": [
-      { "title": "Vitesse Ultra", "desc": "Moteur C++ optimisé pour un chargement ultra rapide." },
-      { "title": "Streaming Sécurisé", "desc": "Gestion de playlists chiffrées pour un usage privé." },
-      { "title": "4K Native", "desc": "Prise en charge de la 4K et 8K réelles pour écrans OLED." }
+      {
+        "title": "Vitesse Ultra",
+        "desc": "Moteur C++ optimisé pour un chargement ultra rapide."
+      },
+      {
+        "title": "Streaming Sécurisé",
+        "desc": "Gestion de playlists chiffrées pour un usage privé."
+      },
+      {
+        "title": "4K Native",
+        "desc": "Prise en charge de la 4K et 8K réelles pour écrans OLED."
+      }
     ],
     "system_online": "SYSTÈME EN LIGNE V2.0",
-
     "type_ultra_fast": "Ultra Rapide",
     "type_crystal_clear": "Clarté Cristalline",
     "type_wise_player": "Wise Player",
-
     "brand_name": "Wise Player",
     "ready_to_stream": "Prêt à diffuser",
-
     "brand_small": "Wise",
     "brand_big": "Player",
     "brand_upper": "WISEPLAYER",
-
     "plans": "PLANS",
     "choose_access": "Choisissez votre accès",
     "days_access": "Jours d'accès",
     "instant_activation": "Activation instantanée",
-
     "faq_title": "Questions fréquentes",
     "still_questions": "Encore des questions ?",
     "still_questions_desc": "Rejoignez des milliers d'utilisateurs.",
     "contact_support": "Contacter le support",
-
     "instagram": "Instagram",
     "twitter": "Twitter",
-
     "mac_placeholder": "00:1A:79:XX:XX:XX",
     "futureIs": "Le futur est",
     "experienceText": "Streaming nouvelle génération avec performance ultra.",
     "freeTrial": "Essai gratuit",
     "tutorial": "Tutoriel",
-
     "disclaimerHeading": "Avertissement",
     "disclaimerText1": "Wise Player n'héberge aucun contenu.",
     "disclaimerPoint1": "Nous ne sommes pas responsables du contenu",
     "disclaimerPoint2": "Les utilisateurs doivent respecter les lois",
     "disclaimerPoint3": "Sources tierces uniquement",
     "disclaimerPoint4": "Aucun contenu protégé stocké",
-
     "featureHeadingParent": "FONCTIONNALITÉS",
     "featureHeadingChild": "Pourquoi nous choisir",
-
     "cta_dive_in": "Prêt à commencer ?",
     "cta_trial_text": "Commencez votre essai gratuit aujourd’hui",
-
     "check_status": "Vérifier le statut",
     "proceed_payment": "Procéder au paiement",
     "activate_now": "Activer maintenant",
     "cancel": "Annuler",
     "try_another_mac": "Essayer une autre MAC",
-
     "device_activation": "Activation de l'appareil",
     "enter_mac_desc": "Entrez l'adresse MAC pour continuer",
     "enter_mac": "Entrer adresse MAC",
     "invalid_mac": "Format MAC invalide",
-
     "status_active": "Statut : ACTIF",
     "status_inactive": "Statut : INACTIF",
-
     "faq_mac_title": "Qu'est-ce qu'une adresse MAC ?",
     "faq_mac_answer": "Identifiant unique de l'appareil.",
     "faq_transfer_title": "Puis-je transférer mon plan ?",
     "faq_transfer_answer": "Non, lié à l’appareil.",
-
     "footerBrandText": "Meilleure plateforme de streaming.",
     "support": "Support",
     "reseller": "Revendeur",
@@ -385,10 +370,12 @@
     "refundPolicy": "Politique de remboursement",
     "socialMedia": "Réseaux sociaux",
     "beyondTheScreen": "Au-delà de l'écran",
-  "headFreeTrial": "ESSAI GRATUIT 7 JOURS",
-  "headTutorial": "Tutoriel"
+    "headFreeTrial": "ESSAI GRATUIT 7 JOURS",
+    "headTutorial": "Tutoriel"
   },
-  "common": { "something_wrong": "Une erreur s'est produite" },
+  "common": {
+    "something_wrong": "Une erreur s'est produite"
+  },
   "api": {
     "device_not_found": "Appareil non trouvé",
     "invalid_device": "Appareil invalide",
@@ -396,27 +383,22 @@
     "something_wrong": "Une erreur s'est produite",
     "plans_error": "Impossible de charger les offres"
   },
-
   "navbar": {
     "logo": {
       "title": "WISE PLAYER",
       "subtitle": "Expérience Premium"
     },
-
     "nav_home": "Accueil",
     "nav_upload_list": "Liste de téléchargement",
     "nav_activation": "Activation",
     "nav_reseller": "Revendeur",
     "nav_contact": "Contact",
-
     "buttons": {
       "reseller": "Revendeur"
     },
-
     "language": {
       "select": "Choisir la langue"
     },
-
     "languages": {
       "en": "Anglais",
       "fr": "Français",
@@ -427,11 +409,54 @@
       "nl": "Néerlandais",
       "ar": "Arabe"
     },
-
     "aria": {
       "toggle_menu": "Basculer le menu"
     }
+  },
+  "contact_Page": {
+    "contact_support_center": "CENTRE D'ASSISTANCE",
+    "contact_header_1": "Comment pouvons-nous",
+    "contact_header_2": "vous aider ?",
+    "contact_sub": "Nous sommes là pour vous aider avec tout problème technique, question de facturation ou commentaire.",
+    "contact_247_title": "Support 24/7",
+    "contact_247_desc": "Notre équipe est toujours en ligne.",
+    "contact_secure_title": "Sécurisé et Chiffré",
+    "contact_secure_desc": "Vos données sont en sécurité avec nous.",
+    "contact_visit_site": "Visiter le Site",
+    "contact_brand_msg": "Améliorez votre expérience de streaming avec nos services premium.",
+    "contact_fname": "Prénom",
+    "contact_lname": "Nom",
+    "contact_email": "Adresse E-mail",
+    "contact_mac": "Adresse MAC",
+    "contact_inquiry": "Type de Demande",
+    "contact_tech_issue": "Problème Technique",
+    "contact_billing": "Facturation / Remboursement",
+    "contact_general": "Question Générale",
+    "contact_message": "Détail du Message",
+    "contact_msg_placeholder": "Comment pouvons-nous vous aider aujourd’hui ?",
+    "contact_attachments": "Pièces Jointes",
+    "contact_upload_text": "Déposez vos fichiers ici ou",
+    "contact_browse": "Parcourir",
+    "contact_upload_hint": "Images ou Vidéos (Max 5MB)",
+    "contact_btn_submit": "Envoyer le Ticket",
+    "contact_success_title": "Message Envoyé !",
+    "contact_success_msg": "Nous vous répondrons bientôt."
+  },
+  "playlist": {
+    "upload_playlist": "Téléchargez votre playlist",
+    "mac_address": "Adresse MAC",
+    "source": "Source",
+    "link": "Lien",
+    "file": "Fichier",
+    "put_link": "Mettez votre lien",
+    "name": "Nom",
+    "mac_not_found": "Adresse MAC introuvable. Veuillez revenir et vérifier à nouveau.",
+    "enter_name_link": "Veuillez entrer le nom et le lien",
+    "saved": "Enregistré !",
+    "save_playlist": "Enregistrer la playlist",
+    "delete_playlist": "Supprimez votre playlist",
+    "your_mac": "Votre adresse MAC",
+    "required": "Requis",
+    "delete": "Supprimer"
   }
-
-
 }

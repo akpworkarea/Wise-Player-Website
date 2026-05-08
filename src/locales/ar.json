@@ -3,32 +3,24 @@
     "appName": "حكيم ",
     "appName2": "لاعب",
     "tagline": "سريع · آمن · مميز · تفعيل",
-
     "stepEnterMac": "أدخل ماك",
     "stepGenerateKey": "إنشاء المفتاح",
     "stepActivate": "تفعيل",
-
     "macLabel": "عنوان ماك",
-
     "generateKey": "إنشاء المفتاح",
     "generating": "جارٍ الإنشاء...",
     "keyGenerated": "تم إنشاء المفتاح",
-
     "agreement": "أؤكد أن لدي محتوى خاص بي وأنا أدفع مقابل",
     "terms": "ترخيص حكيم لاعب مدى الحياة",
     "activateDevice": "تفعيل الجهاز",
     "verifying": "جارٍ التحقق...",
-
     "successTitle": "تم التحقق والتفعيل!",
     "successDesc": "جهازك الآن مرخص بنسخة مميزة.",
     "activatedDevice": "الجهاز المُفعل",
-
     "lifetime": "وصول مدى الحياة",
     "secured": "آمن",
-
     "activateAnother": "تفعيل جهاز آخر",
     "goToDashboard": "الذهاب إلى لوحة التحكم",
-
     "keyGeneratedSuccess": "تم إنشاء مفتاح التفعيل",
     "keyGenerateFailed": "فشل إنشاء المفتاح",
     "deviceActivated": "تم تفعيل الجهاز بنجاح",
@@ -37,79 +29,71 @@
     "footer": "حكيم لاعب · جميع الحقوق محفوظة",
     "goToHome": "الذهاب إلى الصفحة الرئيسية"
   },
-  
-  
   "home": {
     "headExperienceText": "تشغيل وسائط مميز بدون تقطيع. محسّن لأجهزة Smart TV المتقدمة.",
     "features": [
-      { "title": "سرعة عالية", "desc": "محرك C++ لسرعة تحميل فائقة." },
-      { "title": "بث آمن", "desc": "إدارة قوائم مشفرة للمشاهدة الخاصة." },
-      { "title": "4K حقيقي", "desc": "دعم 4K و 8K حقيقي." }
+      {
+        "title": "سرعة عالية",
+        "desc": "محرك C++ لسرعة تحميل فائقة."
+      },
+      {
+        "title": "بث آمن",
+        "desc": "إدارة قوائم مشفرة للمشاهدة الخاصة."
+      },
+      {
+        "title": "4K حقيقي",
+        "desc": "دعم 4K و 8K حقيقي."
+      }
     ],
     "system_online": "SYSTEM ONLINE V2.0",
-
     "type_ultra_fast": "سرعة فائقة",
     "type_crystal_clear": "وضوح عالي",
     "type_wise_player": "Wise Player",
-
     "brand_name": "Wise Player",
     "ready_to_stream": "جاهز للبث",
-
     "brand_small": "Wise",
     "brand_big": "Player",
     "brand_upper": "WISEPLAYER",
-
     "plans": "الخطط",
     "choose_access": "اختر الوصول",
     "days_access": "أيام الوصول",
     "instant_activation": "تفعيل فوري",
-
     "faq_title": "الأسئلة الشائعة",
     "still_questions": "هل لديك أسئلة؟",
     "still_questions_desc": "انضم لآلاف المستخدمين.",
     "contact_support": "اتصل بالدعم",
-
     "instagram": "Instagram",
     "twitter": "Twitter",
-
     "mac_placeholder": "00:1A:79:XX:XX:XX",
     "futureIs": "المستقبل هو",
     "experienceText": "بث متطور بأداء عالي.",
     "freeTrial": "تجربة مجانية",
     "tutorial": "دليل",
-
     "disclaimerHeading": "إخلاء المسؤولية",
     "disclaimerText1": "Wise Player لا يستضيف محتوى.",
     "disclaimerPoint1": "لسنا مسؤولين عن المحتوى",
     "disclaimerPoint2": "يجب الالتزام بالقوانين",
     "disclaimerPoint3": "مصادر خارجية فقط",
     "disclaimerPoint4": "لا يتم تخزين محتوى محمي",
-
     "featureHeadingParent": "المميزات",
     "featureHeadingChild": "لماذا نحن",
-
     "cta_dive_in": "هل أنت جاهز؟",
     "cta_trial_text": "ابدأ التجربة الآن",
-
     "check_status": "تحقق من الحالة",
     "proceed_payment": "الدفع",
     "activate_now": "تفعيل",
     "cancel": "إلغاء",
     "try_another_mac": "جرب MAC آخر",
-
     "device_activation": "تفعيل الجهاز",
     "enter_mac_desc": "أدخل MAC",
     "enter_mac": "أدخل MAC",
     "invalid_mac": "MAC غير صالح",
-
     "status_active": "الحالة: نشط",
     "status_inactive": "الحالة: غير نشط",
-
     "faq_mac_title": "ما هو MAC؟",
     "faq_mac_answer": "معرّف فريد.",
     "faq_transfer_title": "نقل الخطة؟",
     "faq_transfer_answer": "غير ممكن.",
-
     "footerBrandText": "أفضل منصة بث.",
     "support": "الدعم",
     "reseller": "موزع",
@@ -118,10 +102,12 @@
     "refundPolicy": "الاسترجاع",
     "socialMedia": "التواصل",
     "beyondTheScreen": "أكثر من شاشة",
-  "headFreeTrial": "تجربة مجانية 7 أيام",
-  "headTutorial": "دليل"
+    "headFreeTrial": "تجربة مجانية 7 أيام",
+    "headTutorial": "دليل"
   },
-  "common": { "something_wrong": "حدث خطأ" },
+  "common": {
+    "something_wrong": "حدث خطأ"
+  },
   "api": {
     "device_not_found": "لم يتم العثور",
     "invalid_device": "غير صالح",
@@ -134,21 +120,17 @@
       "title": "WISE PLAYER",
       "subtitle": "تجربة مميزة"
     },
-
     "nav_home": "الرئيسية",
     "nav_upload_list": "قائمة التحميل",
     "nav_activation": "التفعيل",
     "nav_reseller": "الموزع",
     "nav_contact": "اتصال",
-
     "buttons": {
       "reseller": "الموزع"
     },
-
     "language": {
       "select": "اختر اللغة"
     },
-
     "languages": {
       "en": "الإنجليزية",
       "fr": "الفرنسية",
@@ -159,10 +141,56 @@
       "nl": "الهولندية",
       "ar": "العربية"
     },
-
     "aria": {
       "toggle_menu": "تبديل القائمة"
     }
-  }
-
+  },
+  "contact_Page": {
+    "contact_support_center": "مركز الدعم",
+    "contact_header_1": "كيف يمكننا",
+    "contact_header_2": "المساعدة؟",
+    "contact_sub": "نحن هنا لمساعدتك في أي مشاكل تقنية أو استفسارات الفوترة أو الملاحظات.",
+    "contact_247_title": "دعم 24/7",
+    "contact_247_desc": "فريقنا متصل دائمًا.",
+    "contact_secure_title": "آمن ومشفّر",
+    "contact_secure_desc": "بياناتك آمنة معنا.",
+    "contact_visit_site": "زيارة الموقع",
+    "contact_brand_msg": "ارتقِ بتجربة البث الخاصة بك مع خدماتنا المميزة.",
+    "contact_fname": "الاسم الأول",
+    "contact_lname": "اسم العائلة",
+    "contact_email": "البريد الإلكتروني",
+    "contact_mac": "عنوان MAC",
+    "contact_inquiry": "نوع الاستفسار",
+    "contact_tech_issue": "مشكلة تقنية",
+    "contact_billing": "الفوترة / استرداد",
+    "contact_general": "سؤال عام",
+    "contact_message": "تفاصيل الرسالة",
+    "contact_msg_placeholder": "كيف يمكننا مساعدتك اليوم؟",
+    "contact_attachments": "المرفقات",
+    "contact_upload_text": "قم بإسقاط ملفاتك هنا أو",
+    "contact_browse": "تصفح",
+    "contact_upload_hint": "صور أو فيديوهات (الحد الأقصى 5MB)",
+    "contact_btn_submit": "إرسال التذكرة",
+    "contact_success_title": "تم إرسال الرسالة!",
+    "contact_success_msg": "سنتواصل معك قريبًا."
+  },
+  "playlist": {
+    "upload_playlist": "قم برفع قائمة التشغيل الخاصة بك",
+    "mac_address": "عنوان MAC",
+    "source": "المصدر",
+    "link": "الرابط",
+    "file": "ملف",
+    "put_link": "ضع رابطك",
+    "name": "الاسم",
+    "mac_not_found": "لم يتم العثور على عنوان MAC. يرجى الرجوع والتحقق مرة أخرى.",
+    "enter_name_link": "يرجى إدخال الاسم والرابط",
+    "saved": "تم الحفظ!",
+    "save_playlist": "حفظ قائمة التشغيل",
+    "delete_playlist": "احذف قائمة التشغيل الخاصة بك",
+    "your_mac": "عنوان MAC الخاص بك",
+    "required": "مطلوب",
+    "delete": "حذف"
+  },
+  "footer_terms": "الشروط",
+  "footer_privacy": "الخصوصية"
 }

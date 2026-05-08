@@ -6,7 +6,6 @@
   "nav_contact": "Contact",
   "uploadList": "Upload List",
   "contact": "Contact",
-  
   "wisePlay": "WISE PLAY",
   "login": "Login",
   "disclaimerHeading": "WARNING",
@@ -114,33 +113,35 @@
   "recover_subtitle": "We'll send a recovery link to your username contact.",
   "btn_send_recovery": "SEND RECOVERY LINK",
   "authorized_only": "Authorized Access Only",
-  "contact_support_center": "SUPPORT CENTER",
-  "contact_header_1": "How can we",
-  "contact_header_2": "help?",
-  "contact_sub": "We’re here to assist you with any technical issues, billing inquiries, or feedback.",
-  "contact_247_title": "24/7 Support",
-  "contact_247_desc": "Our team is always online.",
-  "contact_secure_title": "Secure Encrypted",
-  "contact_secure_desc": "Your data is safe with us.",
-  "contact_visit_site": "Visit Website",
-  "contact_brand_msg": "Elevate your streaming experience with our premium services.",
-  "contact_fname": "First Name",
-  "contact_lname": "Last Name",
-  "contact_email": "Email Address",
-  "contact_mac": "MAC Address",
-  "contact_inquiry": "Inquiry Type",
-  "contact_tech_issue": "Technical Issue",
-  "contact_billing": "Billing / Refund",
-  "contact_general": "General Question",
-  "contact_message": "Message Detail",
-  "contact_msg_placeholder": "How can we help you today?",
-  "contact_attachments": "Attachments",
-  "contact_upload_text": "Drop your files here or",
-  "contact_browse": "Browse",
-  "contact_upload_hint": "Images or Videos (Max 5MB)",
-  "contact_btn_submit": "Submit Ticket",
-  "contact_success_title": "Message Sent!",
-  "contact_success_msg": "We'll gets back to you soon.",
+  "contact_Page": {
+    "contact_support_center": "SUPPORT CENTER",
+    "contact_header_1": "How can we",
+    "contact_header_2": "help?",
+    "contact_sub": "We’re here to assist you with any technical issues, billing inquiries, or feedback.",
+    "contact_247_title": "24/7 Support",
+    "contact_247_desc": "Our team is always online.",
+    "contact_secure_title": "Secure Encrypted",
+    "contact_secure_desc": "Your data is safe with us.",
+    "contact_visit_site": "Visit Website",
+    "contact_brand_msg": "Elevate your streaming experience with our premium services.",
+    "contact_fname": "First Name",
+    "contact_lname": "Last Name",
+    "contact_email": "Email Address",
+    "contact_mac": "MAC Address",
+    "contact_inquiry": "Inquiry Type",
+    "contact_tech_issue": "Technical Issue",
+    "contact_billing": "Billing / Refund",
+    "contact_general": "General Question",
+    "contact_message": "Message Detail",
+    "contact_msg_placeholder": "How can we help you today?",
+    "contact_attachments": "Attachments",
+    "contact_upload_text": "Drop your files here or",
+    "contact_browse": "Browse",
+    "contact_upload_hint": "Images or Videos (Max 5MB)",
+    "contact_btn_submit": "Submit Ticket",
+    "contact_success_title": "Message Sent!",
+    "contact_success_msg": "We'll gets back to you soon."
+  },
   "tfs_badge": "LIVE 24/7 AVAILABLE",
   "tfs_hero_title": "Entertainment That",
   "tfs_hero_span": "Never Sleeps.",
@@ -222,7 +223,7 @@
   "side_track": "Track Activation Request",
   "side_purchase": "Purchase Credit",
   "side_logout": "Logout",
-   "dashboard": "Dashboard",
+  "dashboard": "Dashboard",
   "device_management": "Device Management",
   "sub_reseller": "Sub Reseller",
   "activation_requests": "Activation Requests",
@@ -232,7 +233,7 @@
   "confirm_logout": "Confirm Logout",
   "cancel": "Cancel",
   "overview": "Overview",
-    "subreseller_management": "Sub-reseller Management",
+  "subreseller_management": "Sub-reseller Management",
   "manage_subreseller": "Manage your sub-reseller and activation requests",
   "create_subreseller": "Create New Sub-Reseller",
   "user_details": "User Details",
@@ -255,48 +256,40 @@
   "submit": "Submit",
   "are_you_sure_logout": "Are You Sure Logout",
   "page_of": "Page {{current}} of {{total}}",
-   "edit": "Edit",
+  "edit": "Edit",
   "update": "Update",
   "username_label": "Username",
   "id_label": "ID",
-    "transfer_credits": "Transfer Credits",
+  "transfer_credits": "Transfer Credits",
   "enter_amount": "Enter amount",
   "user": "User",
   "available_credits": "Available Credits",
   "enter_valid_amount": "Enter a valid amount",
   "not_enough_credits": "Not enough credits",
   "transfer_failed": "Transfer failed",
-  
   "activation": {
     "appName": "WISE ",
     "appName2": "PLAYER",
     "tagline": "Fast · Secure · Premium · Activation",
-
     "stepEnterMac": "Enter MAC",
     "stepGenerateKey": "Generate Key",
     "stepActivate": "Activate",
-
     "macLabel": "MAC Address",
-
     "generateKey": "Generate Key",
     "generating": "Generating...",
     "keyGenerated": "Key Generated",
-
     "agreement": "I confirm I have my own content and I am paying for",
     "terms": "Wise Player lifetime license",
     "activateDevice": "Activate Device",
     "verifying": "Verifying...",
-
     "successTitle": "Verified & Active!",
     "successDesc": "Your device is now premium licensed.",
     "activatedDevice": "Activated Device",
-
     "lifetime": "Lifetime Access",
     "secured": "Secured",
-
     "activateAnother": "Activate Another Device",
     "goToHome": "Go to Home",
-      "keyGeneratedSuccess": "Activation key generated",
+    "keyGeneratedSuccess": "Activation key generated",
     "keyGenerateFailed": "Failed to generate key",
     "deviceActivated": "Device Activated Successfully",
     "activationFailed": "Activation Failed",
@@ -319,70 +312,55 @@
         "desc": "Support for true 4K and 8K resolution for OLED screens."
       }
     ],
-     "system_online": "SYSTEM ONLINE V2.0",
-
+    "system_online": "SYSTEM ONLINE V2.0",
     "type_ultra_fast": "Ultra Fast",
     "type_crystal_clear": "Crystal Clear",
     "type_wise_player": "Wise Player",
-
     "brand_name": "Wise Player",
     "ready_to_stream": "Ready to Stream",
-
     "brand_small": "Wise",
     "brand_big": "Player",
     "brand_upper": "WISEPLAYER",
-
     "plans": "PLANS",
     "choose_access": "Choose Your Access",
     "days_access": "Days Access",
     "instant_activation": "Instant Activation",
-
     "faq_title": "Frequently Asked",
     "still_questions": "Still have questions?",
     "still_questions_desc": "Join thousands of users enjoying the best streaming experience.",
     "contact_support": "Contact Support",
-
     "instagram": "Instagram",
     "twitter": "Twitter",
-
     "mac_placeholder": "00:1A:79:XX:XX:XX",
     "futureIs": "The Future is",
     "experienceText": "Experience next level streaming with ultra performance.",
     "freeTrial": "Free Trial",
     "tutorial": "Tutorial",
-
     "disclaimerHeading": "Disclaimer",
     "disclaimerText1": "Wise Player does not host any content.",
     "disclaimerPoint1": "We are not responsible for content",
     "disclaimerPoint2": "Users must comply with laws",
     "disclaimerPoint3": "Third-party sources only",
     "disclaimerPoint4": "No copyrighted material stored",
-
     "featureHeadingParent": "FEATURES",
     "featureHeadingChild": "Why Choose Us",
-
     "cta_dive_in": "Ready to Dive In?",
     "cta_trial_text": "Start your free trial today",
-
     "check_status": "Check Status",
     "proceed_payment": "Proceed to Payment",
     "activate_now": "Activate Now",
     "cancel": "Cancel",
     "try_another_mac": "Try Another MAC",
-
     "device_activation": "Device Activation",
     "enter_mac_desc": "Enter your device MAC address to continue",
     "enter_mac": "Enter MAC Address",
     "invalid_mac": "Invalid MAC format (AA:BB:CC:DD:EE:FF)",
-
     "status_active": "Status: ACTIVE",
     "status_inactive": "Status: INACTIVE",
-
     "faq_mac_title": "What is a MAC address?",
     "faq_mac_answer": "A MAC address is a unique device identifier.",
     "faq_transfer_title": "Can I transfer my plan?",
     "faq_transfer_answer": "No, plans are device-specific.",
-
     "footerBrandText": "Best streaming experience platform.",
     "support": "Support",
     "reseller": "Reseller",
@@ -391,43 +369,35 @@
     "refundPolicy": "Refund Policy",
     "socialMedia": "Social Media",
     "beyondTheScreen": "Beyond the Screen",
-  "headFreeTrial": "7-DAY FREE TRIAL",
-  "headTutorial": "Tutorial"
-  
+    "headFreeTrial": "7-DAY FREE TRIAL",
+    "headTutorial": "Tutorial"
   },
-
   "common": {
     "something_wrong": "Something went wrong"
   },
-
   "api": {
     "device_not_found": "Device not found",
     "invalid_device": "Invalid device",
     "payment_failed": "Payment failed",
     "something_wrong": "Something went wrong",
-     "plans_error": "Unable to load plans"
+    "plans_error": "Unable to load plans"
   },
-
-   "navbar": {
+  "navbar": {
     "logo": {
       "title": "WISE PLAYER",
       "subtitle": "Premium Experience"
     },
-
     "nav_home": "Home",
     "nav_upload_list": "Upload List",
     "nav_activation": "Activation",
     "nav_reseller": "Reseller",
     "nav_contact": "Contact",
-
     "buttons": {
       "reseller": "Reseller"
     },
-
     "language": {
       "select": "Select Language"
     },
-
     "languages": {
       "en": "English",
       "fr": "French",
@@ -438,9 +408,25 @@
       "nl": "Dutch",
       "ar": "Arabic"
     },
-
     "aria": {
       "toggle_menu": "Toggle menu"
     }
+  },
+  "playlist": {
+    "upload_playlist": "Upload your playlist",
+    "mac_address": "MAC Address",
+    "source": "Source",
+    "link": "Link",
+    "file": "File",
+    "put_link": "Put your link",
+    "name": "Name",
+    "mac_not_found": "MAC Address not found. Please go back and validate again.",
+    "enter_name_link": "Please enter Name and Link",
+    "saved": "Saved!",
+    "save_playlist": "Save Playlist",
+    "delete_playlist": "Delete your playlist",
+    "your_mac": "Your MAC Address",
+    "required": "Required",
+    "delete": "Delete"
   }
 }
