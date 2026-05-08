@@ -166,6 +166,39 @@
     "aria": {
       "toggle_menu": "Alternar menu"
     }
+  },
+  "uploadlist":{
+    "upload_playlist_title": "Carregue a sua playlist",
+    "enter_device_mac": "Digite o endereço MAC do seu dispositivo para continuar",
+    "device_id_label": "ID do dispositivo / Endereço MAC",
+    "validate_btn": "Validar",
+     "checking_status": "Verificando status..."
+
+  },
+  "resellerpage":{
+    "reseller_badge": "Torne-se parceiro",
+    "reseller_title": "VOCÊ QUER SE TORNAR UM REVENDEDOR?",
+    "reseller_desc": "Se sim, você está no lugar certo. Nossa equipe oferece a oportunidade de se tornar revendedor de licenças do nosso aplicativo. Gerencie e ative as assinaturas dos seus clientes facilmente pelo seu painel.",
+    "register": "Registrar",
+    "pricing_title": "PLANOS DE PREÇOS",
+    "pricing_subtitle": "Preços flexíveis para clientes e revendedores",
+    "customer_plans": "Planos do cliente",
+    "one_code": "1 Código",
+    "annual_sub": "Assinatura anual",
+    "buy_now": "Comprar agora",
+    "two_codes": "2 Códigos",
+    "best_couples": "Para casais",
+    "special_offer": "Oferta especial",
+    "get_offer": "Obter oferta",
+    "reseller_pricing_table": "Preços de revendedor",
+    "qty": "Quantidade",
+    "unit_price": "Preço unitário",
+    "total_label": "Total",
+    "depends": "Depende da quantidade",
+    "custom": "Personalizado",
+    "bonus_msg": "Códigos bônus podem ser incluídos em grandes pedidos",
+    "whatsapp_msg": "Pedidos acima de 1000 códigos exigem contato via WhatsApp",
+    "login": "Entrar"
   }
 
   

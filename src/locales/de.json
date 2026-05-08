@@ -164,6 +164,39 @@
     "aria": {
       "toggle_menu": "Menü umschalten"
     }
+  },
+  "uploadlist":{
+    "upload_playlist_title": "Laden Sie Ihre Playlist hoch.",
+    "enter_device_mac":"Geben Sie die MAC-Adresse Ihres Geräts ein, um fortzufahren",
+    "device_id_label": "ID DE L'APPAREIL / ADRESSE MAC",
+    "validate_btn": "Bestätigen",
+     "checking_status": "Status wird überprüft..."
+
+  },
+  "resellerpage":{
+    "reseller_badge": "Partner werden",
+    "reseller_title": "MÖCHTEN SIE WIEDERVERKÄUFER WERDEN?",
+    "reseller_desc": "Wenn ja, sind Sie hier genau richtig. Unser Team bietet Ihnen die Möglichkeit, Lizenz-Reseller unserer Anwendung zu werden. Verwalten und aktivieren Sie Kundenabonnements einfach über Ihr eigenes Reseller-Panel.",
+    "register": "Registrieren",
+    "pricing_title": "PREISPLÄNE",
+    "pricing_subtitle": "Flexible Preise für Kunden und Reseller",
+    "customer_plans": "Kundenpläne",
+    "one_code": "1 Code",
+    "annual_sub": "Jahresabonnement",
+    "buy_now": "Jetzt kaufen",
+    "two_codes": "2 Codes",
+    "best_couples": "Für Paare",
+    "special_offer": "Sonderangebot",
+    "get_offer": "Angebot erhalten",
+    "reseller_pricing_table": "Reseller-Preise",
+    "qty": "Menge",
+    "unit_price": "Stückpreis",
+    "total_label": "Gesamt",
+    "depends": "Abhängig von der Menge",
+    "custom": "Individuell",
+    "bonus_msg": "Bonuscodes können bei großen Bestellungen enthalten sein",
+    "whatsapp_msg": "Bestellungen über 1000 Codes erfordern WhatsApp Kontakt",
+    "login": "Anmelden"
   }
 
 

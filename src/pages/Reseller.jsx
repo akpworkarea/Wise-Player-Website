@@ -51,7 +51,7 @@ function Reseller() {
             {/* Badge */}
             <motion.div variants={fadeInUp}>
               <span className="inline-block bg-yellow-400 text-black text-xs px-3 py-1 rounded-full mb-4 font-semibold">
-                🚀 {t('reseller_badge')}
+                🚀 {t('resellerpage.reseller_badge')}
 
               </span>
             </motion.div>
@@ -61,7 +61,7 @@ function Reseller() {
               variants={fadeInUp}
               className="text-2xl md:text-3xl font-bold text-gray-800"
             >
-              {t('reseller_title')}
+              {t('resellerpage.reseller_title')}
             </motion.h2>
 
             {/* Description */}
@@ -69,7 +69,7 @@ function Reseller() {
               variants={fadeInUp}
               className="text-gray-600 mt-4 leading-relaxed"
             >
-              {t('reseller_desc')}
+              {t('resellerpage.reseller_desc')}
             </motion.p>
 
             {/* Buttons */}
@@ -83,7 +83,7 @@ function Reseller() {
                 className="bg-gray-800 w-40 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-700 transition"
                 onClick={() => navigate("/register")}
               >
-                {t('register')}
+                {t('resellerpage.register')}
               </motion.button>
 
               <motion.button
@@ -92,51 +92,51 @@ function Reseller() {
                 onClick={() => navigate("/login")}
                 className="w-40 !border !border-red-600 text-red-600 px-6 py-3 rounded-xl font-semibold hover:bg-red-50 transition"
               >
-                {t('login')}
+                {t('resellerpage.login')}
               </motion.button>
             </motion.div>
           </motion.div>
         </div>
         {/* HEADER */}
         <div className="text-center pt-12 mb-12">
-          <h1 className="text-4xl font-bold text-red-600">{t('pricing_title')}</h1>
+          <h1 className="text-4xl font-bold text-red-600">{t('resellerpage.pricing_title')}</h1>
           <p className="text-gray-500 mt-2">
-            {t('pricing_subtitle')}
+            {t('resellerpage.pricing_subtitle')}
           </p>
         </div>
 
         {/* ================= CUSTOMER PRICING ================= */}
         <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          {t('customer_plans')}
+          {t('resellerpage.customer_plans')}
         </h2>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* 1 CODE */}
           <div className="border rounded-2xl p-8 shadow hover:shadow-xl transition">
-            <h3 className="text-xl font-semibold">{t('one_code')}</h3>
-            <p className="text-gray-500">{t('annual_sub')}</p>
+            <h3 className="text-xl font-semibold">{t('resellerpage.one_code')}</h3>
+            <p className="text-gray-500">{t('resellerpage.annual_sub')}</p>
 
             <h1 className="text-4xl font-bold text-red-600 mt-4">€5.99</h1>
 
             <button className="mt-6 w-full bg-red-600 text-white py-3 rounded-xl hover:bg-red-700">
-              {t('buy_now')}
+              {t('resellerpage.buy_now')}
             </button>
           </div>
 
           {/* 2 CODE */}
           <div className="border-2 border-yellow-400 rounded-2xl p-8 shadow-lg relative">
             <span className="absolute top-3 right-3 bg-yellow-400 text-black px-3 py-1 text-xs rounded-full">
-              🔥 {t('special_offer')}
+              🔥 {t('resellerpage.special_offer')}
 
             </span>
 
-            <h3 className="text-xl font-semibold">{t('two_codes')}</h3>
-            <p className="text-gray-500">{t('best_couples')}</p>
+            <h3 className="text-xl font-semibold">{t('resellerpage.two_codes')}</h3>
+            <p className="text-gray-500">{t('resellerpage.best_couples')}</p>
 
             <h1 className="text-4xl font-bold text-red-600 mt-4">€14.99</h1>
 
             <button className="mt-6 w-full bg-yellow-400 text-black py-3 rounded-xl hover:bg-yellow-500">
-              {t('get_offer')}
+              {t('resellerpage.get_offer')}
             </button>
           </div>
         </div>
@@ -147,7 +147,7 @@ function Reseller() {
             {/* Header */}
             <div className=" font-bold text-center py-4">
               <h2 className="text-xl font-semibold tracking-wide">
-                {t('reseller_pricing_table')}
+                {t('resellerpage.reseller_pricing_table')}
               </h2>
             </div>
 
@@ -155,8 +155,8 @@ function Reseller() {
             <table className="w-full text-center">
               <thead>
                 <tr className="bg-gray-50 text-gray-700 text-sm uppercase">
-                  <th className="p-4">{t('qty')}</th>                 <th className="p-4">{t('unit_price')}</th>
-                  <th className="p-4">{t('total_label')}</th>
+                  <th className="p-4">{t('resellerpage.qty')}</th>                 <th className="p-4">{t('resellerpage.unit_price')}</th>
+                  <th className="p-4">{t('resellerpage.total_label')}</th>
                 </tr>
               </thead>
 
@@ -170,30 +170,33 @@ function Reseller() {
                 <tr className="border-t hover:bg-gray-50 transition">
                   <td className="p-4 font-medium">10 – 50</td>
                   <td>€2.20</td>
-                  <td>{t('depends')}</td>                </tr>
+                  <td>{t('resellerpage.depends')}</td>                </tr>
 
                 <tr className="border-t hover:bg-gray-50 transition">
                   <td className="p-4 font-medium">50 – 100</td>
                   <td>€2.00</td>
-                  <td>{t('depends')}</td>
+                  <td>{t('resellerpage.depends')}</td>
                 </tr>
 
                 <tr className="border-t hover:bg-gray-50 transition">
                   <td className="p-4 font-medium">100 – 200</td>
                   <td>€1.75</td>
-                  <td>Depends</td>
+                  <td>{t('resellerpage.depends')}</td>
+
                 </tr>
 
                 <tr className="border-t hover:bg-gray-50 transition">
                   <td className="p-4 font-medium">200 – 500</td>
                   <td>€1.50</td>
-                  <td>Depends</td>
+                  <td>{t('resellerpage.depends')}</td>
+
                 </tr>
 
                 <tr className="border-t hover:bg-gray-50 transition">
                   <td className="p-4 font-medium">500 – 1000</td>
                   <td>€1.25</td>
-                  <td>Depends</td>
+                  <td>{t('resellerpage.depends')}</td>
+
                 </tr>
 
                 <tr>
@@ -207,7 +210,7 @@ function Reseller() {
                       className="flex items-center justify-center gap-2"
                     >
                       <FaWhatsapp className="text-green-600 text-lg" />
-                      <span>{t('custom')}</span>
+                      <span>{t('resellerpage.custom')}</span>
                     </a>
                   </td>
                 </tr>
@@ -216,8 +219,8 @@ function Reseller() {
 
             {/* Footer Notes */}
             <div className="bg-gray-50 p-4 text-sm text-gray-800 font-semibold space-y-1">
-              <p>✔ {t('bonus_msg')}</p>
-              <p>✔ {t('whatsapp_msg')}</p>
+              <p>✔ {t('resellerpage.bonus_msg')}</p>
+              <p>✔ {t('resellerpage.whatsapp_msg')}</p>
             </div>
           </div>
         </div>

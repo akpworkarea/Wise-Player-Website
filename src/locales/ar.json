@@ -3,32 +3,24 @@
     "appName": "حكيم ",
     "appName2": "لاعب",
     "tagline": "سريع · آمن · مميز · تفعيل",
-
     "stepEnterMac": "أدخل ماك",
     "stepGenerateKey": "إنشاء المفتاح",
     "stepActivate": "تفعيل",
-
     "macLabel": "عنوان ماك",
-
     "generateKey": "إنشاء المفتاح",
     "generating": "جارٍ الإنشاء...",
     "keyGenerated": "تم إنشاء المفتاح",
-
     "agreement": "أؤكد أن لدي محتوى خاص بي وأنا أدفع مقابل",
     "terms": "ترخيص حكيم لاعب مدى الحياة",
     "activateDevice": "تفعيل الجهاز",
     "verifying": "جارٍ التحقق...",
-
     "successTitle": "تم التحقق والتفعيل!",
     "successDesc": "جهازك الآن مرخص بنسخة مميزة.",
     "activatedDevice": "الجهاز المُفعل",
-
     "lifetime": "وصول مدى الحياة",
     "secured": "آمن",
-
     "activateAnother": "تفعيل جهاز آخر",
     "goToDashboard": "الذهاب إلى لوحة التحكم",
-
     "keyGeneratedSuccess": "تم إنشاء مفتاح التفعيل",
     "keyGenerateFailed": "فشل إنشاء المفتاح",
     "deviceActivated": "تم تفعيل الجهاز بنجاح",
@@ -37,79 +29,71 @@
     "footer": "حكيم لاعب · جميع الحقوق محفوظة",
     "goToHome": "الذهاب إلى الصفحة الرئيسية"
   },
-  
-  
   "home": {
     "headExperienceText": "تشغيل وسائط مميز بدون تقطيع. محسّن لأجهزة Smart TV المتقدمة.",
     "features": [
-      { "title": "سرعة عالية", "desc": "محرك C++ لسرعة تحميل فائقة." },
-      { "title": "بث آمن", "desc": "إدارة قوائم مشفرة للمشاهدة الخاصة." },
-      { "title": "4K حقيقي", "desc": "دعم 4K و 8K حقيقي." }
+      {
+        "title": "سرعة عالية",
+        "desc": "محرك C++ لسرعة تحميل فائقة."
+      },
+      {
+        "title": "بث آمن",
+        "desc": "إدارة قوائم مشفرة للمشاهدة الخاصة."
+      },
+      {
+        "title": "4K حقيقي",
+        "desc": "دعم 4K و 8K حقيقي."
+      }
     ],
     "system_online": "SYSTEM ONLINE V2.0",
-
     "type_ultra_fast": "سرعة فائقة",
     "type_crystal_clear": "وضوح عالي",
     "type_wise_player": "Wise Player",
-
     "brand_name": "Wise Player",
     "ready_to_stream": "جاهز للبث",
-
     "brand_small": "Wise",
     "brand_big": "Player",
     "brand_upper": "WISEPLAYER",
-
     "plans": "الخطط",
     "choose_access": "اختر الوصول",
     "days_access": "أيام الوصول",
     "instant_activation": "تفعيل فوري",
-
     "faq_title": "الأسئلة الشائعة",
     "still_questions": "هل لديك أسئلة؟",
     "still_questions_desc": "انضم لآلاف المستخدمين.",
     "contact_support": "اتصل بالدعم",
-
     "instagram": "Instagram",
     "twitter": "Twitter",
-
     "mac_placeholder": "00:1A:79:XX:XX:XX",
     "futureIs": "المستقبل هو",
     "experienceText": "بث متطور بأداء عالي.",
     "freeTrial": "تجربة مجانية",
     "tutorial": "دليل",
-
     "disclaimerHeading": "إخلاء المسؤولية",
     "disclaimerText1": "Wise Player لا يستضيف محتوى.",
     "disclaimerPoint1": "لسنا مسؤولين عن المحتوى",
     "disclaimerPoint2": "يجب الالتزام بالقوانين",
     "disclaimerPoint3": "مصادر خارجية فقط",
     "disclaimerPoint4": "لا يتم تخزين محتوى محمي",
-
     "featureHeadingParent": "المميزات",
     "featureHeadingChild": "لماذا نحن",
-
     "cta_dive_in": "هل أنت جاهز؟",
     "cta_trial_text": "ابدأ التجربة الآن",
-
     "check_status": "تحقق من الحالة",
     "proceed_payment": "الدفع",
     "activate_now": "تفعيل",
     "cancel": "إلغاء",
     "try_another_mac": "جرب MAC آخر",
-
     "device_activation": "تفعيل الجهاز",
     "enter_mac_desc": "أدخل MAC",
     "enter_mac": "أدخل MAC",
     "invalid_mac": "MAC غير صالح",
-
     "status_active": "الحالة: نشط",
     "status_inactive": "الحالة: غير نشط",
-
     "faq_mac_title": "ما هو MAC؟",
     "faq_mac_answer": "معرّف فريد.",
     "faq_transfer_title": "نقل الخطة؟",
     "faq_transfer_answer": "غير ممكن.",
-
     "footerBrandText": "أفضل منصة بث.",
     "support": "الدعم",
     "reseller": "موزع",
@@ -118,10 +102,12 @@
     "refundPolicy": "الاسترجاع",
     "socialMedia": "التواصل",
     "beyondTheScreen": "أكثر من شاشة",
-  "headFreeTrial": "تجربة مجانية 7 أيام",
-  "headTutorial": "دليل"
+    "headFreeTrial": "تجربة مجانية 7 أيام",
+    "headTutorial": "دليل"
   },
-  "common": { "something_wrong": "حدث خطأ" },
+  "common": {
+    "something_wrong": "حدث خطأ"
+  },
   "api": {
     "device_not_found": "لم يتم العثور",
     "invalid_device": "غير صالح",
@@ -134,21 +120,17 @@
       "title": "WISE PLAYER",
       "subtitle": "تجربة مميزة"
     },
-
     "nav_home": "الرئيسية",
     "nav_upload_list": "قائمة التحميل",
     "nav_activation": "التفعيل",
     "nav_reseller": "الموزع",
     "nav_contact": "اتصال",
-
     "buttons": {
       "reseller": "الموزع"
     },
-
     "language": {
       "select": "اختر اللغة"
     },
-
     "languages": {
       "en": "الإنجليزية",
       "fr": "الفرنسية",
@@ -159,10 +141,40 @@
       "nl": "الهولندية",
       "ar": "العربية"
     },
-
     "aria": {
       "toggle_menu": "تبديل القائمة"
     }
+  },
+  "uploadlist": {
+    "upload_playlist_title": "قم بتحميل قائمة التشغيل الخاصة بك.",
+    "enter_device_mac": "وان MAC الخاص بجهازك للمتابعة",
+    "device_id_label": "معرّف الجهاز / عنوان MAC",
+    "validate_btn": "تحقق",
+    "checking_status": "جارٍ التحقق من الحالة..."
+  },
+  "resellerpage": {
+    "reseller_badge": "كن شريكًا",
+    "reseller_title": "هل تريد أن تصبح موزعًا؟",
+    "reseller_desc": "إذا كان الأمر كذلك فأنت في المكان الصحيح. يتيح لك فريقنا فرصة أن تصبح موزع تراخيص لتطبيقنا. يمكنك إدارة وتفعيل اشتراكات عملائك بسهولة من خلال لوحة التحكم الخاصة بك.",
+    "register": "تسجيل",
+    "pricing_title": "خطط الأسعار",
+    "pricing_subtitle": "أسعار مرنة للعملاء والموزعين",
+    "customer_plans": "خطط العملاء",
+    "one_code": "كود واحد",
+    "annual_sub": "اشتراك سنوي",
+    "buy_now": "اشترِ الآن",
+    "two_codes": "كودان",
+    "best_couples": "للأزواج",
+    "special_offer": "عرض خاص",
+    "get_offer": "احصل على العرض",
+    "reseller_pricing_table": "أسعار الموزعين",
+    "qty": "الكمية",
+    "unit_price": "سعر الوحدة",
+    "total_label": "الإجمالي",
+    "depends": "يعتمد على الكمية",
+    "custom": "مخصص",
+    "bonus_msg": "قد يتم تضمين أكواد إضافية للطلبات الكبيرة",
+    "whatsapp_msg": "الطلبات التي تزيد عن 1000 كود تتطلب التواصل عبر واتساب",
+    "login": "تسجيل الدخول"
   }
-
 }

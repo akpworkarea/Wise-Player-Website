@@ -164,6 +164,39 @@
     "aria": {
       "toggle_menu": "Attiva menu"
     }
+  },
+  "uploadlist":{
+    "upload_playlist_title":"Carica la tua playlist",
+    "enter_device_mac":"Inserisci l’indirizzo MAC del tuo dispositivo per continuare.",
+    "device_id_label": "ID dispositivo / Indirizzo MAC",
+    "validate_btn": "Convalida",
+     "checking_status": "Controllo dello stato..."
+
+  },
+  "resellerpage":{
+    "reseller_badge": "Diventa partner",
+      "reseller_title": "VUOI DIVENTARE UN RIVENDITORE?",
+      "reseller_desc": "Se sì, sei nel posto giusto. Il nostro team ti offre l’opportunità di diventare rivenditore di licenze della nostra applicazione. Gestisci e attiva facilmente gli abbonamenti dei tuoi clienti dal tuo pannello.",
+      "register": "Registrati",
+      "pricing_title": "PIANI PREZZI",
+      "pricing_subtitle": "Prezzi flessibili per clienti e rivenditori",
+      "customer_plans": "Piani clienti",
+      "one_code": "1 Codice",
+      "annual_sub": "Abbonamento annuale",
+      "buy_now": "Acquista ora",
+      "two_codes": "2 Codici",
+      "best_couples": "Per coppie",
+      "special_offer": "Offerta speciale",
+      "get_offer": "Ottieni offerta",
+      "reseller_pricing_table": "Prezzi rivenditore",
+      "qty": "Quantità",
+      "unit_price": "Prezzo unitario",
+      "total_label": "Totale",
+      "depends": "Dipende dalla quantità",
+      "custom": "Personalizzato",
+      "bonus_msg": "Codici bonus possono essere inclusi per grandi ordini",
+      "whatsapp_msg": "Ordini sopra 1000 codici richiedono contatto WhatsApp",
+      "login": "Accedi"
   }
 
 
