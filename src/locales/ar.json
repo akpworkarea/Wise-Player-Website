@@ -103,9 +103,8 @@
     "socialMedia": "التواصل",
     "beyondTheScreen": "أكثر من شاشة",
     "headFreeTrial": "تجربة مجانية 7 أيام",
-    "headTutorial": "دليل"
-  },
-  "common": {
+    "headTutorial": "دليل",
+    "common": {
     "something_wrong": "حدث خطأ"
   },
   "api": {
@@ -114,7 +113,9 @@
     "payment_failed": "فشل الدفع",
     "something_wrong": "خطأ",
     "plans_error": "فشل تحميل الخطط"
+  }
   },
+  
   "navbar": {
     "logo": {
       "title": "WISE PLAYER",
@@ -221,10 +222,10 @@
     "delete_playlist": "احذف قائمة التشغيل الخاصة بك",
     "your_mac": "عنوان MAC الخاص بك",
     "required": "مطلوب",
-    "delete": "حذف"
-  },
-  "footer_terms": "الشروط",
-  "footer_privacy": "الخصوصية"
-
-
+    "delete": "حذف",
+     "footer_terms": "الشروط",
+  "footer_privacy": "الخصوصية",
+  "footer_helpdesk": "مكتب المساعدة",
+   "footerCopyRight": "وايز بلاير · جميع الحقوق محفوظة"
+  }
 }

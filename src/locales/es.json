@@ -103,9 +103,8 @@
     "socialMedia": "Redes",
     "beyondTheScreen": "Más allá",
     "headFreeTrial": "PRUEBA GRATIS 7 DÍAS",
-    "headTutorial": "Tutorial"
-  },
-  "common": {
+    "headTutorial": "Tutorial",
+    "common": {
     "something_wrong": "Algo salió mal"
   },
   "api": {
@@ -114,7 +113,9 @@
     "payment_failed": "Pago fallido",
     "something_wrong": "Error",
     "plans_error": "Error cargando planes"
+  }
   },
+  
   "navbar": {
     "logo": {
       "title": "WISE PLAYER",
@@ -223,8 +224,10 @@
     "delete_playlist": "Eliminar tu lista de reproducción",
     "your_mac": "Tu dirección MAC",
     "required": "Requerido",
-    "delete": "Eliminar"
-  },
-  "footer_terms": "Términos",
-  "footer_privacy": "Privacidad"
+    "delete": "Eliminar",
+    "footer_terms": "Términos",
+  "footer_privacy": "Privacidad",
+  "footer_helpdesk": "Mesa de ayuda",
+  "footerCopyRight": "Wise Player · Todos los derechos reservados"
+  }
 }

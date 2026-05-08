@@ -103,9 +103,8 @@
     "socialMedia": "Social media",
     "beyondTheScreen": "Meer dan het scherm",
     "headFreeTrial": "7 DAGEN GRATIS PROEF",
-    "headTutorial": "Handleiding"
-  },
-  "common": {
+    "headTutorial": "Handleiding",
+    "common": {
     "something_wrong": "Er is iets misgegaan"
   },
   "api": {
@@ -114,7 +113,9 @@
     "payment_failed": "Betaling mislukt",
     "something_wrong": "Er is iets misgegaan",
     "plans_error": "Kan plannen niet laden"
+  }
   },
+  
   "navbar": {
     "logo": {
       "title": "WISE PLAYER",
@@ -221,8 +222,10 @@
     "delete_playlist": "Verwijder je afspeellijst",
     "your_mac": "Jouw MAC-adres",
     "required": "Vereist",
-    "delete": "Verwijderen"
-  },
-  "footer_terms": "Voorwaarden",
-  "footer_privacy": "Privacy"
+    "delete": "Verwijderen",
+    "footer_terms": "Voorwaarden",
+  "footer_privacy": "Privacy",
+  "footer_helpdesk": "Helpdesk",
+  "footerCopyRight": "Wise Player · Alle rechten voorbehouden"
+  }
 }

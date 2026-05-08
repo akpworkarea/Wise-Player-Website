@@ -324,16 +324,16 @@ const ContactUs = () => {
         className="mt-20 w-full max-w-6xl flex flex-col md:flex-row justify-between items-center text-[11px] text-slate-400 gap-6 border-t border-slate-100 pt-8 mb-8"
       >
         <p className="font-semibold tracking-tighter uppercase">
-          © 2021-2026 WisePlayer Media Group. All rights reserved.
+         {t('playlist.footerCopyRight')} 
         </p>
 
         <div className="flex gap-8">
           <a href="#" className="hover:text-red-500 flex items-center gap-2 transition-colors uppercase font-bold">
-            <FileText size={14} /> {t('footer_terms')}
+            <FileText size={14} /> {t('playlist.footer_terms')}
           </a>
 
           <a href="#" className="hover:text-red-500 flex items-center gap-2 transition-colors uppercase font-bold">
-            <Globe size={14} /> {t('footer_privacy')}
+            <Globe size={14} /> {t('playlist.footer_privacy')}
           </a>
         </div>
       </motion.footer>

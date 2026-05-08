@@ -56,12 +56,12 @@ const WisePlayerHome = () => {
  const getApiMessageKey = (msg = '') => {
   const normalized = msg.toLowerCase();
 
-  if (normalized.includes('device not found')) return 'api.device_not_found';
-  if (normalized.includes('invalid device')) return 'api.invalid_device';
-  if (normalized.includes('payment')) return 'api.payment_failed';
-  if (normalized.includes('plan')) return 'api.plans_error';
+  if (normalized.includes('device not found')) return 'home.api.device_not_found';
+  if (normalized.includes('invalid device')) return 'home.api.invalid_device';
+  if (normalized.includes('payment')) return 'home.api.payment_failed';
+  if (normalized.includes('plan')) return 'home.api.plans_error';
 
-  return 'api.something_wrong';
+  return 'home.api.something_wrong';
 };
 
   const [showModal, setShowModal] = useState(false);

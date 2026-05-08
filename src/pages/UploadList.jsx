@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronRight, ShieldCheck } from 'lucide-react';
+import { ChevronRight, Flame } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { validateDevice } from '../auth/apiservice';
 import { useTranslation } from 'react-i18next';
@@ -62,32 +62,44 @@ const WiseplayerUpload = () => {
   const isValid = isMacComplete(uploadMac) && !isLoading;
 
   return (
-    /* outer: fixed full viewport, no scroll */
-    <div className="!fixed !inset-0 !bg-[#f4f4f7] flex flex-col items-center justify-center px-4">
+    <div className="fixed inset-0 bg-[#f4f4f7] flex flex-col items-center justify-center px-4 pt-[85px] pb-[72px]">
 
       {/* ── CARD ─────────────────────────────────────────── */}
-      <div className="w-full max-w-sm sm:max-w-md bg-white rounded-2xl border border-black/[0.06] shadow-sm p-7 sm:p-9 mb-20">
+      <div className="w-full max-w-sm sm:max-w-md bg-white rounded-2xl border border-black/[0.06] shadow-sm p-6 sm:p-8">
 
         {/* Header */}
-        <div className="flex flex-col items-center text-center mb-7">
-          <div className="w-14 h-14 rounded-2xl bg-[#800000]/[0.08] flex items-center justify-center mb-4">
-            <ShieldCheck size={28} className="!text-[#800000]" />
+        <div className="flex flex-col items-center text-center mb-6">
+
+          {/* Brand logo */}
+          <div className="w-14 h-14 rounded-2xl bg-[#800000]/[0.08] flex items-center justify-center mb-3">
+            <Flame size={28} fill="#800000" color="#800000" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold !text-[#1a1a1a] tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#1a1a1a] tracking-tight">
+            {t("activation.appName")}
+            <span className="text-[#800000]"> {t("activation.appName2")}</span>
+          </h1>
+          <p className="text-xs text-gray-400 mt-1 tracking-wide">
+            {t("activation.tagline")}
+          </p>
+
+          {/* Divider */}
+          <div className="w-full h-px bg-black/[0.06] my-3" />
+
+          {/* Page title */}
+          <h2 className="text-lg sm:text-xl font-extrabold text-[#1a1a1a] tracking-tight">
             {t('uploadlist.upload_playlist_title')}
           </h2>
-          <p className="text-sm !text-gray-500 mt-1.5">
-            {/* Enter your device MAC address to continue */}
+          <p className="text-sm text-gray-500 mt-1.5">
             {t('uploadlist.enter_device_mac')}
           </p>
         </div>
 
-        {/* Label — centered */}
-        <label className="!block !text-sm !font-bold !text-[#1a1a1a] !tracking-wide text-center !mb-2">
+        {/* Label */}
+        <label className="block text-xs font-bold text-[#1a1a1a] tracking-wide uppercase text-center mb-2">
           {t('uploadlist.device_id_label')}
         </label>
 
-        {/* Input — use !important to override index.css global input styles */}
+        {/* Input */}
         <input
           type="text"
           inputMode="text"
@@ -96,21 +108,21 @@ const WiseplayerUpload = () => {
           onChange={handleMacChange}
           maxLength={17}
           className={`
-            !w-full !box-border !px-4 !py-3.5 !rounded-xl !border-2 text-center
-            !font-bold !text-lg !tracking-[4px] !uppercase !outline-none
-            !transition-colors !duration-200 !shadow-none
+            w-full h-12 px-4 rounded-xl border-2 text-center
+            font-bold text-lg tracking-[4px] uppercase outline-none
+            transition-colors duration-200 shadow-none bg-white
             ${statusError
-              ? '!border-red-400 !bg-red-50 !text-red-700 focus:!border-red-500 focus:!ring-0'
+              ? 'border-red-400 bg-red-50 text-red-700 focus:border-red-500 focus:ring-2 focus:ring-red-200'
               : uploadMac
-                ? '!border-[#800000] !bg-white !text-[#1a1a1a] focus:!border-[#800000] focus:!ring-2 focus:!ring-[#800000]/20'
-                : '!border-gray-200 !bg-white !text-[#1a1a1a] focus:!border-[#800000] focus:!ring-2 focus:!ring-[#800000]/20'
+                ? 'border-[#800000] bg-[#800000]/[0.04] text-[#800000] focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15'
+                : 'border-gray-200 text-[#1a1a1a] focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15'
             }
           `}
         />
 
         {/* Error */}
         {statusError && (
-          <p className="text-sm font-semibold !text-red-600 text-center mt-2.5">
+          <p className="text-sm font-semibold text-red-600 text-center mt-2.5">
             {statusError}
           </p>
         )}
@@ -120,12 +132,12 @@ const WiseplayerUpload = () => {
           onClick={handleConfigure}
           disabled={!isValid}
           className={`
-            w-full py-4 rounded-xl font-bold text-base mt-5
+            w-full py-3 sm:py-3.5 rounded-xl font-bold text-sm mt-5
             flex items-center justify-center gap-2
             transition-all duration-200 active:scale-[0.98] border-0
             ${isValid
-              ? 'bg-[#800000] hover:bg-[#6a0000] !text-white shadow-sm hover:shadow-md cursor-pointer'
-              : '!bg-gray-100 !text-gray-400 cursor-not-allowed'
+              ? 'bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm hover:shadow-md cursor-pointer'
+              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             }
           `}
         >
@@ -148,33 +160,28 @@ const WiseplayerUpload = () => {
       </div>
 
       {/* ── FOOTER — fixed to bottom ──────────────────────── */}
-     <div className="!fixed !bottom-0 !left-0 !right-0 bg-white border-t border-black/[0.06] pt-4 pb-6 px-4 gap-4 flex flex-col items-center justify-center">
-
-  {/* Copyright first */}
-  <p className="text-xs !text-gray-500 font-medium text-center">
-    &copy; {new Date().getFullYear()} {t('footer_copyright')}
-  </p>
-
-  {/* Footer links below with spacing */}
-  <div className="flex flex-row items-center justify-center gap-3 max-w-md mx-auto">
-    {[t('footer_privacy'), t('footer_terms'), t('footer_helpdesk')].map((label) => (
-      <a
-        key={label}
-        href="#"
-        className="
-          text-xs uppercase tracking-wide
-          !text-gray-500 font-bold
-          hover:!text-[#800000]
-          transition-colors duration-150
-          no-underline
-        "
-      >
-        {label}
-      </a>
-    ))}
-  </div>
-
-</div>
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-black/[0.06] py-3 px-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-1.5 max-w-md mx-auto">
+          <p className="text-xs text-gray-400 font-medium">
+            &copy; {new Date().getFullYear()} {t('playlist.footerCopyRight')}
+          </p>
+          <div className="flex items-center gap-4">
+            {[
+              t('playlist.footer_privacy'),
+              t('playlist.footer_terms'),
+              t('playlist.footer_helpdesk'),
+            ].map((label) => (
+              <a
+                key={label}
+                href="#"
+                className="text-xs font-semibold text-gray-400 uppercase tracking-wide hover:text-[#800000] transition-colors duration-150 no-underline"
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
 
     </div>
   );
