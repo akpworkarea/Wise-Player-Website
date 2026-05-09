@@ -104,18 +104,17 @@
     "beyondTheScreen": "Além da tela",
     "headFreeTrial": "TESTE GRÁTIS 7 DIAS",
     "headTutorial": "Tutorial",
-     "common": {
-    "something_wrong": "Algo deu errado"
+    "common": {
+      "something_wrong": "Algo deu errado"
+    },
+    "api": {
+      "device_not_found": "Dispositivo não encontrado",
+      "invalid_device": "Dispositivo inválido",
+      "payment_failed": "Falha no pagamento",
+      "something_wrong": "Algo deu errado",
+      "plans_error": "Não foi possível carregar os planos"
+    }
   },
-  "api": {
-    "device_not_found": "Dispositivo não encontrado",
-    "invalid_device": "Dispositivo inválido",
-    "payment_failed": "Falha no pagamento",
-    "something_wrong": "Algo deu errado",
-    "plans_error": "Não foi possível carregar os planos"
-  }
-  },
- 
   "navbar": {
     "logo": {
       "title": "WISE PLAYER",
@@ -146,15 +145,24 @@
       "toggle_menu": "Alternar menu"
     }
   },
-  "uploadlist":{
+  "dashboard": "Painel",
+  "device_management": "Gerenciamento de Dispositivos",
+  "sub_reseller": "Sub-revendedor",
+  "activation_requests": "Solicitações de Ativação",
+  "transaction_history": "Histórico de Transações",
+  "purchase_credit": "Comprar Crédito",
+  "logout": "Sair",
+  "confirm_logout": "Confirmar Saída",
+  "are_you_sure_logout": "Tem certeza de que deseja sair?",
+  "cancel": "Cancelar",
+  "uploadlist": {
     "upload_playlist_title": "Carregue a sua playlist",
     "enter_device_mac": "Digite o endereço MAC do seu dispositivo para continuar",
     "device_id_label": "ID do dispositivo / Endereço MAC",
     "validate_btn": "Validar",
-     "checking_status": "Verificando status..."
-
+    "checking_status": "Verificando status..."
   },
-  "resellerpage":{
+  "resellerpage": {
     "reseller_badge": "Torne-se parceiro",
     "reseller_title": "VOCÊ QUER SE TORNAR UM REVENDEDOR?",
     "reseller_desc": "Se sim, você está no lugar certo. Nossa equipe oferece a oportunidade de se tornar revendedor de licenças do nosso aplicativo. Gerencie e ative as assinaturas dos seus clientes facilmente pelo seu painel.",
@@ -179,8 +187,130 @@
     "whatsapp_msg": "Pedidos acima de 1000 códigos exigem contato via WhatsApp",
     "login": "Entrar"
   },
-
-  
+  "admin_dashboard": {
+    "panel": "Painel",
+    "overview": "Visão Geral",
+    "users": "Usuários",
+    "requests": "Solicitações",
+    "subreseller": "Sub-revendedor",
+    "admin_user": "Usuário Administrador",
+    "online": "Online",
+    "total_users": "Total de Usuários",
+    "active_subs": "Assinaturas Ativas",
+    "pending_req": "Solicitações Pendentes",
+    "total_coins": "Total de Moedas",
+    "device_id": "ID do Dispositivo",
+    "status": "Status",
+    "subscription": "Assinatura",
+    "registered": "Registrado",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "no_devices_found": "Nenhum dispositivo encontrado",
+    "no_devices": "Nenhum dispositivo",
+    "plan": "Plano"
+  },
+  "userManagement": {
+    "device_management": "Gerenciamento de Dispositivos",
+    "manage_members": "Gerenciar membros e assinaturas",
+    "search_device": "Pesquisar dispositivo...",
+    "create_new_device": "Criar Novo Dispositivo",
+    "total_users": "Total de Usuários",
+    "active": "Ativo",
+    "device_id": "ID do Dispositivo",
+    "status": "Status",
+    "subscription": "Assinatura",
+    "expires": "Expira",
+    "registered": "Registrado",
+    "action": "Ação",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "no_user_found": "Nenhum usuário encontrado",
+    "plan": "Plano",
+    "toggle_status": "Alterar Status",
+    "no_users": "Nenhum usuário",
+    "prev": "Anterior",
+    "page": "Página",
+    "of": "de",
+    "next": "Próximo"
+  },
+  "subreseller_management": "Gerenciamento de Subrevendedores",
+  "manage_subreseller": "Gerenciar subrevendedores e contas",
+  "create_subreseller": "Criar Subrevendedor",
+  "user_details": "Detalhes do Usuário",
+  "status": "Status",
+  "created": "Criado",
+  "coin": "Crédito",
+  "action": "Ação",
+  "username_label": "Nome de Usuário",
+  "id_label": "ID",
+  "transfer": "Transferir",
+  "edit": "Editar",
+  "username": "Nome de Usuário",
+  "password": "Senha",
+  "full_name": "Nome Completo",
+  "submit": "Enviar",
+  "update": "Atualizar",
+  "requests": {
+    "request_management": "Gerenciamento de Solicitações",
+    "new_request": "Nova Solicitação",
+    "all": "Todos",
+    "pending": "Pendente",
+    "approved": "Aprovado",
+    "rejected": "Rejeitado",
+    "device_id": "ID do Dispositivo",
+    "reseller_id": "ID do Revendedor",
+    "plan": "Plano",
+    "credits": "Créditos",
+    "created": "Criado",
+    "status": "Status",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "no_data_found": "Nenhum dado encontrado",
+    "reseller": "Revendedor",
+    "no_requests": "Nenhuma solicitação",
+    "prev": "Anterior",
+    "page": "Página",
+    "of": "de",
+    "next": "Próximo",
+    "submit_request": "Enviar Solicitação",
+    "select_plan": "Selecionar Plano",
+    "submit": "Enviar",
+    "cancel": "Cancelar"
+  },
+  "transaction": {
+    "transaction_history": "Histórico de Transações",
+    "id": "ID",
+    "amount": "Valor",
+    "type": "Tipo",
+    "notes": "Notas",
+    "date": "Data",
+    "no_data_found": "Nenhum dado encontrado",
+    "prev": "Anterior",
+    "page": "Página",
+    "of": "de",
+    "next": "Próximo"
+  },
+  "purchaseCredit": {
+    "exclusive_bulk_offer": "Oferta Exclusiva em Grande Quantidade!",
+    "special_bonus_available": "Bônus especial disponível para sua compra",
+    "contact_on_whatsapp": "Contato no WhatsApp",
+    "maybe_later": "Talvez Depois",
+    "calculate_price": "Calcular Preço",
+    "enter_coins": "Inserir créditos",
+    "coins": "Créditos",
+    "total_price": "Preço Total",
+    "buy_credits": "Comprar Créditos",
+    "credits_pricing": "Preços dos Créditos",
+    "credits_system": "Sistema de Créditos",
+    "credits_system_desc": "Compre créditos e desbloqueie recursos premium. Planos flexíveis projetados para usuários e revendedores.",
+    "customer_pricing": "Preços para Clientes",
+    "one_code_annual": "1 Código (Anual)",
+    "two_codes_offer": "2 Códigos (Oferta)",
+    "reseller_pricing": "Preços para Revendedores",
+    "quantity_codes": "Quantidade (Códigos)",
+    "unit_price": "Preço Unitário",
+    "contact_for_bulk_bonus": "Contato para bônus em grande quantidade"
+  },
   "contact_Page": {
     "contact_support_center": "CENTRO DE SUPORTE",
     "contact_header_1": "Como podemos",
@@ -227,8 +357,13 @@
     "required": "Obrigatório",
     "delete": "Excluir",
     "footer_terms": "Termos",
-  "footer_privacy": "Privacidade",
-  "footer_helpdesk": "Central de Ajuda",
-  "footerCopyRight": "Wise Player · Todos os direitos reservados"
-  }
+    "footer_privacy": "Privacidade",
+    "footer_helpdesk": "Central de Ajuda",
+    "footerCopyRight": "Wise Player · Todos os direitos reservados"
+  },
+  "payment_success_redirecting": "Pagamento bem-sucedido, redirecionando para o painel em breve",
+  "total_users": "Total de Usuários",
+  "active_subs": "Assinaturas Ativas",
+  "pending_req": "Solicitações Pendentes",
+  "total_coins": "Total de Moedas"
 }

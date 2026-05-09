@@ -45,6 +45,15 @@
         "desc": "Unterstützt echtes 4K und 8K für OLED-Bildschirme."
       }
     ],
+    "dashboard": "Dashboard",
+    "device_management": "Geräteverwaltung",
+    "sub_reseller": "Unterhändler",
+    "activation_requests": "Aktivierungsanfragen",
+    "transaction_history": "Transaktionsverlauf",
+    "purchase_credit": "Guthaben kaufen",
+    "logout": "Abmelden",
+    "confirm_logout": "Abmeldung bestätigen",
+    "are_you_sure_logout": "Sind Sie sicher, dass Sie sich abmelden möchten?",
     "system_online": "SYSTEM ONLINE V2.0",
     "type_ultra_fast": "Ultra Schnell",
     "type_crystal_clear": "Kristallklar",
@@ -105,17 +114,16 @@
     "headFreeTrial": "7 TAGE GRATIS TEST",
     "headTutorial": "Anleitung",
     "common": {
-    "something_wrong": "Etwas ist schiefgelaufen"
+      "something_wrong": "Etwas ist schiefgelaufen"
+    },
+    "api": {
+      "device_not_found": "Gerät nicht gefunden",
+      "invalid_device": "Ungültiges Gerät",
+      "payment_failed": "Zahlung fehlgeschlagen",
+      "something_wrong": "Fehler aufgetreten",
+      "plans_error": "Pläne konnten nicht geladen werden"
+    }
   },
-  "api": {
-    "device_not_found": "Gerät nicht gefunden",
-    "invalid_device": "Ungültiges Gerät",
-    "payment_failed": "Zahlung fehlgeschlagen",
-    "something_wrong": "Fehler aufgetreten",
-    "plans_error": "Pläne konnten nicht geladen werden"
-  }
-  },
-  
   "navbar": {
     "logo": {
       "title": "WISE PLAYER",
@@ -146,15 +154,14 @@
       "toggle_menu": "Menü umschalten"
     }
   },
-  "uploadlist":{
+  "uploadlist": {
     "upload_playlist_title": "Laden Sie Ihre Playlist hoch.",
-    "enter_device_mac":"Geben Sie die MAC-Adresse Ihres Geräts ein, um fortzufahren",
+    "enter_device_mac": "Geben Sie die MAC-Adresse Ihres Geräts ein, um fortzufahren",
     "device_id_label": "ID DE L'APPAREIL / ADRESSE MAC",
     "validate_btn": "Bestätigen",
-     "checking_status": "Status wird überprüft..."
-
+    "checking_status": "Status wird überprüft..."
   },
-  "resellerpage":{
+  "resellerpage": {
     "reseller_badge": "Partner werden",
     "reseller_title": "MÖCHTEN SIE WIEDERVERKÄUFER WERDEN?",
     "reseller_desc": "Wenn ja, sind Sie hier genau richtig. Unser Team bietet Ihnen die Möglichkeit, Lizenz-Reseller unserer Anwendung zu werden. Verwalten und aktivieren Sie Kundenabonnements einfach über Ihr eigenes Reseller-Panel.",
@@ -179,8 +186,28 @@
     "whatsapp_msg": "Bestellungen über 1000 Codes erfordern WhatsApp Kontakt",
     "login": "Anmelden"
   },
-
-
+  "admin_dashboard": {
+    "panel": "Übersicht",
+    "overview": "Überblick",
+    "users": "Benutzer",
+    "requests": "Anfragen",
+    "subreseller": "Unterhändler",
+    "admin_user": "Administrator",
+    "online": "Online",
+    "total_users": "Gesamtbenutzer",
+    "active_subs": "Aktive Abonnements",
+    "pending_req": "Ausstehende Anfragen",
+    "total_coins": "Gesamtmünzen",
+    "device_id": "Geräte-ID",
+    "status": "Status",
+    "subscription": "Abonnement",
+    "registered": "Registriert",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "plan": "Plan",
+    "no_devices_found": "Keine Geräte gefunden",
+    "no_devices": "Keine Geräte"
+  },
   "contact_Page": {
     "contact_support_center": "SUPPORT CENTER",
     "contact_header_1": "Wie können wir",
@@ -210,6 +237,118 @@
     "contact_success_title": "Nachricht gesendet!",
     "contact_success_msg": "Wir melden uns bald bei Ihnen."
   },
+  "userManagement": {
+    "device_management": "Geräteverwaltung",
+    "manage_members": "Mitglieder und Abonnements verwalten",
+    "search_device": "Gerät suchen...",
+    "create_new_device": "Neues Gerät erstellen",
+    "total_users": "Gesamtbenutzer",
+    "active": "Aktiv",
+    "device_id": "Geräte-ID",
+    "status": "Status",
+    "subscription": "Abonnement",
+    "expires": "Läuft ab",
+    "registered": "Registriert",
+    "action": "Aktion",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "no_user_found": "Kein Benutzer gefunden",
+    "plan": "Plan",
+    "toggle_status": "Status ändern",
+    "no_users": "Keine Benutzer",
+    "prev": "Zurück",
+    "page": "Seite",
+    "of": "von",
+    "next": "Weiter"
+  },
+  "requests": {
+    "request_management": "Anfragenverwaltung",
+    "new_request": "Neue Anfrage",
+    "all": "Alle",
+    "pending": "Ausstehend",
+    "approved": "Genehmigt",
+    "rejected": "Abgelehnt",
+    "device_id": "Geräte-ID",
+    "reseller_id": "Händler-ID",
+    "plan": "Plan",
+    "credits": "Guthaben",
+    "created": "Erstellt",
+    "status": "Status",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "no_data_found": "Keine Daten gefunden",
+    "reseller": "Händler",
+    "no_requests": "Keine Anfragen",
+    "prev": "Zurück",
+    "page": "Seite",
+    "of": "von",
+    "next": "Weiter",
+    "submit_request": "Anfrage senden",
+    "select_plan": "Plan auswählen",
+    "submit": "Absenden",
+    "cancel": "Abbrechen"
+  },
+  "purchaseCredit": {
+    "exclusive_bulk_offer": "Exklusives Großangebot!",
+    "special_bonus_available": "Spezieller Bonus für Ihren Einkauf verfügbar",
+    "contact_on_whatsapp": "Über WhatsApp kontaktieren",
+    "maybe_later": "Vielleicht später",
+    "calculate_price": "Preis berechnen",
+    "enter_coins": "Guthaben eingeben",
+    "coins": "Guthaben",
+    "total_price": "Gesamtpreis",
+    "buy_credits": "Guthaben kaufen",
+    "credits_pricing": "Guthabenpreise",
+    "credits_system": "Guthabensystem",
+    "credits_system_desc": "Kaufen Sie Guthaben und schalten Sie Premium-Funktionen frei. Flexible Pläne für Nutzer und Wiederverkäufer.",
+    "customer_pricing": "Kundenpreise",
+    "one_code_annual": "1 Code (Jährlich)",
+    "two_codes_offer": "2 Codes (Angebot)",
+    "reseller_pricing": "Wiederverkäuferpreise",
+    "quantity_codes": "Menge (Codes)",
+    "unit_price": "Stückpreis",
+    "contact_for_bulk_bonus": "Kontakt für Mengenbonus"
+  },
+  "transaction": {
+    "transaction_history": "Transaktionsverlauf",
+    "id": "ID",
+    "amount": "Betrag",
+    "type": "Typ",
+    "notes": "Notizen",
+    "date": "Datum",
+    "no_data_found": "Keine Daten gefunden",
+    "prev": "Zurück",
+    "page": "Seite",
+    "of": "von",
+    "next": "Weiter"
+  },
+  "subreseller_management": "Unterhändlerverwaltung",
+  "manage_subreseller": "Unterhändler und Konten verwalten",
+  "create_subreseller": "Unterhändler erstellen",
+  "user_details": "Benutzerdetails",
+  "status": "Status",
+  "created": "Erstellt",
+  "coin": "Guthaben",
+  "action": "Aktion",
+  "username_label": "Benutzername",
+  "id_label": "ID",
+  "transfer": "Übertragen",
+  "edit": "Bearbeiten",
+  "username": "Benutzername",
+  "password": "Passwort",
+  "full_name": "Vollständiger Name",
+  "submit": "Absenden",
+  "update": "Aktualisieren",
+  "dashboard": "Dashboard",
+  "device_management": "Geräteverwaltung",
+  "sub_reseller": "Unterhändler",
+  "activation_requests": "Aktivierungsanfragen",
+  "transaction_history": "Transaktionsverlauf",
+  "purchase_credit": "Guthaben kaufen",
+  "logout": "Abmelden",
+  "confirm_logout": "Abmeldung bestätigen",
+  "are_you_sure_logout": "Sind Sie sicher, dass Sie sich abmelden möchten?",
+  "cancel": "Abbrechen",
   "playlist": {
     "upload_playlist": "Lade deine Playlist hoch",
     "mac_address": "MAC-Adresse",
@@ -227,8 +366,13 @@
     "required": "Erforderlich",
     "delete": "Löschen",
     "footer_terms": "Bedingungen",
-  "footer_privacy": "Datenschutz",
-  "footer_helpdesk": "Helpdesk",
-   "footerCopyRight": "Wise Player · Alle Rechte vorbehalten"
-  }
+    "footer_privacy": "Datenschutz",
+    "footer_helpdesk": "Helpdesk",
+    "footerCopyRight": "Wise Player · Alle Rechte vorbehalten"
+  },
+  "payment_success_redirecting": "Zahlung erfolgreich, Weiterleitung zum Dashboard in Kürze",
+  "total_users": "Gesamtbenutzer",
+  "active_subs": "Aktive Abonnements",
+  "pending_req": "Ausstehende Anfragen",
+  "total_coins": "Gesamtmünzen"
 }

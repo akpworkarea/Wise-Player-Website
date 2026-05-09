@@ -58,13 +58,13 @@ const SubresellerDashboard = () => {
   };
 
   const copyToClipboard = (text) => {
-  navigator.clipboard.writeText(text);
-  setCopiedId(text);
+    navigator.clipboard.writeText(text);
+    setCopiedId(text);
 
-  setTimeout(() => {
-    setCopiedId(null);
-  }, 1500);
-};
+    setTimeout(() => {
+      setCopiedId(null);
+    }, 1500);
+  };
 
   useEffect(() => {
     fetchdata();
@@ -84,12 +84,12 @@ const SubresellerDashboard = () => {
       setError(res.message);
     }
   };
-   
+
   const truncateId = (id, start = 8, end = 5) => {
-  if (!id) return "";
-  if (id.length <= start + end) return id;
-  return `${id.slice(0, start)}...${id.slice(-end)}`;
-};
+    if (!id) return "";
+    if (id.length <= start + end) return id;
+    return `${id.slice(0, start)}...${id.slice(-end)}`;
+  };
 
 
   // EDIT OPEN
@@ -144,8 +144,8 @@ const SubresellerDashboard = () => {
   const getStatusBadge = (active) => (
     <span
       className={`px-2 py-1 text-xs rounded-full font-semibold ${active
-          ? "bg-green-100 text-green-700"
-          : "bg-red-100 text-red-600"
+        ? "bg-green-100 text-green-700"
+        : "bg-red-100 text-red-600"
         }`}
     >
       {active ? t("active") : t("inactive")}
@@ -197,48 +197,48 @@ const SubresellerDashboard = () => {
                 <td className="px-4 py-3 text-left">
                   <div className="font-semibold">{user.fullName}</div>
                   <div className="text-xs text-gray-500 flex items-center gap-2 flex-wrap">
-  {t("username_label")}:
-  <span className="text-blue-600">{user.username}</span>
+                    {t("username_label")}:
+                    <span className="text-blue-600">{user.username}</span>
 
-  <div className="relative">
-    <button
-      onClick={() => copyToClipboard(user.username)}
-      className="text-[10px] border px-2 py-0.5 rounded text-black-500 hover:bg-blue-50 transition"
-    >
-      Copy
-    </button>
+                    <div className="relative">
+                      <button
+                        onClick={() => copyToClipboard(user.username)}
+                        className="text-[10px] border px-2 py-0.5 rounded text-black-500 hover:bg-blue-50 transition"
+                      >
+                        Copy
+                      </button>
 
-    {copiedId === user.username && (
-      <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
-        Copied!
-      </span>
-    )}
-  </div>
-</div>
-         <div className="text-xs text-gray-500 flex items-center gap-2 flex-wrap">
-  {t("id_label")}:
-  <span
-  className="text-blue-600 cursor-pointer"
-  title={user.id}
->
-  {truncateId(user.id)}
-</span>
+                      {copiedId === user.username && (
+                        <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
+                          Copied!
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-500 flex items-center gap-2 flex-wrap">
+                    {t("id_label")}:
+                    <span
+                      className="text-blue-600 cursor-pointer"
+                      title={user.id}
+                    >
+                      {truncateId(user.id)}
+                    </span>
 
-  <div className="relative">
-    <button
-      onClick={() => copyToClipboard(user.id)}
-      className="text-[10px] border px-2 py-0.5 rounded text-black-500 hover:bg-blue-50 transition"
-    >
-      Copy
-    </button>
+                    <div className="relative">
+                      <button
+                        onClick={() => copyToClipboard(user.id)}
+                        className="text-[10px] border px-2 py-0.5 rounded text-black-500 hover:bg-blue-50 transition"
+                      >
+                        Copy
+                      </button>
 
-    {copiedId === user.id && (
-      <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
-        Copied!
-      </span>
-    )}
-  </div>
-</div>
+                      {copiedId === user.id && (
+                        <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
+                          Copied!
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </td>
 
                 <td>{getStatusBadge(user.active)}</td>
@@ -293,48 +293,48 @@ const SubresellerDashboard = () => {
             {/* DETAILS */}
             <div className="text-sm text-gray-600 space-y-1">
 
-            <p className="flex items-center gap-2 flex-wrap">
-  <span className="font-medium">ID:</span>
+              <p className="flex items-center gap-2 flex-wrap">
+                <span className="font-medium">ID:</span>
 
-  <span className="text-blue-800">
-    {truncateId(user.id)}
-  </span>
+                <span className="text-blue-800">
+                  {truncateId(user.id)}
+                </span>
 
-  <div className="relative">
-    <button
-      onClick={() => copyToClipboard(user.id)}
-      className="text-[10px] border px-2 py-0.5 rounded text-black-500 hover:bg-blue-50 transition"
-    >
-      Copy
-    </button>
+                <div className="relative">
+                  <button
+                    onClick={() => copyToClipboard(user.id)}
+                    className="text-[10px] border px-2 py-0.5 rounded text-black-500 hover:bg-blue-50 transition"
+                  >
+                    Copy
+                  </button>
 
-    {copiedId === user.id && (
-      <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
-        Copied!
-      </span>
-    )}
-  </div>
-</p>
+                  {copiedId === user.id && (
+                    <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
+                      Copied!
+                    </span>
+                  )}
+                </div>
+              </p>
 
               <div className="flex items-center gap-2 flex-wrap">
-  <span className="font-medium">{t("username_label")}:</span>
-  <span className="text-blue-800">{user.username}</span>
+                <span className="font-medium">{t("username_label")}:</span>
+                <span className="text-blue-800">{user.username}</span>
 
-  <div className="relative">
-    <button
-      onClick={() => copyToClipboard(user.username)}
-      className="text-[10px] border px-2 py-0.5 rounded text-black-500 hover:bg-blue-50"
-    >
-      Copy
-    </button>
+                <div className="relative">
+                  <button
+                    onClick={() => copyToClipboard(user.username)}
+                    className="text-[10px] border px-2 py-0.5 rounded text-black-500 hover:bg-blue-50"
+                  >
+                    Copy
+                  </button>
 
-    {copiedId === user.username && (
-      <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
-        Copied!
-      </span>
-    )}
-  </div>
-</div>
+                  {copiedId === user.username && (
+                    <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
+                      Copied!
+                    </span>
+                  )}
+                </div>
+              </div>
 
               <p>
                 <span className="font-medium">{t("created")}:</span>{" "}
@@ -371,7 +371,7 @@ const SubresellerDashboard = () => {
 
       {/* CREATE MODAL */}
       {openModel && (
-<div className="fixed inset-0 flex justify-center items-center bg-black/70 z-50">
+        <div className="fixed inset-0 flex justify-center items-center bg-black/70 z-50">
           <motion.form
             onSubmit={handleSubmit}
             className="bg-white p-4 rounded-xl shadow"

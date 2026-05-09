@@ -49,27 +49,27 @@ const MainLayout = ({ children }) => {
 
           {/* MAIN CONTENT */}
           <div
-  className={`
-    flex-1 min-h-screen bg-[#f8f9fa] transition-all duration-300
-    ml-0
-    ${collapsed ? "md:ml-[90px]" : "md:ml-[260px]"}
-    w-full
-    overflow-x-hidden
-  `}
->
+            className={`
+          flex-1 min-h-screen bg-[#f8f9fa] transition-all duration-300
+          ml-0
+          ${collapsed ? "md:ml-[90px]" : "md:ml-[260px]"}
+          w-full
+          overflow-x-hidden
+        `}
+          >
             {/* HEADER */}
-
-            <div className="bg-white shadow-sm px-4 py-3 flex justify-between items-center sticky top-0 z-50"
+            <div
+              className="bg-white shadow-sm px-4 py-3 flex justify-between items-center sticky top-0 z-50"
               style={{
                 position: "sticky",
                 top: 0,
-                zIndex: 2000, // ✅ IMPORTANT
-                overflow: "visible", // ✅ IMPORTANT
+                zIndex: 2000,
+                overflow: "visible",
               }}
             >
               {/* LEFT */}
               <div className="flex items-center gap-3">
-                {/* HAMBURGER (ONLY MOBILE) */}
+                {/* HAMBURGER */}
                 <button
                   onClick={() => setMobileOpen(true)}
                   className="md:hidden p-2 rounded bg-gray-100"
@@ -78,14 +78,14 @@ const MainLayout = ({ children }) => {
                 </button>
 
                 <h6 className="font-bold m-0" style={{ color: maroonMain }}>
-                  {t("reseller_panel")}
+                  {t("navbar.layout.reseller_panel")}
                 </h6>
               </div>
 
               {/* RIGHT */}
               <div className="flex items-center gap-3">
 
-                {/* 🌐 LANGUAGE */}
+                {/* LANGUAGE */}
                 <div style={{ position: "relative", zIndex: 3000 }}>
                   <div
                     onClick={() => setIsLangOpen(!isLangOpen)}
@@ -114,11 +114,11 @@ const MainLayout = ({ children }) => {
                         border: "1px solid #ddd",
                         borderRadius: "10px",
                         boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
-                        zIndex: 99999, // 🔥 FIX
+                        zIndex: 99999,
                         minWidth: "90px",
                       }}
                     >
-                      {["EN", "FR"].map((lang) => (
+                      {["en", "fr","pt","ar","de","it","nl","es"].map((lang) => (
                         <div
                           key={lang}
                           onClick={() => {
@@ -143,7 +143,7 @@ const MainLayout = ({ children }) => {
                   )}
                 </div>
 
-                {/* 💰 CREDIT */}
+                {/* CREDIT */}
                 <div
                   style={{
                     background: maroonMain,
