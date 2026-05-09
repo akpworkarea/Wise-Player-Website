@@ -416,7 +416,7 @@
     "custom": "Custom",
     "bonus_msg": "Bonus codes may be included for large orders",
     "whatsapp_msg": "Orders above 1000 codes require WhatsApp contact",
-    "login": "Connexion"
+    "login": "login"
   },
   "playlist": {
     "upload_playlist": "Upload your playlist",

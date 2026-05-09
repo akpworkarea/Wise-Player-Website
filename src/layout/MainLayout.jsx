@@ -33,6 +33,56 @@ const MainLayout = ({ children }) => {
   const isAdmin = adminRoutes.includes(currentPath);
   const hideNavbar = hideNavbarRoutes.includes(currentPath);
 
+const availableLanguages = [
+  {
+    code: "en",
+    short: "EN",
+    name: "English",
+    flag: "🇺🇸",
+  },
+  {
+    code: "fr",
+    short: "FR",
+    name: "Français",
+    flag: "🇫🇷",
+  },
+  {
+    code: "es",
+    short: "ES",
+    name: "Español",
+    flag: "🇪🇸",
+  },
+  {
+    code: "de",
+    short: "DE",
+    name: "Deutsch",
+    flag: "🇩🇪",
+  },
+  {
+    code: "it",
+    short: "IT",
+    name: "Italiano",
+    flag: "🇮🇹",
+  },
+  {
+    code: "pt",
+    short: "PT",
+    name: "Português",
+    flag: "🇵🇹",
+  },
+  {
+    code: "nl",
+    short: "NL",
+    name: "Nederlands",
+    flag: "🇳🇱",
+  },
+  {
+    code: "ar",
+    short: "AR",
+    name: "العربية",
+    flag: "🇸🇦",
+  },
+];
   return (
     <div>
       {/* PUBLIC NAVBAR */}
@@ -85,63 +135,130 @@ const MainLayout = ({ children }) => {
               {/* RIGHT */}
               <div className="flex items-center gap-3">
 
-                {/* 🌐 LANGUAGE */}
-                <div style={{ position: "relative", zIndex: 3000 }}>
-                  <div
-                    onClick={() => setIsLangOpen(!isLangOpen)}
-                    style={{
-                      padding: "6px 12px",
-                      borderRadius: "20px",
-                      border: "1px solid #e2e8f0",
-                      cursor: "pointer",
-                      fontWeight: "600",
-                      fontSize: "13px",
-                      background: "#fff",
-                      minWidth: "60px",
-                      textAlign: "center",
-                    }}
-                  >
-                    🌐 {i18n.language.toUpperCase()}
-                  </div>
+              {/* 🌐 LANGUAGE */}
+<div style={{ position: "relative", zIndex: 3000 }}>
+  {/* SELECT BUTTON */}
+  <div
+    onClick={() => setIsLangOpen(!isLangOpen)}
+    style={{
+      height: "36px",
+      padding: "0 12px",
+      borderRadius: "20px",
+      border: "1px solid #e5e7eb",
+      background: "#fff",
+      display: "flex",
+      alignItems: "center",
+      gap: "6px",
+      cursor: "pointer",
+      fontSize: "13px",
+      fontWeight: "600",
+      boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+    }}
+  >
+    <span style={{ fontSize: "15px" }}>🌐</span>
 
-                  {isLangOpen && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "120%",
-                        right: 0,
-                        background: "#fff",
-                        border: "1px solid #ddd",
-                        borderRadius: "10px",
-                        boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
-                        zIndex: 99999, // 🔥 FIX
-                        minWidth: "90px",
-                      }}
-                    >
-                      {["EN", "FR"].map((lang) => (
-                        <div
-                          key={lang}
-                          onClick={() => {
-                            i18n.changeLanguage(lang);
-                            setIsLangOpen(false);
-                          }}
-                          style={{
-                            padding: "10px 14px",
-                            cursor: "pointer",
-                            fontSize: "13px",
-                            fontWeight: "500",
-                            background:
-                              i18n.language === lang
-                                ? "#fdf2f2"
-                                : "transparent",
-                          }}
-                        >
-                          {lang}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+    <span>
+      {
+        availableLanguages.find(
+          (lang) => lang.code === i18n.language
+        )?.short
+      }
+    </span>
+  </div>
+
+  {/* DROPDOWN */}
+  {isLangOpen && (
+    <div
+      style={{
+        position: "absolute",
+        top: "110%",
+        right: 0,
+        width: "120px",
+        background: "#fff",
+        border: "1px solid #eee",
+        borderRadius: "12px",
+        overflow: "hidden",
+        boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
+        zIndex: 99999,
+      }}
+    >
+      {availableLanguages.map((lang) => {
+        const active = i18n.language === lang.code;
+
+        return (
+          <div
+            key={lang.code}
+            onClick={() => {
+              i18n.changeLanguage(lang.code);
+              localStorage.setItem("lang", lang.code);
+
+              document.documentElement.dir =
+                lang.code === "ar" ? "rtl" : "ltr";
+
+              setIsLangOpen(false);
+            }}
+            style={{
+              padding: "10px 12px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              cursor: "pointer",
+              background: active ? "#f9f5f5" : "#fff",
+              transition: "0.2s",
+            }}
+          >
+            {/* LEFT */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <span style={{ fontSize: "16px" }}>
+                {lang.flag}
+              </span>
+
+              <div>
+                <div
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {lang.short}
                 </div>
+
+                <div
+                  style={{
+                    fontSize: "11px",
+                    color: "#6b7280",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {lang.name}
+                </div>
+              </div>
+            </div>
+
+            {/* ACTIVE */}
+            {active && (
+              <div
+                style={{
+                  width: "7px",
+                  height: "7px",
+                  borderRadius: "50%",
+                  background: "#800000",
+                }}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  )}
+</div>
 
                 {/* 💰 CREDIT */}
                 <div
