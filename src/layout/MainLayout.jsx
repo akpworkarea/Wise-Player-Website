@@ -99,27 +99,27 @@ const availableLanguages = [
 
           {/* MAIN CONTENT */}
           <div
-  className={`
-    flex-1 min-h-screen bg-[#f8f9fa] transition-all duration-300
-    ml-0
-    ${collapsed ? "md:ml-[90px]" : "md:ml-[260px]"}
-    w-full
-    overflow-x-hidden
-  `}
->
+            className={`
+          flex-1 min-h-screen bg-[#f8f9fa] transition-all duration-300
+          ml-0
+          ${collapsed ? "md:ml-[90px]" : "md:ml-[260px]"}
+          w-full
+          overflow-x-hidden
+        `}
+          >
             {/* HEADER */}
-
-            <div className="bg-white shadow-sm px-4 py-3 flex justify-between items-center sticky top-0 z-50"
+            <div
+              className="bg-white shadow-sm px-4 py-3 flex justify-between items-center sticky top-0 z-50"
               style={{
                 position: "sticky",
                 top: 0,
-                zIndex: 2000, // ✅ IMPORTANT
-                overflow: "visible", // ✅ IMPORTANT
+                zIndex: 2000,
+                overflow: "visible",
               }}
             >
               {/* LEFT */}
               <div className="flex items-center gap-3">
-                {/* HAMBURGER (ONLY MOBILE) */}
+                {/* HAMBURGER */}
                 <button
                   onClick={() => setMobileOpen(true)}
                   className="md:hidden p-2 rounded bg-gray-100"
@@ -128,14 +128,14 @@ const availableLanguages = [
                 </button>
 
                 <h6 className="font-bold m-0" style={{ color: maroonMain }}>
-                  {t("reseller_panel")}
+                  {t("navbar.layout.reseller_panel")}
                 </h6>
               </div>
 
               {/* RIGHT */}
               <div className="flex items-center gap-3">
 
-              {/* 🌐 LANGUAGE */}
+              {/* LANGUAGE */}
 <div style={{ position: "relative", zIndex: 3000 }}>
   {/* SELECT BUTTON */}
   <div
@@ -260,7 +260,7 @@ const availableLanguages = [
   )}
 </div>
 
-                {/* 💰 CREDIT */}
+                {/* CREDIT */}
                 <div
                   style={{
                     background: maroonMain,

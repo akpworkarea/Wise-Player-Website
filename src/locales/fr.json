@@ -12,7 +12,6 @@
   "experienceText": "WisePlayer ne fournit aucun contenu multimédia. Les utilisateurs doivent fournir leurs propres listes de lecture. Nous sommes un outil de lecture multimédia professionnel conçu pour l'expérience ultime.",
   "freeTrial": "ESSAI GRATUIT DE 7 JOURS",
   "tutorial": "Tutoriel",
- 
   "beyondTheScreen": "AU-DELÀ DE L'ÉCRAN",
   "support": "Support",
   "customerSupport": "Support Client",
@@ -241,6 +240,40 @@
   "enter_valid_amount": "Entrez un montant valide",
   "not_enough_credits": "Crédits insuffisants",
   "transfer_failed": "Échec du transfert",
+  "purchaseCredit": {
+    "exclusive_bulk_offer": "Offre Exclusive en Gros !",
+    "special_bonus_available": "Bonus spécial disponible pour votre achat",
+    "contact_on_whatsapp": "Contacter sur WhatsApp",
+    "maybe_later": "Peut-être plus tard",
+    "calculate_price": "Calculer le Prix",
+    "enter_coins": "Entrer les crédits",
+    "coins": "Crédits",
+    "total_price": "Prix Total",
+    "buy_credits": "Acheter des Crédits",
+    "credits_pricing": "Tarification des Crédits",
+    "credits_system": "Système de Crédits",
+    "credits_system_desc": "Achetez des crédits et débloquez des fonctionnalités premium. Des plans flexibles conçus pour les utilisateurs et les revendeurs.",
+    "customer_pricing": "Tarification Client",
+    "one_code_annual": "1 Code (Annuel)",
+    "two_codes_offer": "2 Codes (Offre)",
+    "reseller_pricing": "Tarification Revendeur",
+    "quantity_codes": "Quantité (Codes)",
+    "unit_price": "Prix Unitaire",
+    "contact_for_bulk_bonus": "Contacter pour bonus en gros"
+  },
+  "transaction": {
+    "transaction_history": "Historique des Transactions",
+    "id": "ID",
+    "amount": "Montant",
+    "type": "Type",
+    "notes": "Notes",
+    "date": "Date",
+    "no_data_found": "Aucune donnée trouvée",
+    "prev": "Précédent",
+    "page": "Page",
+    "of": "de",
+    "next": "Suivant"
+  },
   "activation": {
     "appName": "WISE ",
     "appName2": "PLAYER",
@@ -347,17 +380,16 @@
     "headFreeTrial": "ESSAI GRATUIT 7 JOURS",
     "headTutorial": "Tutoriel",
     "common": {
-    "something_wrong": "Une erreur s'est produite"
+      "something_wrong": "Une erreur s'est produite"
+    },
+    "api": {
+      "device_not_found": "Appareil non trouvé",
+      "invalid_device": "Appareil invalide",
+      "payment_failed": "Échec du paiement",
+      "something_wrong": "Une erreur s'est produite",
+      "plans_error": "Impossible de charger les offres"
+    }
   },
-  "api": {
-    "device_not_found": "Appareil non trouvé",
-    "invalid_device": "Appareil invalide",
-    "payment_failed": "Échec du paiement",
-    "something_wrong": "Une erreur s'est produite",
-    "plans_error": "Impossible de charger les offres"
-  }
-  },
-  
   "navbar": {
     "logo": {
       "title": "WISE PLAYER",
@@ -420,7 +452,6 @@
     "whatsapp_msg": "Les commandes de plus de 1000 codes nécessitent un contact WhatsApp",
     "login": "Connexion"
   },
-  
   "contact_Page": {
     "contact_support_center": "CENTRE D'ASSISTANCE",
     "contact_header_1": "Comment pouvons-nous",
@@ -450,6 +481,52 @@
     "contact_success_title": "Message Envoyé !",
     "contact_success_msg": "Nous vous répondrons bientôt."
   },
+  "admin_dashboard": {
+    "panel": "Panneau",
+    "overview": "Aperçu",
+    "users": "Utilisateurs",
+    "requests": "Demandes",
+    "subreseller": "Sous-revendeur",
+    "admin_user": "Administrateur",
+    "online": "En ligne",
+    "total_users": "Total des utilisateurs",
+    "active_subs": "Abonnements actifs",
+    "pending_req": "Demandes en attente",
+    "total_coins": "Total des pièces",
+    "device_id": "ID de l'appareil",
+    "status": "Statut",
+    "subscription": "Abonnement",
+    "registered": "Enregistré",
+    "copy": "Copier",
+    "copied": "Copié !",
+    "plan": "Forfait",
+    "no_devices_found": "Aucun appareil trouvé",
+    "no_devices": "Aucun appareil"
+  },
+  "userManagement": {
+    "device_management": "Gestion des Appareils",
+    "manage_members": "Gérer les membres et les abonnements",
+    "search_device": "Rechercher un appareil...",
+    "create_new_device": "Créer un Nouvel Appareil",
+    "total_users": "Utilisateurs Totaux",
+    "active": "Actif",
+    "device_id": "ID de l’Appareil",
+    "status": "Statut",
+    "subscription": "Abonnement",
+    "expires": "Expire",
+    "registered": "Enregistré",
+    "action": "Action",
+    "copy": "Copier",
+    "copied": "Copié !",
+    "no_user_found": "Aucun utilisateur trouvé",
+    "plan": "Plan",
+    "toggle_status": "Changer le Statut",
+    "no_users": "Aucun utilisateur",
+    "prev": "Précédent",
+    "page": "Page",
+    "of": "de",
+    "next": "Suivant"
+  },
   "playlist": {
     "upload_playlist": "Téléchargez votre playlist",
     "mac_address": "Adresse MAC",
@@ -467,8 +544,13 @@
     "required": "Requis",
     "delete": "Supprimer",
     "footer_terms": "Conditions",
-  "footer_privacy": "Confidentialité",
-  "footer_helpdesk": "Service d’assistance",
-  "footerCopyRight": "Wise Player · Tous droits réservés"
-  }
+    "footer_privacy": "Confidentialité",
+    "footer_helpdesk": "Service d’assistance",
+    "footerCopyRight": "Wise Player · Tous droits réservés"
+  },
+  "payment_success_redirecting": "Paiement réussi, redirection vers le tableau de bord sous peu",
+  "total_users": "Utilisateurs Totaux",
+  "active_subs": "Abonnements Actifs",
+  "pending_req": "Demandes en Attente",
+  "total_coins": "Total des Pièces"
 }

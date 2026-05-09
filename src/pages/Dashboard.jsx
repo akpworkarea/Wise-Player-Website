@@ -72,161 +72,189 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#f4f4f7] w-full">
+   <div className="min-h-screen bg-[#f4f4f7] w-full">
 
-      {/* HEADER */}
-      <div className="bg-white border-b px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sticky top-0 z-10">
-        <h5 className="text-xs sm:text-sm font-semibold uppercase tracking-wider">
-          {t("panel")} /{" "}
-          <span className="text-[#800000]">{t(activeTab)}</span>
-        </h5>
+  {/* HEADER */}
+  <div className="bg-white border-b px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sticky top-0 z-10">
+    <h5 className="text-xs sm:text-sm font-semibold uppercase tracking-wider">
+      {t("admin_dashboard.panel")} /{" "}
+      <span className="text-[#800000]">
+        {t(`admin_dashboard.${activeTab}`)}
+      </span>
+    </h5>
 
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:block text-right">
-            <p className="text-sm font-semibold">{t("admin_user")}</p>
-            <p className="text-xs text-green-600">● {t("online")}</p>
-          </div>
+    <div className="flex items-center gap-3">
+      <div className="hidden sm:block text-right">
+        <p className="text-sm font-semibold">
+          {t("admin_dashboard.admin_user")}
+        </p>
 
-          <div className="w-9 h-9 rounded-full bg-[#800000]" />
-        </div>
+        <p className="text-xs text-green-600">
+          ● {t("admin_dashboard.online")}
+        </p>
       </div>
 
-      {/* MAIN */}
-      <div className="p-4 space-y-6">
+      <div className="w-9 h-9 rounded-full bg-[#800000]" />
+    </div>
+  </div>
 
-        {/* STATS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          {stats.map((item, i) => (
-            <div key={i} className="bg-white p-4 rounded-xl shadow border">
-              <div className="flex justify-between">
-                <div className="p-2 bg-red-50 text-[#800000] rounded-md">
-                  {item.icon}
-                </div>
-                <span className="text-xs font-bold text-green-600">
-                  {item.trend}
-                </span>
-              </div>
+  {/* MAIN */}
+  <div className="p-4 space-y-6">
 
-              <h2 className="text-xl font-bold mt-3">{item.count}</h2>
-              <p className="text-sm text-gray-500">{item.title}</p>
+    {/* STATS */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      {stats.map((item, i) => (
+        <div key={i} className="bg-white p-4 rounded-xl shadow border">
+          <div className="flex justify-between">
+            <div className="p-2 bg-red-50 text-[#800000] rounded-md">
+              {item.icon}
             </div>
-          ))}
+
+            <span className="text-xs font-bold text-green-600">
+              {item.trend}
+            </span>
+          </div>
+
+          <h2 className="text-xl font-bold mt-3">{item.count}</h2>
+          <p className="text-sm text-gray-500">{item.title}</p>
         </div>
+      ))}
+    </div>
 
-        {/* TABLE (DESKTOP) */}
-        <div className="hidden md:block bg-white rounded-xl shadow border overflow-x-auto">
-          <table className="min-w-full text-sm">
-            <thead className="bg-gray-100 text-xs uppercase text-gray-600">
-              <tr>
-                <th className="px-4 py-3 text-center">Device ID</th>
-                <th className="px-4 py-3 text-center">Status</th>
-                <th className="px-4 py-3 text-center">Subscription</th>
-                <th className="px-4 py-3 text-center">Registered</th>
-              </tr>
-            </thead>
+    {/* TABLE (DESKTOP) */}
+    <div className="hidden md:block bg-white rounded-xl shadow border overflow-x-auto">
+      <table className="min-w-full text-sm">
+        <thead className="bg-gray-100 text-xs uppercase text-gray-600">
+          <tr>
+            <th className="px-4 py-3 text-center">
+              {t("admin_dashboard.device_id")}
+            </th>
 
-            <tbody>
-              {dashboard?.devices?.length > 0 ? (
-                dashboard.devices.slice(0, 8).map((item) => (
-                  <tr key={item.deviceId} className="border-t text-center">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-2 flex-wrap">
+            <th className="px-4 py-3 text-center">
+              {t("admin_dashboard.status")}
+            </th>
 
-                        <span
-                          className="text-blue-600 cursor-pointer"
-                          title={item.deviceId}   // 👈 hover shows full ID
-                        >
-                          {truncateId(item.deviceId)}
-                        </span>
+            <th className="px-4 py-3 text-center">
+              {t("admin_dashboard.subscription")}
+            </th>
 
-                        <div className="relative">
-                          <button
-                            onClick={() => copyToClipboard(item.deviceId)}
-                            className="text-xs border px-2 py-1 rounded hover:bg-blue-50 transition"
-                          >
-                            Copy
-                          </button>
+            <th className="px-4 py-3 text-center">
+              {t("admin_dashboard.registered")}
+            </th>
+          </tr>
+        </thead>
 
-                          {copiedId === item.deviceId && (
-                            <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
-                              Copied!
-                            </span>
-                          )}
-                        </div>
-
-                      </div>
-                    </td>
-                    <td>{item.deviceStatus}</td>
-                    <td>{item.subscriptionType}</td>
-                    <td>{formatDate(item.registeredAt)}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4" className="py-6 text-center">
-                    No devices found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* MOBILE */}
-        <div className="md:hidden space-y-4">
+        <tbody>
           {dashboard?.devices?.length > 0 ? (
             dashboard.devices.slice(0, 8).map((item) => (
-              <div key={item.deviceId} className="bg-white p-4 rounded-xl shadow">
-                <div className="flex justify-between">
-                  <div className="flex items-center gap-2 flex-wrap">
+              <tr key={item.deviceId} className="border-t text-center">
+                <td className="px-4 py-3">
+                  <div className="flex items-center justify-center gap-2 flex-wrap">
 
                     <span
-                      className="text-blue-600 font-semibold text-sm"
+                      className="text-blue-600 cursor-pointer"
                       title={item.deviceId}
                     >
-                      {truncateId(item.deviceId, 6, 4)}
+                      {truncateId(item.deviceId)}
                     </span>
 
                     <div className="relative">
                       <button
                         onClick={() => copyToClipboard(item.deviceId)}
-                        className="text-[10px] border px-2 py-0.5 rounded hover:bg-blue-50 transition"
+                        className="text-xs border px-2 py-1 rounded hover:bg-blue-50 transition"
                       >
-                        Copy
+                        {t("admin_dashboard.copy")}
                       </button>
 
                       {copiedId === item.deviceId && (
                         <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
-                          Copied!
+                          {t("admin_dashboard.copied")}
                         </span>
                       )}
                     </div>
 
                   </div>
+                </td>
 
-                  <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">
-                    {item.deviceStatus}
-                  </span>
-                </div>
-
-                <div className="text-sm text-gray-500 mt-2">
-                  <p>Plan: {item.subscriptionType}</p>
-                  <p>Registered: {formatDate(item.registeredAt)}</p>
-                </div>
-              </div>
+                <td>{item.deviceStatus}</td>
+                <td>{item.subscriptionType}</td>
+                <td>{formatDate(item.registeredAt)}</td>
+              </tr>
             ))
           ) : (
-            <p className="text-center">No devices</p>
+            <tr>
+              <td colSpan="4" className="py-6 text-center">
+                {t("admin_dashboard.no_devices_found")}
+              </td>
+            </tr>
           )}
-        </div>
-
-        {/* TABS */}
-        {activeTab === "users" && <UserManagement />}
-        {activeTab === "requests" && <RequestManagement />}
-        {activeTab === "subreseller" && <SubReseller />}
-
-      </div>
+        </tbody>
+      </table>
     </div>
+
+    {/* MOBILE */}
+    <div className="md:hidden space-y-4">
+      {dashboard?.devices?.length > 0 ? (
+        dashboard.devices.slice(0, 8).map((item) => (
+          <div key={item.deviceId} className="bg-white p-4 rounded-xl shadow">
+            <div className="flex justify-between">
+              <div className="flex items-center gap-2 flex-wrap">
+
+                <span
+                  className="text-blue-600 font-semibold text-sm"
+                  title={item.deviceId}
+                >
+                  {truncateId(item.deviceId, 6, 4)}
+                </span>
+
+                <div className="relative">
+                  <button
+                    onClick={() => copyToClipboard(item.deviceId)}
+                    className="text-[10px] border px-2 py-0.5 rounded hover:bg-blue-50 transition"
+                  >
+                    {t("admin_dashboard.copy")}
+                  </button>
+
+                  {copiedId === item.deviceId && (
+                    <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
+                      {t("admin_dashboard.copied")}
+                    </span>
+                  )}
+                </div>
+
+              </div>
+
+              <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">
+                {item.deviceStatus}
+              </span>
+            </div>
+
+            <div className="text-sm text-gray-500 mt-2">
+              <p>
+                {t("admin_dashboard.plan")}: {item.subscriptionType}
+              </p>
+
+              <p>
+                {t("admin_dashboard.registered")}:{" "}
+                {formatDate(item.registeredAt)}
+              </p>
+            </div>
+          </div>
+        ))
+      ) : (
+        <p className="text-center">
+          {t("admin_dashboard.no_devices")}
+        </p>
+      )}
+    </div>
+
+    {/* TABS */}
+    {activeTab === "users" && <UserManagement />}
+    {activeTab === "requests" && <RequestManagement />}
+    {activeTab === "subreseller" && <SubReseller />}
+
+  </div>
+</div>
   );
 };
 

@@ -3,37 +3,39 @@ import { TransitionHistoryData } from "../auth/transitionHistory";
 import { useAuth } from "../context/AuthContext";
 import { subResellerTransactionHistory } from "../auth/subReseller/transitionHistory";
 import { useRefresh } from "../context/RefreshContext";
+import { useTranslation } from "react-i18next";
 
 function TransitionHistory() {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const { t } = useTranslation()
 
-const { userRole } = useAuth();
-const { refreshTransactions } = useRefresh();
+  const { userRole } = useAuth();
+  const { refreshTransactions } = useRefresh();
 
-const fetchData = async (pageNo = 0) => {
-  try {
-    let res;
+  const fetchData = async (pageNo = 0) => {
+    try {
+      let res;
 
-    if (userRole === "SUB_RESELLER") {
-      res = await subResellerTransactionHistory(pageNo);
-    } else {
-      res = await TransitionHistoryData(pageNo);
+      if (userRole === "SUB_RESELLER") {
+        res = await subResellerTransactionHistory(pageNo);
+      } else {
+        res = await TransitionHistoryData(pageNo);
+      }
+
+      if (!res?.success) return;
+
+      setData(res.data.content || []);
+      setTotalPages(res.data.totalPages || 0);
+    } catch (err) {
+      console.error(err);
     }
-
-    if (!res?.success) return;
-
-    setData(res.data.content || []);
-    setTotalPages(res.data.totalPages || 0);
-  } catch (err) {
-    console.error(err);
-  }
-};
+  };
 
   useEffect(() => {
-  fetchData(page);
-}, [page, refreshTransactions]);
+    fetchData(page);
+  }, [page, refreshTransactions]);
 
   // ✅ REAL FIX (no fake 1)
   const itemsPerPage = 10;
@@ -47,18 +49,18 @@ const fetchData = async (pageNo = 0) => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Transaction History</h2>
+      <h2 style={styles.title}>{t("transaction.transaction_history")}</h2>
 
       <div style={styles.card}>
         <div style={styles.tableWrapper}>
           <table style={styles.table}>
             <thead>
               <tr>
-                <th style={styles.th}>ID</th>
-                <th style={styles.th}>Amount</th>
-                <th style={styles.th}>Type</th>
-                <th style={styles.th}>Notes</th>
-                <th style={styles.th}>Date</th>
+                <th style={styles.th}>{t("transaction.id")}</th>
+                <th style={styles.th}>{t("transaction.amount")}</th>
+                <th style={styles.th}>{t("transaction.type")}</th>
+                <th style={styles.th}>{t("transaction.notes")}</th>
+                <th style={styles.th}>{t("transaction.date")}</th>
               </tr>
             </thead>
 
@@ -96,7 +98,7 @@ const fetchData = async (pageNo = 0) => {
               ) : (
                 <tr>
                   <td colSpan="5" style={styles.empty}>
-                    No Data Found
+                    {t("transaction.no_data_found")}
                   </td>
                 </tr>
               )}
@@ -105,7 +107,6 @@ const fetchData = async (pageNo = 0) => {
         </div>
       </div>
 
-      {/* ✅ CONSISTENT + CORRECT PAGINATION */}
       {showPagination && (
         <div className="d-flex justify-content-center align-items-center gap-3 p-3 flex-wrap">
 
@@ -114,11 +115,11 @@ const fetchData = async (pageNo = 0) => {
             onClick={() => setPage((p) => p - 1)}
             className="btn btn-sm btn-outline-dark"
           >
-            Prev
+            {t("transaction.prev")}
           </button>
 
           <span style={{ fontWeight: "500" }}>
-            Page {page + 1} of {computedTotalPages}
+            {t("transaction.page")} {page + 1} {t("transaction.of")} {computedTotalPages}
           </span>
 
           <button
@@ -126,7 +127,7 @@ const fetchData = async (pageNo = 0) => {
             onClick={() => setPage((p) => p + 1)}
             className="btn btn-sm btn-outline-dark"
           >
-            Next
+            {t("transaction.next")}
           </button>
 
         </div>

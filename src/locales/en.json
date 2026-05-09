@@ -241,6 +241,28 @@
   "enter_valid_amount": "Enter a valid amount",
   "not_enough_credits": "Not enough credits",
   "transfer_failed": "Transfer failed",
+  "admin_dashboard": {
+    "panel": "Panel",
+    "overview": "Overview",
+    "users": "Users",
+    "requests": "Requests",
+    "subreseller": "Sub Reseller",
+    "admin_user": "Admin User",
+    "online": "Online",
+    "total_users": "Total Users",
+    "active_subs": "Active Subscriptions",
+    "pending_req": "Pending Requests",
+    "total_coins": "Total Coins",
+    "device_id": "Device ID",
+    "status": "Status",
+    "subscription": "Subscription",
+    "registered": "Registered",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "plan": "Plan",
+    "no_devices_found": "No devices found",
+    "no_devices": "No devices"
+  },
   "activation": {
     "appName": "WISE ",
     "appName2": "PLAYER",
@@ -286,6 +308,7 @@
         "desc": "Support for true 4K and 8K resolution for OLED screens."
       }
     ],
+    "payment_success_redirecting": "Payment successful redirecting to the dashboard shortly",
     "system_online": "SYSTEM ONLINE V2.0",
     "type_ultra_fast": "Ultra Fast",
     "type_crystal_clear": "Crystal Clear",
@@ -346,15 +369,15 @@
     "headFreeTrial": "7-DAY FREE TRIAL",
     "headTutorial": "Tutorial",
     "common": {
-    "something_wrong": "Something went wrong"
-  },
-  "api": {
-    "device_not_found": "Device not found",
-    "invalid_device": "Invalid device",
-    "payment_failed": "Payment failed",
-    "something_wrong": "Something went wrong",
-    "plans_error": "Unable to load plans"
-  }
+      "something_wrong": "Something went wrong"
+    },
+    "api": {
+      "device_not_found": "Device not found",
+      "invalid_device": "Invalid device",
+      "payment_failed": "Payment failed",
+      "something_wrong": "Something went wrong",
+      "plans_error": "Unable to load plans"
+    }
   },
   "navbar": {
     "logo": {
@@ -381,6 +404,9 @@
       "pt": "Portuguese",
       "nl": "Dutch",
       "ar": "Arabic"
+    },
+    "layout": {
+      "reseller_panel": "Reseller Panel"
     },
     "aria": {
       "toggle_menu": "Toggle menu"
@@ -418,6 +444,91 @@
     "whatsapp_msg": "Orders above 1000 codes require WhatsApp contact",
     "login": "login"
   },
+  "userManagement": {
+    "device_management": "Device Management",
+    "manage_members": "Manage members and subscriptions",
+    "search_device": "Search device...",
+    "create_new_device": "Create New Device",
+    "total_users": "Total Users",
+    "active": "Active",
+    "device_id": "Device ID",
+    "status": "Status",
+    "subscription": "Subscription",
+    "expires": "Expires",
+    "registered": "Registered",
+    "action": "Action",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "no_user_found": "No User found",
+    "plan": "Plan",
+    "toggle_status": "Toggle Status",
+    "no_users": "No Users",
+    "prev": "Prev",
+    "page": "Page",
+    "of": "of",
+    "next": "Next"
+  },
+  "requests": {
+    "request_management": "Request Management",
+    "new_request": "New Request",
+    "all": "All",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "device_id": "Device ID",
+    "reseller_id": "Reseller ID",
+    "plan": "Plan",
+    "credits": "Credits",
+    "created": "Created",
+    "status": "Status",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "no_data_found": "No Data Found",
+    "reseller": "Reseller",
+    "no_requests": "No Requests",
+    "prev": "Prev",
+    "page": "Page",
+    "of": "of",
+    "next": "Next",
+    "submit_request": "Submit Request",
+    "select_plan": "Select Plan",
+    "submit": "Submit",
+    "cancel": "Cancel"
+  },
+  "transaction": {
+    "transaction_history": "Transaction History",
+    "id": "ID",
+    "amount": "Amount",
+    "type": "Type",
+    "notes": "Notes",
+    "date": "Date",
+    "no_data_found": "No Data Found",
+    "prev": "Prev",
+    "page": "Page",
+    "of": "of",
+    "next": "Next"
+  },
+  "purchaseCredit": {
+    "exclusive_bulk_offer": "Exclusive Bulk Offer!",
+    "special_bonus_available": "Special bonus available for your purchase",
+    "contact_on_whatsapp": "Contact on WhatsApp",
+    "maybe_later": "Maybe Later",
+    "calculate_price": "Calculate Price",
+    "enter_coins": "Enter coins",
+    "coins": "Coins",
+    "total_price": "Total Price",
+    "buy_credits": "Buy Credits",
+    "credits_pricing": "Credits Pricing",
+    "credits_system": "Credits System",
+    "credits_system_desc": "Purchase credits and unlock premium features. Flexible plans designed for both users and resellers.",
+    "customer_pricing": "Customer Pricing",
+    "one_code_annual": "1 Code (Annual)",
+    "two_codes_offer": "2 Codes (Offer)",
+    "reseller_pricing": "Reseller Pricing",
+    "quantity_codes": "Quantity(Codes)",
+    "unit_price": "Unit Price",
+    "contact_for_bulk_bonus": "Contact for Bulk Bonus"
+  },
   "playlist": {
     "upload_playlist": "Upload your playlist",
     "mac_address": "MAC Address",
@@ -436,7 +547,8 @@
     "delete": "Delete",
     "footerCopyRight": "Wise Player · All Rights Reserved",
     "footer_terms": "Terms",
-  "footer_privacy": "Privacy",
-  "footer_helpdesk": "Help Desk"
-  }
+    "footer_privacy": "Privacy",
+    "footer_helpdesk": "Help Desk"
+  },
+  "total_users":"Total Users"
 }
