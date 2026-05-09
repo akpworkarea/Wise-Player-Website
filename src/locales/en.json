@@ -442,7 +442,7 @@
     "custom": "Custom",
     "bonus_msg": "Bonus codes may be included for large orders",
     "whatsapp_msg": "Orders above 1000 codes require WhatsApp contact",
-    "login": "Connexion"
+    "login": "Login"
   },
   "userManagement": {
     "device_management": "Device Management",
@@ -466,7 +466,19 @@
     "prev": "Prev",
     "page": "Page",
     "of": "of",
-    "next": "Next"
+    "next": "Next",
+
+  "new_device": "New Device",
+  "mac_placeholder": "MAC Address (AA:BB:CC:DD:EE:FF)",
+  "processing": "Processing...",
+  "create": "Create",
+  "confirm_action": "Confirm Action",
+  "are_you_sure": "Are you sure you want to",
+  "disable": "disable",
+  "activate": "activate",
+  "this_user": "this user?",
+  "cancel": "Cancel",
+  "yes_confirm": "Yes, Confirm"
   },
   "requests": {
     "request_management": "Request Management",
@@ -550,5 +562,13 @@
     "footer_privacy": "Privacy",
     "footer_helpdesk": "Help Desk"
   },
-  "total_users":"Total Users"
+  "total_users":"Total Users",
+
+  "Sign_in": "Sign In",
+  "Register": "Register",
+  "authorized_access_only": "Authorized Access Only",
+  "dont_have_account": "Don't have an account?",
+  "success_redirecting": "Success! Redirecting...",
+  "invalid_credentials": "Invalid Credentials",
+  "reset_link_sent": "Reset link sent!"
 }

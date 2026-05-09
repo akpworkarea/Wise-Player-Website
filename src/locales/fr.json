@@ -187,6 +187,7 @@
   "active_subs": "Subs Actifs",
   "pending_req": "Demandes en attente",
   "total_coins": "Total des pièces",
+  
   "device_id": "ID de l'appareil",
   "status": "Statut",
   "subscription": "Abonnement",
@@ -525,7 +526,18 @@
     "prev": "Précédent",
     "page": "Page",
     "of": "de",
-    "next": "Suivant"
+    "next": "Suivant",
+    "new_device": "Nouvel appareil",
+"mac_placeholder": "Adresse MAC (AA:BB:CC:DD:EE:FF)",
+"processing": "Traitement en cours...",
+"create": "Créer",
+"confirm_action": "Confirmer l'action",
+"are_you_sure": "Êtes-vous sûr de vouloir",
+"disable": "désactiver",
+"activate": "activer",
+"this_user": "cet utilisateur ?",
+"cancel": "Annuler",
+"yes_confirm": "Oui, confirmer"
   },
   "playlist": {
     "upload_playlist": "Téléchargez votre playlist",
@@ -549,8 +561,12 @@
     "footerCopyRight": "Wise Player · Tous droits réservés"
   },
   "payment_success_redirecting": "Paiement réussi, redirection vers le tableau de bord sous peu",
-  "total_users": "Utilisateurs Totaux",
-  "active_subs": "Abonnements Actifs",
-  "pending_req": "Demandes en Attente",
-  "total_coins": "Total des Pièces"
+
+  "Sign_in": "Se connecter",
+  "Register": "S'inscrire",
+  "authorized_access_only": "Accès autorisé uniquement",
+  "dont_have_account": "Vous n'avez pas de compte ?",
+  "success_redirecting": "Succès ! Redirection...",
+  "invalid_credentials": "Identifiants invalides",
+  "reset_link_sent": "Lien de réinitialisation envoyé !"
 }
