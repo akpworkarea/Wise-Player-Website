@@ -6,8 +6,10 @@ import logo from "../../assets/logo.png";
 import { useTranslation } from "react-i18next";
 
 const Register = () => {
-  const { t } = useTranslation();
+  const { t ,i18n} = useTranslation();
   const navigate = useNavigate();
+      const [isLangOpen, setIsLangOpen] = useState(false);
+  
 
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
@@ -69,6 +71,65 @@ const Register = () => {
       setError(result.message);
     }
   };
+  const availableLanguages = [
+    {
+      code: "en",
+      short: "🇺🇸",
+      name: "English",
+      flag: "🇺🇸",
+      image: "https://flagcdn.com/w40/us.png",
+    },
+    {
+      code: "fr",
+      short: "🇫🇷",
+      name: "Français",
+      flag: "🇫🇷",
+      image: "https://flagcdn.com/w40/fr.png",
+    },
+    {
+      code: "es",
+      short: "🇪🇸",
+      name: "Español",
+      flag: "🇪🇸",
+      image: "https://flagcdn.com/w40/es.png",
+    },
+    {
+      code: "de",
+      short: "🇩🇪",
+      name: "Deutsch",
+      flag: "🇩🇪",
+      image: "https://flagcdn.com/w40/de.png",
+    },
+    {
+      code: "it",
+      short: "🇮🇹",
+      name: "Italiano",
+      flag: "🇮🇹",
+      image: "https://flagcdn.com/w40/it.png",
+    },
+    {
+      code: "pt",
+      short: "🇵🇹",
+      name: "Português",
+      flag: "🇵🇹",
+      image: "https://flagcdn.com/w40/pt.png",
+    },
+    {
+      code: "nl",
+      short: "🇳🇱",
+      name: "Nederlands",
+      flag: "🇳🇱",
+      image: "https://flagcdn.com/w40/nl.png",
+    },
+    {
+      code: "ar",
+      short: "🇸🇦",
+      name: "العربية",
+      flag: "🇸🇦",
+      image: "https://flagcdn.com/w40/sa.png",
+    },
+  ];
+
 
   return (
     <div className="main-page-wrapper">
@@ -97,6 +158,148 @@ const Register = () => {
 
       {/* RIGHT FORM */}
       <div className="register-container">
+        <div
+          style={{
+            position: "absolute",
+            top: "20px",
+            right: "20px",
+            zIndex: 3000,
+          }}
+        >
+          {/* SELECT BUTTON */}
+          <div
+            onClick={() => setIsLangOpen(!isLangOpen)}
+            style={{
+              minWidth: "62px",
+              height: "42px",
+              padding: "0 14px",
+              borderRadius: "30px",
+              border: "1px solid rgba(255,255,255,0.6)",
+              background: "transparent",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "700",
+              color: "#111827",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+              transition: "all 0.25s ease",
+              userSelect: "none",
+            }}
+          >
+            <span style={{ fontSize: "16px" }}>🌐</span>
+
+            <span>
+              {
+                availableLanguages.find(
+                  (lang) => lang.code === i18n.language
+                )?.short
+              }
+            </span>
+          </div>
+
+          {/* DROPDOWN */}
+          {isLangOpen && (
+            <div
+              style={{
+                position: "absolute",
+                top: "52px",
+                right: 0,
+                width: "210px",
+                background: "#ffffff",
+                borderRadius: "16px",
+                overflow: "hidden",
+                boxShadow: "0 20px 40px rgba(0,0,0,0.12)",
+                border: "1px solid #f1f5f9",
+                animation: "fadeIn 0.2s ease",
+              }}
+            >
+              {availableLanguages.map((lang) => {
+                const active = i18n.language === lang.code;
+
+                return (
+                  <div
+                    key={lang.code}
+                    onClick={() => {
+                      i18n.changeLanguage(lang.code);
+                      localStorage.setItem("lang", lang.code);
+                      setIsLangOpen(false);
+                    }}
+                    style={{
+                      padding: "12px 14px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      cursor: "pointer",
+                      background: active ? "#f9fafb" : "#fff",
+                      borderBottom: "1px solid #f8fafc",
+                      transition: "0.2s",
+                    }}
+                  >
+                    {/* LEFT */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                      }}
+                    >
+                      <img
+                        src={lang.image}
+                        alt={lang.name}
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          borderRadius: "50%",
+                          objectFit: "cover",
+                          boxShadow: "0 0 0 1px #e5e7eb",
+                        }}
+                      />
+
+                      <div>
+                        <div
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: "700",
+                            color: "#111827",
+                          }}
+                        >
+                          {lang.short}
+                        </div>
+
+                        <div
+                          style={{
+                            fontSize: "11px",
+                            color: "#6b7280",
+                          }}
+                        >
+                          {lang.name}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* ACTIVE DOT */}
+                    {active && (
+                      <div
+                        style={{
+                          width: "9px",
+                          height: "9px",
+                          borderRadius: "50%",
+                          background: "#800000",
+                          boxShadow: "0 0 0 4px rgba(128,0,0,0.10)",
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
         <div className={`content-wrapper ${isVisible ? "visible" : ""}`}>
           <div className="header-section">
             <h1 className="logo-text">
