@@ -192,8 +192,8 @@ const availableLanguages = [
               i18n.changeLanguage(lang.code);
               localStorage.setItem("lang", lang.code);
 
-              document.documentElement.dir =
-                lang.code === "ar" ? "rtl" : "ltr";
+              // document.documentElement.dir =
+              //   lang.code === "ar" ? "rtl" : "ltr";
 
               setIsLangOpen(false);
             }}
