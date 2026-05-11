@@ -40,22 +40,30 @@ const SubresellerDashboard = () => {
 
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 8;
 
   const maroonMain = "#800000";
 
   // FETCH
-  const fetchdata = async () => {
-    try {
-      const res = await getAllResellerInfo();
-      const usersData = res?.data?.content ?? [];
-      setUsers(Array.isArray(usersData) ? usersData : []);
-      setCurrentPage(1);
-    } catch (err) {
-      console.error(err);
-      setUsers([]);
-    }
-  };
+  const [totalPages, setTotalPages] = useState(1);
+
+const fetchdata = async (page = currentPage) => {
+  try {
+    const backendPage = page - 1;
+
+    const res = await getAllResellerInfo(backendPage);
+
+    const usersData = res?.data?.content ?? [];
+
+    setUsers(Array.isArray(usersData) ? usersData : []);
+
+    setTotalPages(res?.data?.totalPages || 1);
+
+  } catch (err) {
+    console.error(err);
+    setUsers([]);
+  }
+};
+
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
@@ -66,9 +74,9 @@ const SubresellerDashboard = () => {
     }, 1500);
   };
 
-  useEffect(() => {
-    fetchdata();
-  }, []);
+useEffect(() => {
+  fetchdata(currentPage);
+}, [currentPage]);
 
   // CREATE
   const handleSubmit = async (e) => {
@@ -135,11 +143,7 @@ const SubresellerDashboard = () => {
     setTransferModal(true);
   };
 
-  // PAGINATION
-  const totalPages = Math.ceil(users.length / usersPerPage);
-  const safePage = Math.min(currentPage, totalPages || 1);
-  const indexOfLast = safePage * usersPerPage;
-  const currentUsers = users.slice(indexOfLast - usersPerPage, indexOfLast);
+  
 
   const getStatusBadge = (active) => (
     <span
@@ -192,7 +196,7 @@ const SubresellerDashboard = () => {
           </thead>
 
           <tbody>
-            {currentUsers.map((user) => (
+            {users.map((user) => (
               <tr className="border-t hover:bg-gray-50 transition" key={user.id}>
                 <td className="px-4 py-3 text-left">
                   <div className="font-semibold">{user.fullName}</div>
@@ -278,7 +282,7 @@ const SubresellerDashboard = () => {
       {/* mobile view */}
 
       <div className="block md:hidden space-y-4 p-2">
-        {currentUsers.map((user) => (
+        {users.map((user) => (
           <div key={user.id} className="p-4 bg-white rounded-xl shadow space-y-3">
 
             {/* TOP ROW */}
@@ -467,40 +471,43 @@ const SubresellerDashboard = () => {
       )}
 
       {/* ✅ CONSISTENT PAGINATION (UserManagement style) */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-3 p-4 flex-wrap">
+     {totalPages > 1 && (
+  <div className="flex justify-center items-center gap-3 p-4 flex-wrap">
 
-          <button
-            disabled={safePage === 1}
-            onClick={() => setCurrentPage((p) => p - 1)}
-            className={`px-4 py-1.5 rounded-md border transition 
-  ${safePage === 1
-                ? "opacity-40 cursor-not-allowed"
-                : "hover:bg-gray-200 hover:border-gray-400"
-              }
-`}
-          >
-            Prev
-          </button>
-
-          <span className="font-medium text-sm">
-            Page {safePage} of {totalPages}
-          </span>
-
-          <button
-            disabled={safePage === totalPages}
-            onClick={() => setCurrentPage((p) => p + 1)}
-            className={`px-4 py-1.5 rounded-md border transition 
-        ${safePage === totalPages
-                ? "opacity-40 cursor-not-allowed"
-                : "hover:bg-gray-200 hover:border-gray-400"}
+    <button
+      disabled={currentPage === 1}
+      onClick={() => setCurrentPage((p) => p - 1)}
+      className={`px-4 py-1.5 rounded-md border transition
+        ${
+          currentPage === 1
+            ? "opacity-40 cursor-not-allowed"
+            : "hover:bg-gray-200 hover:border-gray-400"
+        }
       `}
-          >
-            Next
-          </button>
+    >
+      Prev
+    </button>
 
-        </div>
-      )}
+    <span className="font-medium text-sm">
+      Page {currentPage} of {totalPages}
+    </span>
+
+    <button
+      disabled={currentPage === totalPages}
+      onClick={() => setCurrentPage((p) => p + 1)}
+      className={`px-4 py-1.5 rounded-md border transition
+        ${
+          currentPage === totalPages
+            ? "opacity-40 cursor-not-allowed"
+            : "hover:bg-gray-200 hover:border-gray-400"
+        }
+      `}
+    >
+      Next
+    </button>
+
+  </div>
+)}
 
       {/* TRANSFER */}
       <TransferModal

@@ -413,7 +413,7 @@
     }
   },
   "uploadlist": {
-    "upload_playlist_title": "Upload your playlist.",
+    "upload_playlist_title": "UPLOAD YOUR PLAYLIST",
     "enter_device_mac": "Enter your device MAC address to continue",
     "device_id_label": "DEVICE ID / MAC ADDRESS",
     "validate_btn": "Validate",

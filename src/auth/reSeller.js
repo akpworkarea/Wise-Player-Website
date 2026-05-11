@@ -18,19 +18,25 @@ export const createReseller = async (data) => {
   }
 };
 
-export const getAllResellerInfo = async () => {
+export const getAllResellerInfo = async (page = 0) => {
   try {
-    const response = await api.get("api/reseller/sub-resellers", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    console.log(response.data);
+    const response = await api.get(
+      `/api/reseller/sub-resellers?page=${page}&size=20`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
     return { success: true, data: response.data };
+
   } catch (error) {
     return {
       success: false,
-      message: error.response?.data?.message || "Failed to create reseller",
+      message:
+        error.response?.data?.message ||
+        "Failed to fetch reseller data",
     };
   }
 };

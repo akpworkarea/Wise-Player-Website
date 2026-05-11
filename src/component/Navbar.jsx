@@ -14,15 +14,63 @@ const Navbar = () => {
   );
 
   const availableLanguages = [
-  { code: 'en', name: t('navbar.languages.en') },
-  { code: 'fr', name: t('navbar.languages.fr') },
-  { code: 'es', name: t('navbar.languages.es') },
-  { code: 'de', name: t('navbar.languages.de') },
-  { code: 'it', name: t('navbar.languages.it') },
-  { code: 'pt', name: t('navbar.languages.pt') },
-  { code: 'nl', name: t('navbar.languages.nl') },
-  { code: 'ar', name: t('navbar.languages.ar') }
-];
+    {
+      code: "en",
+      short: "🇺🇸",
+      name: "English",
+      flag: "🇺🇸",
+      image: "https://flagcdn.com/w40/us.png",
+    },
+    {
+      code: "fr",
+      short: "🇫🇷",
+      name: "Français",
+      flag: "🇫🇷",
+      image: "https://flagcdn.com/w40/fr.png",
+    },
+    {
+      code: "es",
+      short: "🇪🇸",
+      name: "Español",
+      flag: "🇪🇸",
+      image: "https://flagcdn.com/w40/es.png",
+    },
+    {
+      code: "de",
+      short: "🇩🇪",
+      name: "Deutsch",
+      flag: "🇩🇪",
+      image: "https://flagcdn.com/w40/de.png",
+    },
+    {
+      code: "it",
+      short: "🇮🇹",
+      name: "Italiano",
+      flag: "🇮🇹",
+      image: "https://flagcdn.com/w40/it.png",
+    },
+    {
+      code: "pt",
+      short: "🇵🇹",
+      name: "Português",
+      flag: "🇵🇹",
+      image: "https://flagcdn.com/w40/pt.png",
+    },
+    {
+      code: "nl",
+      short: "🇳🇱",
+      name: "Nederlands",
+      flag: "🇳🇱",
+      image: "https://flagcdn.com/w40/nl.png",
+    },
+    {
+      code: "ar",
+      short: "🇸🇦",
+      name: "العربية",
+      flag: "🇸🇦",
+      image: "https://flagcdn.com/w40/sa.png",
+    },
+  ];
 
   const navLinks = [
     { name: t('navbar.nav_home'), path: '/home', icon: <Home size={17} /> },
@@ -76,7 +124,7 @@ const Navbar = () => {
             />
             <div className="leading-none">
               <span className="block text-xl font-black text-[#1a1a1a] tracking-tight">
-                 {t('navbar.logo.title')}
+                {t('navbar.logo.title')}
               </span>
               <span className="block text-[10px] font-bold text-[#800000] tracking-[2.5px] mt-0.5 uppercase">
                 {t('navbar.logo.subtitle')}
@@ -145,49 +193,140 @@ const Navbar = () => {
             </Link>
 
             {/* Language picker */}
-            <div id="lang-dropdown" className="relative">
+            <div
+              id="lang-dropdown"
+              className="relative z-[3000] isolate"
+            >
+              {/* SELECT BUTTON */}
               <button
                 onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
-                className={`
-                  w-10 h-10 rounded-full border-2 bg-white
-                  text-[11px] font-black text-[#1a1a1a]
-                  flex items-center justify-center
-                  transition-all duration-200
-                  ${isLanguageDropdownOpen
-                    ? 'border-[#800000] shadow-[0_0_0_3px_rgba(128,0,0,0.15)]'
-                    : 'border-gray-200 hover:border-[#800000]/40'
-                  }
-                `}
+                className="
+      flex items-center gap-2
+      h-[38px] px-3.5
+      rounded-full
+      border border-gray-200
+      bg-white
+      text-[13px] font-semibold text-gray-800
+      shadow-sm
+      transition-all duration-200
+      hover:shadow-md
+      focus:outline-none
+      focus:ring-2 focus:ring-[#800000]/20
+      appearance-none
+      leading-none
+    "
+                type="button"
               >
-                {currentLang.slice(0, 2)}
+                <span className="text-[16px] leading-none">🌐</span>
+
+                <span className="leading-none">
+                  {
+                    availableLanguages.find(
+                      (lang) => lang.code === i18n.language
+                    )?.short
+                  }
+                </span>
               </button>
 
-              {/* Dropdown */}
+              {/* DROPDOWN */}
               {isLanguageDropdownOpen && (
-                <div className="
-                  absolute top-[calc(100%+10px)] right-0 z-[1100]
-                  bg-white border border-gray-100 rounded-xl shadow-lg
-                  min-w-[130px] overflow-hidden py-1
-                ">
-                  {availableLanguages.map((lang) => {
-                    const isSelected = lang.code === i18n.language;
+                <div
+                  className="
+        absolute right-0 top-[115%]
+        w-[180px]
+        overflow-hidden
+        rounded-2xl
+        border border-gray-200
+        bg-white
+        shadow-2xl
+        z-[99999]
+        isolate
+      "
+                >
+                  {availableLanguages.map((lang, index) => {
+                    const active = i18n.language === lang.code;
+
                     return (
                       <button
                         key={lang.code}
+                        type="button"
                         onClick={() => {
                           i18n.changeLanguage(lang.code);
-                          setCurrentLang(lang.code.toUpperCase());
+                          localStorage.setItem("lang", lang.code);
                           setIsLanguageDropdownOpen(false);
                         }}
                         className={`
-                          w-full text-left px-4 py-2.5 text-sm transition-colors duration-150
-                          ${isSelected
-                            ? 'text-[#800000] font-bold bg-[#800000]/[0.05]'
-                            : 'text-[#1a1a1a] font-medium hover:bg-gray-50'
+              w-full
+              flex items-center justify-between
+              px-3.5 py-2.5
+              transition-all duration-200
+              cursor-pointer
+              text-left
+              ${active
+                            ? "bg-[#f9f5f5]"
+                            : "bg-white hover:bg-gray-50"
                           }
-                        `}
+              ${index !== availableLanguages.length - 1
+                            ? "border-b border-gray-100"
+                            : ""
+                          }
+
+              appearance-none
+              outline-none
+              focus:bg-gray-50
+            `}
                       >
-                        {lang.name}
+                        {/* LEFT */}
+                        <div className="flex items-center gap-3 min-w-0">
+                          <img
+                            src={lang.image}
+                            alt={lang.name}
+                            className="
+                  w-5 h-5
+                  rounded-full
+                  object-cover
+                  shrink-0
+                "
+                            draggable={false}
+                          />
+
+                          <div className="flex flex-col leading-none min-w-0">
+                            <span
+                              className="
+                    text-[13px]
+                    font-bold
+                    text-gray-900
+                    truncate
+                  "
+                            >
+                              {lang.short}
+                            </span>
+
+                            <span
+                              className="
+                    mt-1
+                    text-[11px]
+                    text-gray-500
+                    truncate
+                  "
+                            >
+                              {lang.name}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* ACTIVE INDICATOR */}
+                        {active && (
+                          <div
+                            className="
+                  w-2 h-2
+                  rounded-full
+                  bg-[#800000]
+                  shadow-[0_0_0_3px_rgba(128,0,0,0.12)]
+                  shrink-0
+                "
+                          />
+                        )}
                       </button>
                     );
                   })}
