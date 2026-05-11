@@ -191,7 +191,7 @@ const WisePlayerActivation = () => {
                 className={`
                   w-full py-3 sm:py-3.5 rounded-xl text-sm font-bold transition-all duration-200 active:scale-[0.98] border-0
                   ${canActivate
-                    ? "bg-[#1a1a1a] hover:bg-black text-white shadow-sm"
+                    ? "bg-[#800000] hover:bg-black text-white shadow-sm"
                     : "bg-gray-100 text-gray-400 cursor-not-allowed"
                   }
                 `}

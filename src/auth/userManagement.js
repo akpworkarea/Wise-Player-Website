@@ -3,22 +3,20 @@ import api from './axiosInstance';
 const token = localStorage.getItem("token");
 
 
-export const subscibedUserinfo = async () => {
+export const subscibedUserinfo = async (page = 0) => {
   try {
-    // ya jahan store kiya hai
-
-    const response = await api.get('/api/reseller/users', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const response = await api.get(
+      `/api/reseller/users?page=${page}&size=20`
+    );
 
     return { success: true, data: response.data };
 
   } catch (error) {
-    return { 
-      success: false, 
-      message: error.response?.data?.message || 'Failed to fetch dashboard data'
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        "Failed to fetch dashboard data",
     };
   }
 };

@@ -20,6 +20,7 @@ function UserManagement() {
   const maroonMain = "#800000";
   const { t } = useTranslation();
 
+  const [totalPages, setTotalPages] = useState(1);
   const [devices, setDevices] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newUser, setNewUser] = useState({ deviceId: "" });
@@ -36,47 +37,51 @@ function UserManagement() {
   const [loadingData, setLoadingData] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
 
-  const fetchDashboard = async () => {
-    setLoadingData(true);
+ const fetchDashboard = async (page = currentPage) => {
+  setLoadingData(true);
 
-    let res;
+  let res;
 
-    if (userRole === "SUB_RESELLER") {
-      res = await subResellerUserInfo();
-    } else {
-      res = await subscibedUserinfo();
-    }
+  const backendPage = page - 1;
 
-    if (res.success) {
-      const data = res.data?.content || [];
+  if (userRole === "SUB_RESELLER") {
+    res = await subResellerUserInfo(backendPage);
+  } else {
+    res = await subscibedUserinfo(backendPage);
+  }
 
-      const sortedData = [...data].sort(
-        (a, b) => new Date(b.registeredAt) - new Date(a.registeredAt)
-      );
+  if (res.success) {
+    const data = res.data?.content || [];
 
-      setDevices(sortedData);
-      setTotalUser(data.length);
-      setActiveUser(
-        data.filter((u) => u.deviceStatus === "ACTIVE").length
-      );
-    }
+    const sortedData = [...data].sort(
+      (a, b) =>
+        new Date(b.registeredAt) -
+        new Date(a.registeredAt)
+    );
 
-    setLoadingData(false);
-  };
+    setDevices(sortedData);
 
-  useEffect(() => {
-    fetchDashboard();
-  }, []);
+    setTotalUser(res.data.totalElements);
 
-  useEffect(() => {
-    const totalPages = Math.ceil(filteredDevices.length / itemsPerPage);
+    setTotalPages(res.data.totalPages);
 
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages || 1);
-    }
-  }, [devices, currentPage]);
+    setActiveUser(
+      data.filter((u) => u.deviceStatus === "ACTIVE")
+        .length
+    );
+  }
+
+  setLoadingData(false);
+};
+
+useEffect(() => {
+  fetchDashboard();
+}, []);
+
+useEffect(() => {
+  fetchDashboard(currentPage);
+}, [currentPage]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -176,16 +181,6 @@ function UserManagement() {
     item.deviceId.toLowerCase().includes(search.toLowerCase())
   );
 
-  const indexOfLast = currentPage * itemsPerPage;
-  const indexOfFirst = indexOfLast - itemsPerPage;
-
-  const currentDevices =
-    filteredDevices.length > 0
-      ? filteredDevices.slice(indexOfFirst, indexOfLast)
-      : [];
-
-  const totalPages = Math.ceil(filteredDevices.length / itemsPerPage);
-
   const truncateId = (id, start = 8, end = 5) => {
     if (!id) return "";
     if (id.length <= start + end) return id;
@@ -280,8 +275,8 @@ function UserManagement() {
                       <td className="p-3"><div className="h-6 bg-gray-200 rounded"></div></td>
                     </tr>
                   ))
-                ) : currentDevices.length > 0 ? (
-                  currentDevices.map((item) => (
+                ) : filteredDevices.length > 0 ? (
+                  filteredDevices.map((item) => (
                     <tr key={item.deviceId} className="border-t text-center">
 
                       <td className="px-3 py-3 text-gray-600">
@@ -375,8 +370,8 @@ function UserManagement() {
                   <div className="h-3 bg-gray-200 rounded w-1/3"></div>
                 </div>
               ))
-            ) : currentDevices.length > 0 ? (
-              currentDevices.map((item) => (
+            ) : filteredDevices.length > 0 ? (
+              filteredDevices.map((item) => (
                 <div key={item.deviceId} className="p-4 bg-white rounded-xl shadow space-y-2">
 
                   <div className="flex justify-between items-center">

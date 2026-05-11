@@ -15,18 +15,19 @@ import { useTranslation } from "react-i18next";
 
 function RequestManagement() {
   const { userRole } = useAuth();
-  const {t} = useTranslation()
+  const { t } = useTranslation()
 
   const [requests, setRequests] = useState([]);
   const [tiers, setTiers] = useState([]);
-  const [filter, setFilter] = useState("All");
+  const [filter, setFilter] = useState("ALL");
   const [copied, setCopied] = useState({ id: null, field: null });
   const [showModal, setShowModal] = useState(false);
   const [apiError, setApiError] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
 
   const { refetchDashboard } = useDashboard();
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+
 
   const [newRequest, setNewRequest] = useState({
     deviceId: "",
@@ -34,25 +35,41 @@ function RequestManagement() {
   });
 
   // FETCH REQUESTS
-  const fetchRequests = async () => {
-    const res = await getActivationRequests(userRole);
-    if (!res.success) return;
+const fetchRequests = async (
+  page = currentPage,
+  currentFilter = filter
+) => {
+  const backendPage = page - 1;
 
-    const data = res.data?.content || [];
+  const status =
+    currentFilter === "ALL"
+      ? ""
+      : currentFilter;
 
-    setRequests(
-      data.map((item) => ({
-        id: item.id,
-        status: item.status,
-        createdAt: formatDate(item.createdAt),
-        resellerId: item.resellerId,
-        deviceId: item.deviceId,
-        planName: item.planName,
-        creditsUsed: item.creditsUsed,
-      }))
-    );
-  };
+  const res = await getActivationRequests(
+    userRole,
+    status,
+    backendPage
+  );
 
+  if (!res.success) return;
+
+  const data = res.data?.content || [];
+
+  setRequests(
+    data.map((item) => ({
+      id: item.id,
+      status: item.status,
+      createdAt: formatDate(item.createdAt),
+      resellerId: item.resellerId,
+      deviceId: item.deviceId,
+      planName: item.planName,
+      creditsUsed: item.creditsUsed,
+    }))
+  );
+
+  setTotalPages(res.data.totalPages || 1);
+};
   // FETCH PLANS
   const fetchPlans = async () => {
     const res = await getPlans();
@@ -61,11 +78,14 @@ function RequestManagement() {
     setTiers(res.data.map((p) => p.name));
   };
 
+useEffect(() => {
+  fetchRequests(currentPage, filter);
+  fetchPlans();
+}, [userRole, currentPage, filter]);
+
   useEffect(() => {
-    fetchRequests();
-    fetchPlans();
     setCurrentPage(1);
-  }, [userRole, filter]);
+  }, [filter]);
 
   // COPY
   const copyToClipboard = (text, id, field) => {
@@ -105,19 +125,9 @@ function RequestManagement() {
     // 🔥 THIS IS THE FIX
     await refetchDashboard();
   };
-  // FILTER
-  const filteredRequests =
-    filter === "All"
-      ? requests
-      : requests.filter((r) => r.status === filter.toUpperCase());
+ 
 
-  // pagination logic
-  const indexOfLast = currentPage * itemsPerPage;
-  const indexOfFirst = indexOfLast - itemsPerPage;
 
-  const currentRequests = filteredRequests.slice(indexOfFirst, indexOfLast);
-
-  const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
 
   const maroonMain = "#800000";
 
@@ -140,13 +150,16 @@ function RequestManagement() {
 
       {/* FILTER */}
       <div className="flex gap-2 flex-wrap">
-        {["All", "Pending", "Approved", "Rejected"].map((tab) => (
+        {["ALL", "PENDING", "APPROVED", "REJECTED"].map((tab) => (
           <button
             key={tab}
-            onClick={() => setFilter(tab)}
+            onClick={() => {
+              setFilter(tab);
+              setCurrentPage(1);
+            }}
             className={`px-3 py-1 rounded-md text-sm transition ${filter === tab
-                ? "bg-black text-white"
-                : "bg-gray-200 hover:bg-gray-300"
+              ? "bg-black text-white"
+              : "bg-gray-200 hover:bg-gray-300"
               }`}
           >
             {t(`requests.${tab.toLowerCase()}`)}
@@ -169,8 +182,8 @@ function RequestManagement() {
           </thead>
 
           <tbody>
-            {currentRequests.length > 0 ? (
-              currentRequests.map((req) => (
+            {requests.length > 0 ? (
+              requests.map((req) => (
                 <tr key={req.id} className="border-t text-center">
 
                   <td className="px-4 py-3">
@@ -224,10 +237,10 @@ function RequestManagement() {
                   <td>
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${req.status === "PENDING"
-                          ? "bg-yellow-100 text-yellow-600"
-                          : req.status === "APPROVED"
-                            ? "bg-green-100 text-green-600"
-                            : "bg-red-100 text-red-600"
+                        ? "bg-yellow-100 text-yellow-600"
+                        : req.status === "APPROVED"
+                          ? "bg-green-100 text-green-600"
+                          : "bg-red-100 text-red-600"
                         }`}
                     >
                       {req.status}
@@ -248,8 +261,8 @@ function RequestManagement() {
 
       {/* MOBILE CARDS */}
       <div className="md:hidden space-y-4">
-        {currentRequests.length > 0 ? (
-          currentRequests.map((req) => (
+        {requests.length > 0 ? (
+          requests.map((req) => (
             <div
               key={req.id}
               className="bg-white p-4 rounded-xl shadow"
@@ -261,10 +274,10 @@ function RequestManagement() {
 
                 <span
                   className={`text-xs px-2 py-1 rounded-full ${req.status === "PENDING"
-                      ? "bg-yellow-100 text-yellow-600"
-                      : req.status === "APPROVED"
-                        ? "bg-green-100 text-green-600"
-                        : "bg-red-100 text-red-600"
+                    ? "bg-yellow-100 text-yellow-600"
+                    : req.status === "APPROVED"
+                      ? "bg-green-100 text-green-600"
+                      : "bg-red-100 text-red-600"
                     }`}
                 >
                   {req.status}
@@ -285,29 +298,31 @@ function RequestManagement() {
       </div>
 
       {/* PAGINATION */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((p) => p - 1)}
-            className="border px-3 py-1 rounded disabled:opacity-50"
-          >
-            {t("requests.prev")}
-          </button>
+     {/* PAGINATION */}
+{totalPages > 1 && (
+  <div className="flex justify-center items-center gap-4">
+    <button
+      disabled={currentPage === 1}
+      onClick={() => setCurrentPage((p) => p - 1)}
+      className="border px-3 py-1 rounded disabled:opacity-50"
+    >
+      {t("requests.prev")}
+    </button>
 
-          <span className="text-sm">
-            {t("requests.page")} {currentPage} {t("requests.of")} {totalPages}
-          </span>
+    <span className="text-sm">
+      {t("requests.page")} {currentPage}{" "}
+      {t("requests.of")} {totalPages}
+    </span>
 
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((p) => p + 1)}
-            className="border px-3 py-1 rounded disabled:opacity-50"
-          >
-            {t("requests.next")}
-          </button>
-        </div>
-      )}
+    <button
+      disabled={currentPage === totalPages}
+      onClick={() => setCurrentPage((p) => p + 1)}
+      className="border px-3 py-1 rounded disabled:opacity-50"
+    >
+      {t("requests.next")}
+    </button>
+  </div>
+)}
 
       <AnimatePresence>
         {showModal && (

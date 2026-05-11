@@ -1,14 +1,27 @@
 import api from "../axiosInstance";
 
 // ✅ GET REQUESTS (Unified)
-export const getActivationRequests = async (role) => {
+export const getActivationRequests = async (
+  role,
+  status = "",
+  page = 0
+) => {
   try {
     const url =
       role === "SUB_RESELLER"
         ? "/api/sub-reseller/activation-request"
         : "/api/reseller/activation-request";
 
-    const response = await api.get(url);
+    let apiUrl = url;
+
+    // ✅ status first
+    if (status) {
+      apiUrl += `?status=${status}&page=${page}&size=20`;
+    } else {
+      apiUrl += `?page=${page}&size=20`;
+    }
+
+    const response = await api.get(apiUrl);
 
     return {
       success: true,
@@ -18,7 +31,8 @@ export const getActivationRequests = async (role) => {
     return {
       success: false,
       message:
-        error.response?.data?.message || "Failed to fetch requests",
+        error.response?.data?.message ||
+        "Failed to fetch requests",
     };
   }
 };

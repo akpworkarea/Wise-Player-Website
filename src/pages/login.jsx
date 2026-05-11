@@ -1,508 +1,397 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, InputGroup, Spinner } from 'react-bootstrap';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flame, User, Lock, ArrowRight, Shield, ArrowLeft, Eye, EyeOff } from 'lucide-react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 import { loginReseller } from '../auth/apiservice';
 import { useDashboard } from '../context/dashboardContext';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 
+// ── Animation variants ────────────────────────────────────────
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+};
+
+const viewVariants = {
+  hidden: { opacity: 0, x: 24 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.25, ease: 'easeOut' } },
+  exit:   { opacity: 0, x: -24, transition: { duration: 0.18 } },
+};
+
 const LoginPage = () => {
-    const [isLangOpen, setIsLangOpen] = useState(false);
-    const { t, i18n } = useTranslation();
-    const navigate = useNavigate();
-    const { refetchDashboard } = useDashboard();
-    const { setUserRole } = useAuth();
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const { refetchDashboard } = useDashboard();
+  const { setUserRole } = useAuth();
 
-    const [view, setView] = useState('login');
-    const [loading, setLoading] = useState(false);
-    const [toast, setToast] = useState(null);
+  const [isLangOpen, setIsLangOpen]     = useState(false);
+  const [view, setView]                 = useState('login');
+  const [loading, setLoading]           = useState(false);
+  const [toast, setToast]               = useState(null);
+  const [username, setUsername]         = useState('');
+  const [password, setPassword]         = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
+  const showToast = (msg, type = 'info') => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
-    const showToast = (msg, type = "info") => {
-        setToast({ msg, type });
-        setTimeout(() => setToast(null), 3000);
-    };
+  const availableLanguages = [
+    { code: 'en', name: 'English',    flag: '🇺🇸', image: 'https://flagcdn.com/w40/us.png' },
+    { code: 'fr', name: 'Français',   flag: '🇫🇷', image: 'https://flagcdn.com/w40/fr.png' },
+    { code: 'es', name: 'Español',    flag: '🇪🇸', image: 'https://flagcdn.com/w40/es.png' },
+    { code: 'de', name: 'Deutsch',    flag: '🇩🇪', image: 'https://flagcdn.com/w40/de.png' },
+    { code: 'it', name: 'Italiano',   flag: '🇮🇹', image: 'https://flagcdn.com/w40/it.png' },
+    { code: 'pt', name: 'Português',  flag: '🇵🇹', image: 'https://flagcdn.com/w40/pt.png' },
+    { code: 'nl', name: 'Nederlands', flag: '🇳🇱', image: 'https://flagcdn.com/w40/nl.png' },
+    { code: 'ar', name: 'العربية',    flag: '🇸🇦', image: 'https://flagcdn.com/w40/sa.png' },
+  ];
 
-    const availableLanguages = [
-        {
-            code: "en",
-            short: "🇺🇸",
-            name: "English",
-            flag: "🇺🇸",
-            image: "https://flagcdn.com/w40/us.png",
-        },
-        {
-            code: "fr",
-            short: "🇫🇷",
-            name: "Français",
-            flag: "🇫🇷",
-            image: "https://flagcdn.com/w40/fr.png",
-        },
-        {
-            code: "es",
-            short: "🇪🇸",
-            name: "Español",
-            flag: "🇪🇸",
-            image: "https://flagcdn.com/w40/es.png",
-        },
-        {
-            code: "de",
-            short: "🇩🇪",
-            name: "Deutsch",
-            flag: "🇩🇪",
-            image: "https://flagcdn.com/w40/de.png",
-        },
-        {
-            code: "it",
-            short: "🇮🇹",
-            name: "Italiano",
-            flag: "🇮🇹",
-            image: "https://flagcdn.com/w40/it.png",
-        },
-        {
-            code: "pt",
-            short: "🇵🇹",
-            name: "Português",
-            flag: "🇵🇹",
-            image: "https://flagcdn.com/w40/pt.png",
-        },
-        {
-            code: "nl",
-            short: "🇳🇱",
-            name: "Nederlands",
-            flag: "🇳🇱",
-            image: "https://flagcdn.com/w40/nl.png",
-        },
-        {
-            code: "ar",
-            short: "🇸🇦",
-            name: "العربية",
-            flag: "🇸🇦",
-            image: "https://flagcdn.com/w40/sa.png",
-        },
-    ];
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const result = await loginReseller({ username, password });
+    setLoading(false);
+    if (result.success) {
+      showToast('Success! Redirecting...', 'success');
+      localStorage.setItem('user', JSON.stringify(result.data));
+      setUserRole(result?.data?.role);
+      localStorage.setItem('userName', username);
+      await refetchDashboard();
+      navigate('/dashboard');
+    } else {
+      showToast(result.message || 'Invalid credentials', 'error');
+    }
+  };
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+  const handleForgot = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      showToast('Reset link sent!', 'success');
+    }, 1500);
+  };
 
-        const result = await loginReseller({ username, password });
-        setLoading(false);
+  const currentLang = availableLanguages.find((l) => l.code === i18n.language);
 
-        if (result.success) {
-            showToast('Success! Redirecting...', 'success');
-            localStorage.setItem("user", JSON.stringify(result.data));
-            setUserRole(result?.data?.role);
-            localStorage.setItem('userName', username);
-            await refetchDashboard();
-            navigate('/dashboard');
-        } else {
-            showToast(result.message || 'Invalid credentials', 'error');
-        }
-    };
+  return (
+    <div className="fixed inset-0 bg-[#f4f4f7] flex flex-col">
 
-    const handleForgot = (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            showToast('Reset link sent!', 'success');
-        }, 1500);
-    };
+      {/* ── LANG PICKER ──────────────────────────────────── */}
+      <div className="absolute top-4 right-4 z-50">
+        <button
+          onClick={() => setIsLangOpen(!isLangOpen)}
+          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-black/[0.08] shadow-sm text-sm font-bold text-[#1a1a1a] hover:border-[#800000]/30 transition-all duration-200"
+        >
+          <span className="text-base">🌐</span>
+          <span>{currentLang?.flag}</span>
+        </button>
 
-    return (
-        <div className="auth-wrapper">
-            <div
-                style={{
-                    position: "absolute",
-                    top: "20px",
-                    right: "20px",
-                    zIndex: 3000,
-                }}
+        <AnimatePresence>
+          {isLangOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -8, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.97 }}
+              transition={{ duration: 0.18 }}
+              className="absolute top-[48px] right-0 w-[200px] bg-white rounded-2xl border border-black/[0.06] shadow-xl overflow-hidden z-50"
             >
-                {/* SELECT BUTTON */}
-                <div
-                    onClick={() => setIsLangOpen(!isLangOpen)}
-                    style={{
-                        minWidth: "62px",
-                        height: "42px",
-                        padding: "0 14px",
-                        borderRadius: "30px",
-                        border: "1px solid rgba(255,255,255,0.6)",
-                        background: "transparent",
-                        backdropFilter: "blur(10px)",
-                        WebkitBackdropFilter: "blur(10px)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "8px",
-                        cursor: "pointer",
-                        fontSize: "14px",
-                        fontWeight: "700",
-                        color: "#111827",
-                        boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
-                        transition: "all 0.25s ease",
-                        userSelect: "none",
+              {availableLanguages.map((lang) => {
+                const active = i18n.language === lang.code;
+                return (
+                  <button
+                    key={lang.code}
+                    onClick={() => {
+                      i18n.changeLanguage(lang.code);
+                      localStorage.setItem('lang', lang.code);
+                      setIsLangOpen(false);
                     }}
-                >
-                    <span style={{ fontSize: "16px" }}>🌐</span>
-
-                    <span>
-                        {
-                            availableLanguages.find(
-                                (lang) => lang.code === i18n.language
-                            )?.short
-                        }
-                    </span>
-                </div>
-
-                {/* DROPDOWN */}
-                {isLangOpen && (
-                    <div
-                        style={{
-                            position: "absolute",
-                            top: "52px",
-                            right: 0,
-                            width: "210px",
-                            background: "#ffffff",
-                            borderRadius: "16px",
-                            overflow: "hidden",
-                            boxShadow: "0 20px 40px rgba(0,0,0,0.12)",
-                            border: "1px solid #f1f5f9",
-                            animation: "fadeIn 0.2s ease",
-                        }}
-                    >
-                        {availableLanguages.map((lang) => {
-                            const active = i18n.language === lang.code;
-
-                            return (
-                                <div
-                                    key={lang.code}
-                                    onClick={() => {
-                                        i18n.changeLanguage(lang.code);
-                                        localStorage.setItem("lang", lang.code);
-                                        setIsLangOpen(false);
-                                    }}
-                                    style={{
-                                        padding: "12px 14px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                        cursor: "pointer",
-                                        background: active ? "#f9fafb" : "#fff",
-                                        borderBottom: "1px solid #f8fafc",
-                                        transition: "0.2s",
-                                    }}
-                                >
-                                    {/* LEFT */}
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "12px",
-                                        }}
-                                    >
-                                        <img
-                                            src={lang.image}
-                                            alt={lang.name}
-                                            style={{
-                                                width: "24px",
-                                                height: "24px",
-                                                borderRadius: "50%",
-                                                objectFit: "cover",
-                                                boxShadow: "0 0 0 1px #e5e7eb",
-                                            }}
-                                        />
-
-                                        <div>
-                                            <div
-                                                style={{
-                                                    fontSize: "13px",
-                                                    fontWeight: "700",
-                                                    color: "#111827",
-                                                }}
-                                            >
-                                                {lang.short}
-                                            </div>
-
-                                            <div
-                                                style={{
-                                                    fontSize: "11px",
-                                                    color: "#6b7280",
-                                                }}
-                                            >
-                                                {lang.name}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* ACTIVE DOT */}
-                                    {active && (
-                                        <div
-                                            style={{
-                                                width: "9px",
-                                                height: "9px",
-                                                borderRadius: "50%",
-                                                background: "#800000",
-                                                boxShadow: "0 0 0 4px rgba(128,0,0,0.10)",
-                                            }}
-                                        />
-                                    )}
-                                </div>
-                            );
-                        })}
+                    className={`
+                      w-full flex items-center justify-between px-4 py-3
+                      text-left transition-colors duration-150 border-0
+                      ${active ? 'bg-[#800000]/[0.04]' : 'bg-white hover:bg-gray-50'}
+                    `}
+                  >
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={lang.image}
+                        alt={lang.name}
+                        className="w-6 h-6 rounded-full object-cover border border-gray-200"
+                      />
+                      <div className="text-left">
+                        <p className="text-xs font-bold text-[#1a1a1a] leading-none">{lang.flag}</p>
+                        <p className="text-[11px] text-gray-500 mt-0.5">{lang.name}</p>
+                      </div>
                     </div>
-                )}
+                    {active && (
+                      <div className="w-2 h-2 rounded-full bg-[#800000] shadow-[0_0_0_3px_rgba(128,0,0,0.12)]" />
+                    )}
+                  </button>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* ── CENTER CONTENT ───────────────────────────────── */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4">
+        <div className="w-full max-w-sm">
+
+          {/* Logo */}
+          <motion.div
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.45 }}
+            className="flex flex-col items-center text-center mb-6"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-[#1a1a1a] flex items-center justify-center mb-3 shadow-md">
+              <Flame size={28} fill="#800000" color="#800000" />
             </div>
+            <h2 className="text-2xl font-black text-[#1a1a1a] tracking-tight">
+              WISE <span className="text-[#800000]">PLAYER</span>
+            </h2>
+            <span className="mt-2 px-3 py-1 rounded-full bg-[#1a1a1a] text-white text-[10px] font-bold tracking-widest uppercase">
+              {t('reseller_portal')}
+            </span>
+          </motion.div>
 
-            <Container className="h-100 d-flex flex-column justify-content-between">
+          {/* Card */}
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            className="bg-white rounded-2xl border border-black/[0.06] shadow-sm p-7"
+          >
+            <AnimatePresence mode="wait">
 
-                <div className="flex-grow-1 d-flex align-items-center">
-                    <Row className="justify-content-center w-100">
-                        <Col xs={11} sm={8} md={6} lg={4}>
+              {/* ── LOGIN VIEW ─────────────────────────────── */}
+              {view === 'login' ? (
+                <motion.div
+                  key="login"
+                  variants={viewVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <h5 className="text-lg font-extrabold text-[#1a1a1a] tracking-tight mb-1">
+                    {t('sign_in_title')}
+                  </h5>
+                  <p className="text-sm text-gray-500 mb-6">
+                    {t('sign_in_subtitle')}
+                  </p>
 
-                            {/* LOGO */}
-                            <motion.div
-                                initial={{ y: -20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                className="text-center mb-4"
-                            >
-                                <div className="logo-box">
-                                    <Flame size={28} color="#ff5a5f" />
-                                </div>
+                  <form onSubmit={handleLogin} className="space-y-4">
 
-                                <h2 className="fw-bold mt-3">
-                                    WISE <span className="brand">PLAYER</span>
-                                </h2>
+                    {/* Username */}
+                    <div>
+                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                        {t('username') || 'Username'}
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                          <User size={15} />
+                        </span>
+                        <input
+                          type="text"
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          required
+                          placeholder="Enter username"
+                          className="w-full h-11 pl-10 pr-4 rounded-xl border-2 border-gray-200 bg-white text-sm text-[#1a1a1a] outline-none focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15 transition-colors duration-200 placeholder:text-gray-400"
+                        />
+                      </div>
+                    </div>
 
-                                <div className="badge bg-dark mt-2 small">
-                                    {t('reseller_portal')}
-                                </div>
-                            </motion.div>
+                    {/* Password */}
+                    <div>
+                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                        {t('password') || 'Password'}
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                          <Lock size={15} />
+                        </span>
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          placeholder="Enter password"
+                          className="w-full h-11 pl-10 pr-12 rounded-xl border-2 border-gray-200 bg-white text-sm text-[#1a1a1a] outline-none focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15 transition-colors duration-200 placeholder:text-gray-400"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#800000] transition-colors duration-200"
+                        >
+                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                    </div>
 
-                            {/* CARD */}
-                            <motion.div className="auth-card">
+                    {/* Forgot */}
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setView('forgot')}
+                        className="text-xs font-semibold text-gray-500 hover:text-[#800000] transition-colors duration-150 border-0 bg-transparent"
+                      >
+                        {t('forgot_password')}
+                      </button>
+                    </div>
 
-                                <AnimatePresence mode="wait">
+                    {/* Submit */}
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className={`
+                        w-full h-11 rounded-xl font-bold text-sm border-0
+                        flex items-center justify-center gap-2
+                        transition-all duration-200 active:scale-[0.98]
+                        ${loading
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-[#1a1a1a] hover:bg-black text-white shadow-sm hover:shadow-md cursor-pointer'
+                        }
+                      `}
+                    >
+                      {loading ? (
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                        </svg>
+                      ) : (
+                        <>
+                          {t('Sign_in')}
+                          <ArrowRight size={16} />
+                        </>
+                      )}
+                    </button>
 
-                                    {view === 'login' ? (
-                                        <motion.div key="login">
+                  </form>
 
-                                            <h5 className="fw-bold mb-1">{t('sign_in_title')}</h5>
+                  {/* Register link */}
+                  <p className="text-center text-xs text-gray-500 mt-5">
+                    Don't have an account?{' '}
+                    <button
+                      onClick={() => navigate('/register')}
+                      className="font-bold text-[#800000] hover:text-[#6a0000] transition-colors duration-150 border-0 bg-transparent"
+                    >
+                      {t('Register')}
+                    </button>
+                  </p>
 
-                                            {/* ✅ FIX 1: ADDED SPACE BELOW SUBTITLE */}
-                                            <p className="text-muted small mb-4">
-                                                {t('sign_in_subtitle')}
-                                            </p>
+                </motion.div>
 
-                                            <Form onSubmit={handleLogin}>
+              ) : (
 
-                                                <Form.Group className="mb-3">
-                                                    <InputGroup>
-                                                        <InputGroup.Text><User size={15} /></InputGroup.Text>
-                                                        <Form.Control
-                                                            value={username}
-                                                            onChange={(e) => setUsername(e.target.value)}
-                                                            required
-                                                        />
-                                                    </InputGroup>
-                                                </Form.Group>
+                /* ── FORGOT VIEW ───────────────────────────── */
+                <motion.div
+                  key="forgot"
+                  variants={viewVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <button
+                    onClick={() => setView('login')}
+                    className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-[#800000] transition-colors duration-150 mb-5 border-0 bg-transparent"
+                  >
+                    <ArrowLeft size={14} />
+                    {t('back_to_signin')}
+                  </button>
 
-                                                <Form.Group className="mb-3">
-                                                    <InputGroup>
-                                                        <InputGroup.Text><Lock size={15} /></InputGroup.Text>
-                                                        <Form.Control
-                                                            type={showPassword ? "text" : "password"}
-                                                            value={password}
-                                                            onChange={(e) => setPassword(e.target.value)}
-                                                            required
-                                                        />
+                  <h5 className="text-lg font-extrabold text-[#1a1a1a] tracking-tight mb-1">
+                    {t('recover_password')}
+                  </h5>
+                  <p className="text-sm text-gray-500 mb-6">
+                    {t('recover_subtitle')}
+                  </p>
 
-                                                        {/* ✅ FIX 2: CLEAN EYE ICON ALIGNMENT */}
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setShowPassword(!showPassword)}
-                                                            className="eye-btn"
-                                                        >
-                                                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                                                        </button>
+                  <form onSubmit={handleForgot} className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                        {t('username') || 'Username'}
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                          <User size={15} />
+                        </span>
+                        <input
+                          type="text"
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          required
+                          placeholder="Enter username"
+                          className="w-full h-11 pl-10 pr-4 rounded-xl border-2 border-gray-200 bg-white text-sm text-[#1a1a1a] outline-none focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15 transition-colors duration-200 placeholder:text-gray-400"
+                        />
+                      </div>
+                    </div>
 
-                                                    </InputGroup>
-                                                </Form.Group>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className={`
+                        w-full h-11 rounded-xl font-bold text-sm border-0
+                        flex items-center justify-center gap-2
+                        transition-all duration-200 active:scale-[0.98]
+                        ${loading
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm cursor-pointer'
+                        }
+                      `}
+                    >
+                      {loading ? (
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                        </svg>
+                      ) : t('btn_send_recovery')}
+                    </button>
+                  </form>
 
-                                                <div className="text-end mb-3">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setView('forgot')}
-                                                        className="auth-link border-0 bg-transparent"
-                                                    >
-                                                        {t('forgot_password')}
-                                                    </button>
-                                                </div>
+                </motion.div>
+              )}
 
-                                                <Button type="submit" disabled={loading} className="w-100 premium-btn">
-                                                    {loading ? (
-                                                        <Spinner size="sm" />
-                                                    ) : (
-                                                        <span className="d-flex align-items-center justify-content-center gap-2">
-                                                            {t('Sign_in')}<ArrowRight size={16} />
-                                                        </span>
-                                                    )}
-                                                </Button>
-                                            </Form>
-
-                                            <div className="text-center mt-3 small">
-                                                Don’t have an account?{" "}
-                                                <span className="auth-link" onClick={() => navigate('/register')}>
-                                                    {t('Register')}
-                                                </span>
-                                            </div>
-
-                                        </motion.div>
-                                    ) : (
-
-                                        <motion.div key="forgot">
-
-                                            <button
-                                                onClick={() => setView('login')}
-                                                className="auth-link d-flex align-items-center mb-3"
-                                            >
-                                                <ArrowLeft size={14} className="me-1" />
-                                                {t('back_to_signin')}
-                                            </button>
-
-                                            <h5>{t('recover_password')}</h5>
-                                            <p className="text-muted small">{t('recover_subtitle')}</p>
-
-                                            <Form onSubmit={handleForgot}>
-                                                <Form.Group className="mb-3">
-                                                    <InputGroup>
-                                                        <InputGroup.Text><User size={15} /></InputGroup.Text>
-                                                        <Form.Control
-                                                            value={username}
-                                                            onChange={(e) => setUsername(e.target.value)}
-                                                            required
-                                                        />
-                                                    </InputGroup>
-                                                </Form.Group>
-
-                                                <Button type="submit" disabled={loading} className="w-100 premium-btn">
-                                                    {loading ? <Spinner size="sm" /> : t('btn_send_recovery')}
-                                                </Button>
-                                            </Form>
-
-                                        </motion.div>
-                                    )}
-
-                                </AnimatePresence>
-
-                            </motion.div>
-
-                        </Col>
-                    </Row>
-                </div>
-
-                {/* FOOTER */}
-                <div className="footer-sec d-flex align-items-center justify-content-center gap-1 pb-3">
-                    <Shield size={16} className="text-success" />
-                    <span className="small fw-semibold footer-text">
-                        Authorized Access Only
-                    </span>
-                </div>
-
-            </Container>
-
-            {toast && (
-                <div className={`toast-custom ${toast.type}`}>
-                    {toast.msg}
-                </div>
-            )}
-
-            {/* FIXED STYLES ONLY */}
-            <style>{`
-                .auth-wrapper {
-                    height: 100vh;
-                    background: linear-gradient(135deg, #f8fafc, #fff1f2, #eef6ff);
-                }
-
-                .logo-box {
-                    display: inline-block;
-                    padding: 12px;
-                    border-radius: 14px;
-                    background: #111;
-                }
-
-                .brand { color: #ff5a5f; }
-
-                .auth-card {
-                    background: #fff;
-                    padding: 24px;
-                    border-radius: 18px;
-                    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-                }
-
-                .premium-btn {
-                    background: #000;
-                    border: none;
-                    padding: 11px;
-                    font-weight: 600;
-                    border-radius: 10px;
-                }
-
-                /* ✅ FIXED EYE ICON */
-                .eye-btn {
-                    border: none;
-                    background: #f3f4f6;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 0 12px;
-                    cursor: pointer;
-                    border-left: 1px solid #e5e7eb;
-                }
-
-                .eye-btn:hover {
-                    background: #e5e7eb;
-                }
-
-                .auth-link {
-                    font-size: 13px;
-                    font-weight: 600;
-                    color: #555;
-                    cursor: pointer;
-                }
-
-                .auth-link:hover {
-                    color: #000;
-                    text-decoration: underline;
-                }
-
-                .footer-sec {
-                    padding-bottom: 12px;
-                }
-
-                .toast-custom {
-                    position: fixed;
-                    top: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    padding: 10px 18px;
-                    border-radius: 10px;
-                    color: #fff;
-                }
-
-                .toast-custom.success { background: #16a34a; }
-                .toast-custom.error { background: #dc2626; }
-            `}</style>
+            </AnimatePresence>
+          </motion.div>
 
         </div>
-    );
+      </div>
+
+      {/* ── FOOTER ───────────────────────────────────────── */}
+      <div className="flex items-center justify-center gap-2 py-4 border-t border-black/[0.06] bg-white">
+        <Shield size={15} className="text-green-500" />
+        <span className="text-xs font-semibold text-gray-500">
+          Authorized Access Only
+        </span>
+      </div>
+
+      {/* ── TOAST ────────────────────────────────────────── */}
+      <AnimatePresence>
+        {toast && (
+          <div className="fixed top-5 left-0 right-0 z-[99999] flex justify-center px-4 pointer-events-none">
+            <motion.div
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.25 }}
+              className={`
+                pointer-events-auto px-6 py-3 rounded-xl font-bold text-sm text-white shadow-lg
+                ${toast.type === 'success' ? 'bg-green-600' : toast.type === 'error' ? 'bg-red-600' : 'bg-amber-500'}
+              `}
+            >
+              {toast.msg}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+    </div>
+  );
 };
 
 export default LoginPage;
