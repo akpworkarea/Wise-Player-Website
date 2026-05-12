@@ -2,14 +2,42 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Flame, User, Lock, Eye, EyeOff, ArrowRight,
-  CheckCircle2, Circle, Shield
+  CheckCircle2, Circle, Shield, Home
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { registerReseller } from '../../auth/apiservice';
 import { useTranslation } from 'react-i18next';
 
-// ── MUST be outside Register component — prevents remount on every render ──
-const InputField = ({ label, value, onChange, type = 'text', placeholder, icon: Icon, rightEl }) => (
+// ── Outside component — stable references ─────────────────────
+const availableLanguages = [
+  { code: 'en', name: 'English',    flag: '🇺🇸', image: 'https://flagcdn.com/w40/us.png' },
+  { code: 'fr', name: 'Français',   flag: '🇫🇷', image: 'https://flagcdn.com/w40/fr.png' },
+  { code: 'es', name: 'Español',    flag: '🇪🇸', image: 'https://flagcdn.com/w40/es.png' },
+  { code: 'de', name: 'Deutsch',    flag: '🇩🇪', image: 'https://flagcdn.com/w40/de.png' },
+  { code: 'it', name: 'Italiano',   flag: '🇮🇹', image: 'https://flagcdn.com/w40/it.png' },
+  { code: 'pt', name: 'Português',  flag: '🇵🇹', image: 'https://flagcdn.com/w40/pt.png' },
+  { code: 'nl', name: 'Nederlands', flag: '🇳🇱', image: 'https://flagcdn.com/w40/nl.png' },
+  { code: 'ar', name: 'العربية',    flag: '🇸🇦', image: 'https://flagcdn.com/w40/sa.png' },
+];
+
+const brandFeatures = [
+  { icon: Shield,       text: 'Secure reseller portal'  },
+  { icon: CheckCircle2, text: 'Full dashboard access'   },
+  { icon: Flame,        text: 'Premium streaming tools' },
+];
+
+const getValidations = (password, username) => ({
+  hasSpecial:    /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  hasNumber:     /\d/.test(password),
+  hasLower:      /[a-z]/.test(password),
+  hasUpper:      /[A-Z]/.test(password),
+  isLengthValid: password.length >= 8,
+  usernameLength: username.length >= 1 && username.length <= 30,
+  usernameChars:  /^[a-zA-Z0-9._]*$/.test(username),
+});
+
+// ── InputField outside component to prevent remount on render ─
+const InputField = ({ label, value, onChange, type = 'text', placeholder, icon: Icon, rightEl, maxLength }) => (
   <div>
     <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
       {label}
@@ -23,71 +51,101 @@ const InputField = ({ label, value, onChange, type = 'text', placeholder, icon: 
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        maxLength={maxLength}
         className="w-full h-11 pl-10 pr-10 rounded-xl border-2 border-gray-200 bg-white text-sm text-[#1a1a1a] outline-none focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15 transition-colors duration-200 placeholder:text-gray-300"
       />
       {rightEl && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10">
-          {rightEl}
-        </div>
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10">{rightEl}</div>
       )}
     </div>
   </div>
 );
 
-// ── Language picker dropdown shared between Login & Register ──────────────
-const availableLanguages = [
-  { code: 'en', name: 'English',    flag: '🇺🇸', image: 'https://flagcdn.com/w40/us.png' },
-  { code: 'fr', name: 'Français',   flag: '🇫🇷', image: 'https://flagcdn.com/w40/fr.png' },
-  { code: 'es', name: 'Español',    flag: '🇪🇸', image: 'https://flagcdn.com/w40/es.png' },
-  { code: 'de', name: 'Deutsch',    flag: '🇩🇪', image: 'https://flagcdn.com/w40/de.png' },
-  { code: 'it', name: 'Italiano',   flag: '🇮🇹', image: 'https://flagcdn.com/w40/it.png' },
-  { code: 'pt', name: 'Português',  flag: '🇵🇹', image: 'https://flagcdn.com/w40/pt.png' },
-  { code: 'nl', name: 'Nederlands', flag: '🇳🇱', image: 'https://flagcdn.com/w40/nl.png' },
-  { code: 'ar', name: 'العربية',    flag: '🇸🇦', image: 'https://flagcdn.com/w40/sa.png' },
-];
+// ── TopBar shared component ───────────────────────────────────
+const TopBar = ({ i18n, isLangOpen, setIsLangOpen, navigate }) => {
+  const currentLang = availableLanguages.find((l) => l.code === i18n.language);
+  return (
+    <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+      <button
+        onClick={() => navigate('/home')}
+        className="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-black/[0.08] shadow-sm text-[#1a1a1a] hover:border-[#800000]/40 hover:text-[#800000] transition-all duration-200"
+      >
+        <Home size={16} />
+      </button>
 
-// ── Brand panel feature list ──────────────────────────────────────────────
-const brandFeatures = [
-  { icon: Shield,        text: 'Secure reseller portal' },
-  { icon: CheckCircle2,  text: 'Full dashboard access'  },
-  { icon: Flame,         text: 'Premium streaming tools' },
-];
+      <div className="relative">
+        <button
+          onClick={() => setIsLangOpen(!isLangOpen)}
+          className="flex items-center gap-2 px-3 py-2 rounded-full bg-white border border-black/[0.08] shadow-sm text-sm font-bold text-[#1a1a1a] hover:border-[#800000]/40 transition-all duration-200"
+        >
+          <span className="text-base">🌐</span>
+          <span>{currentLang?.flag}</span>
+        </button>
 
-// ── Validation pill config ────────────────────────────────────────────────
-const getValidations = (password, username) => ({
-  hasSpecial:     /[!@#$%^&*(),.?":{}|<>]/.test(password),
-  hasNumber:      /\d/.test(password),
-  hasLower:       /[a-z]/.test(password),
-  hasUpper:       /[A-Z]/.test(password),
-  isLengthValid:  password.length >= 8,
-  usernameLength: username.length >= 1 && username.length <= 30,
-  usernameChars:  /^[a-zA-Z0-9._]*$/.test(username),
-});
+        <AnimatePresence>
+          {isLangOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -8, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0,  scale: 1    }}
+              exit={{   opacity: 0, y: -8,  scale: 0.96 }}
+              transition={{ duration: 0.16 }}
+              className="absolute top-12 right-0 w-[200px] bg-white rounded-2xl border border-black/[0.06] shadow-xl overflow-hidden"
+            >
+              {availableLanguages.map((lang) => {
+                const active = i18n.language === lang.code;
+                return (
+                  <button
+                    key={lang.code}
+                    onClick={() => {
+                      i18n.changeLanguage(lang.code);
+                      localStorage.setItem('lang', lang.code);
+                      setIsLangOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-4 py-3 border-0 transition-colors duration-150 ${active ? 'bg-[#800000]/[0.04]' : 'bg-white hover:bg-gray-50'}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <img src={lang.image} alt={lang.name} className="w-6 h-6 rounded-full object-cover border border-gray-100" />
+                      <div className="text-left">
+                        <p className="text-xs font-bold text-[#1a1a1a] leading-none">{lang.flag}</p>
+                        <p className="text-[11px] text-gray-400 mt-0.5">{lang.name}</p>
+                      </div>
+                    </div>
+                    {active && <div className="w-2 h-2 rounded-full bg-[#800000] shadow-[0_0_0_3px_rgba(128,0,0,0.12)]" />}
+                  </button>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
 
-// ═════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 const Register = () => {
   const { t, i18n } = useTranslation();
   const navigate     = useNavigate();
 
-  const [isLangOpen,       setIsLangOpen]       = useState(false);
-  const [fullName,         setFullName]          = useState('');
-  const [username,         setUsername]          = useState('');
-  const [password,         setPassword]          = useState('');
-  const [confirmPassword,  setConfirmPassword]   = useState('');
-  const [agree,            setAgree]             = useState(false);
-  const [error,            setError]             = useState('');
-  const [showPassword,     setShowPassword]      = useState(false);
-  const [showConfirm,      setShowConfirm]       = useState(false);
-  const [loading,          setLoading]           = useState(false);
+  const [isLangOpen,      setIsLangOpen]      = useState(false);
+  const [fullName,        setFullName]         = useState('');
+  const [username,        setUsername]         = useState('');
+  const [password,        setPassword]         = useState('');
+  const [confirmPassword, setConfirmPassword]  = useState('');
+  const [agree,           setAgree]            = useState(false);
+  const [error,           setError]            = useState('');
+  const [showPassword,    setShowPassword]     = useState(false);
+  const [showConfirm,     setShowConfirm]      = useState(false);
+  const [loading,         setLoading]          = useState(false);
 
   const v = getValidations(password, username);
 
   const passwordPills = [
-    { label: '8+ chars',     done: v.isLengthValid },
-    { label: 'Uppercase',    done: v.hasUpper      },
-    { label: 'Lowercase',    done: v.hasLower      },
-    { label: 'Number',       done: v.hasNumber     },
-    { label: 'Special char', done: v.hasSpecial    },
+    { label: '8+',       done: v.isLengthValid },
+    { label: 'A-Z',      done: v.hasUpper      },
+    { label: 'a-z',      done: v.hasLower      },
+    { label: '0-9',      done: v.hasNumber     },
+    { label: '!@#',      done: v.hasSpecial    },
   ];
 
   const handleSubmit = async (e) => {
@@ -115,76 +173,24 @@ const Register = () => {
     }
   };
 
-  const currentLang = availableLanguages.find((l) => l.code === i18n.language);
-
   return (
     <div className="min-h-screen bg-[#f4f4f7] flex flex-col lg:flex-row overflow-x-hidden">
 
-      {/* ── LANG PICKER ──────────────────────────────────── */}
-      <div className="absolute top-4 right-4 z-50">
-        <button
-          onClick={() => setIsLangOpen(!isLangOpen)}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-black/[0.08] shadow-sm text-sm font-bold text-[#1a1a1a] hover:border-[#800000]/40 transition-all duration-200"
-        >
-          <span className="text-base">🌐</span>
-          <span>{currentLang?.flag}</span>
-        </button>
+      <TopBar i18n={i18n} isLangOpen={isLangOpen} setIsLangOpen={setIsLangOpen} navigate={navigate} />
 
-        <AnimatePresence>
-          {isLangOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -8, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0,  scale: 1    }}
-              exit={{   opacity: 0, y: -8,  scale: 0.96 }}
-              transition={{ duration: 0.16 }}
-              className="absolute top-12 right-0 w-[200px] bg-white rounded-2xl border border-black/[0.06] shadow-xl overflow-hidden"
-            >
-              {availableLanguages.map((lang) => {
-                const active = i18n.language === lang.code;
-                return (
-                  <button
-                    key={lang.code}
-                    onClick={() => {
-                      i18n.changeLanguage(lang.code);
-                      localStorage.setItem('lang', lang.code);
-                      setIsLangOpen(false);
-                    }}
-                    className={`
-                      w-full flex items-center justify-between px-4 py-3
-                      border-0 transition-colors duration-150
-                      ${active ? 'bg-[#800000]/[0.04]' : 'bg-white hover:bg-gray-50'}
-                    `}
-                  >
-                    <div className="flex items-center gap-3">
-                      <img src={lang.image} alt={lang.name} className="w-6 h-6 rounded-full object-cover border border-gray-100" />
-                      <div className="text-left">
-                        <p className="text-xs font-bold text-[#1a1a1a] leading-none">{lang.flag}</p>
-                        <p className="text-[11px] text-gray-400 mt-0.5">{lang.name}</p>
-                      </div>
-                    </div>
-                    {active && (
-                      <div className="w-2 h-2 rounded-full bg-[#800000] shadow-[0_0_0_3px_rgba(128,0,0,0.12)]" />
-                    )}
-                  </button>
-                );
-              })}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* ── LEFT BRAND PANEL (desktop only) ──────────────── */}
+      {/* ── LEFT BRAND PANEL ─────────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
         animate={{ opacity: 1,  x: 0   }}
         transition={{ duration: 0.55, ease: 'easeOut' }}
-        className="hidden lg:flex lg:w-[38%] bg-[#1a1a1a] flex-col items-center justify-center px-12 py-16 relative overflow-hidden shrink-0"
+        className="hidden lg:flex lg:w-[38%] bg-[#1a1a1a] flex-col items-center justify-between px-12 py-14 relative overflow-hidden shrink-0"
       >
-        {/* Ambient glow */}
+        {/* Glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-[#800000]/15 blur-3xl pointer-events-none" />
 
+        <div />
+
         <div className="relative z-10 text-center w-full max-w-xs">
-          {/* Animated logo */}
           <motion.div
             animate={{ scale: [1, 1.06, 1] }}
             transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
@@ -200,7 +206,6 @@ const Register = () => {
             {t('activation.tagline')}
           </p>
 
-          {/* Feature list */}
           <div className="space-y-3 text-left">
             {brandFeatures.map(({ icon: Icon, text }, i) => (
               <motion.div
@@ -217,260 +222,265 @@ const Register = () => {
               </motion.div>
             ))}
           </div>
-
-          {/* Divider */}
-          <div className="mt-10 pt-8 border-t border-white/[0.06]">
-            <p className="text-[10px] text-gray-600 tracking-[2px] uppercase">
-              © {new Date().getFullYear()} WisePlayer — Premium Access
-            </p>
-          </div>
         </div>
 
-        {/* Corner fold decoration */}
+        {/* Footer inside panel */}
+        <div className="relative z-10 w-full border-t border-white/[0.06] pt-5 text-center">
+          <p className="text-[10px] text-gray-600 tracking-[2px] uppercase">
+            © {new Date().getFullYear()} WisePlayer — Premium Access
+          </p>
+        </div>
+
+        {/* Corner fold */}
         <div className="absolute bottom-0 right-0 w-0 h-0 border-solid border-b-[70px] border-r-[70px] border-b-[#f4f4f7] border-r-transparent border-t-transparent border-l-transparent" />
       </motion.div>
 
       {/* ── RIGHT FORM PANEL ─────────────────────────────── */}
-      <div className="flex-1 flex items-center justify-center px-4 py-14 sm:py-16 lg:py-10 min-h-screen lg:min-h-0">
-        <div className="w-full max-w-md">
+      <div className="flex-1 flex flex-col min-h-screen lg:min-h-0">
 
-          {/* Mobile-only logo */}
-          <motion.div
-            initial={{ y: -16, opacity: 0 }}
-            animate={{ y: 0,   opacity: 1  }}
-            transition={{ duration: 0.4 }}
-            className="flex lg:hidden flex-col items-center mb-8"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-[#1a1a1a] flex items-center justify-center mb-3 shadow-md">
-              <Flame size={28} fill="#800000" color="#800000" />
-            </div>
-            <h2 className="text-2xl font-black text-[#1a1a1a] tracking-tight">
-              WISE <span className="text-[#800000]">PLAYER</span>
-            </h2>
-            <p className="text-xs text-gray-400 tracking-widest uppercase mt-1">
-              {t('activation.tagline')}
-            </p>
-          </motion.div>
+        {/* Scrollable content */}
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 sm:py-14 lg:py-8 overflow-y-auto">
+          <div className="w-full max-w-md">
 
-          {/* Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0  }}
-            transition={{ duration: 0.45, delay: 0.12 }}
-            className="bg-white rounded-2xl border border-black/[0.06] shadow-sm p-7 sm:p-8 relative"
-          >
-            {/* Pulsing badge */}
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-              <motion.div
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ repeat: Infinity, duration: 2.5 }}
-                className="px-5 py-1.5 rounded-full bg-[#800000] text-white text-[10px] font-black tracking-widest uppercase shadow-md shadow-[#800000]/25 whitespace-nowrap"
-              >
-                {t('reg_signup_badge')}
-              </motion.div>
-            </div>
+            {/* Mobile logo */}
+            <motion.div
+              initial={{ y: -16, opacity: 0 }}
+              animate={{ y: 0,   opacity: 1  }}
+              transition={{ duration: 0.4 }}
+              className="flex lg:hidden flex-col items-center mb-8"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-[#1a1a1a] flex items-center justify-center mb-3 shadow-md">
+                <Flame size={28} fill="#800000" color="#800000" />
+              </div>
+              <h2 className="text-2xl font-black text-[#1a1a1a] tracking-tight">
+                WISE <span className="text-[#800000]">PLAYER</span>
+              </h2>
+              <p className="text-xs text-gray-400 tracking-widest uppercase mt-1">
+                {t('activation.tagline')}
+              </p>
+            </motion.div>
 
-            <form onSubmit={handleSubmit} className="space-y-4 mt-3">
-
-              {/* Full name + Username — 2 col on sm+ */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InputField
-                  label={t('reg_fullname')}
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="John Doe"
-                  icon={User}
-                />
-                <InputField
-                  label={t('reg_username')}
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="john_doe"
-                  icon={User}
-                />
+            {/* Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0  }}
+              transition={{ duration: 0.45, delay: 0.1 }}
+              className="bg-white rounded-2xl border border-black/[0.06] shadow-sm p-7 sm:p-8 relative"
+            >
+              {/* Pulsing badge */}
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                <motion.div
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ repeat: Infinity, duration: 2.5 }}
+                  className="px-5 py-1.5 rounded-full bg-[#800000] text-white text-[10px] font-black tracking-widest uppercase shadow-md shadow-[#800000]/25 whitespace-nowrap"
+                >
+                  {t('reg_signup_badge')}
+                </motion.div>
               </div>
 
-              {/* Password */}
-              <InputField
-                label={t('reg_password')}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
-                icon={Lock}
-                rightEl={
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((p) => !p)}
-                    className="text-gray-400 hover:text-[#800000] transition-colors duration-150 border-0 bg-transparent p-0"
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                }
-              />
+              <form onSubmit={handleSubmit} className="space-y-3.5 mt-4">
 
-              {/* Validation pills */}
-              <AnimatePresence>
-                {password && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="flex flex-wrap gap-1.5 overflow-hidden"
-                  >
-                    {passwordPills.map(({ label, done }) => (
-                      <motion.span
-                        key={label}
-                        animate={{ backgroundColor: done ? '#dcfce7' : '#f3f4f6' }}
-                        transition={{ duration: 0.3 }}
-                        className={`inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full ${
-                          done ? 'text-green-700' : 'text-gray-400'
-                        }`}
-                      >
-                        {done ? <CheckCircle2 size={10} /> : <Circle size={10} />}
-                        {label}
-                      </motion.span>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                {/* Full name + Username */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <InputField
+                    label={t('reg_fullname')}
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="John Doe"
+                    icon={User}
+                  />
+                  <div>
+                    <InputField
+                      label={t('reg_username')}
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="john_doe"
+                      icon={User}
+                      maxLength={30}
+                    />
+                    {/* Live username feedback */}
+                    <AnimatePresence>
+                      {username && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.18 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="flex items-center justify-between mt-1.5 px-1">
+                            <span className={`text-[10px] font-semibold flex items-center gap-1 ${v.usernameChars ? 'text-green-600' : 'text-red-500'}`}>
+                              {v.usernameChars
+                                ? <><CheckCircle2 size={10} /> a-z 0-9 . _</>
+                                : <><Circle size={10} /> Only a-z 0-9 . _</>
+                              }
+                            </span>
+                            <span className={`text-[10px] font-bold ${username.length >= 28 ? 'text-red-500' : 'text-gray-400'}`}>
+                              {username.length}/30
+                            </span>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
 
-              {/* Confirm password */}
-              <InputField
-                label={t('reg_confirm_password')}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                type={showConfirm ? 'text' : 'password'}
-                placeholder="••••••••"
-                icon={Lock}
-                rightEl={
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirm((p) => !p)}
-                    className="text-gray-400 hover:text-[#800000] transition-colors duration-150 border-0 bg-transparent p-0"
-                  >
-                    {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                }
-              />
-
-              {/* Match indicator */}
-              <AnimatePresence>
-                {confirmPassword && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className={`text-xs font-semibold flex items-center gap-1.5 -mt-2 ${
-                      password === confirmPassword ? 'text-green-600' : 'text-red-500'
-                    }`}
-                  >
-                    {password === confirmPassword
-                      ? <><CheckCircle2 size={11} /> Passwords match</>
-                      : <><Circle size={11} /> Passwords don't match</>
-                    }
-                  </motion.p>
-                )}
-              </AnimatePresence>
-
-              {/* Error */}
-              <AnimatePresence>
-                {error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -6 }}
-                    animate={{ opacity: 1, y: 0  }}
-                    exit={{ opacity: 0 }}
-                    className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold text-center"
-                  >
-                    {error}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Terms checkbox */}
-              <button
-                type="button"
-                onClick={() => setAgree((a) => !a)}
-                className="flex items-start gap-3 w-full text-left border-0 bg-transparent cursor-pointer"
-              >
-                <motion.div
-                  animate={{
-                    backgroundColor: agree ? '#800000' : '#ffffff',
-                    borderColor:     agree ? '#800000' : '#d1d5db',
-                  }}
-                  transition={{ duration: 0.2 }}
-                  className="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5"
-                >
-                  <AnimatePresence>
-                    {agree && (
-                      <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
-                        transition={{ duration: 0.15 }}
-                      >
-                        <CheckCircle2 size={12} className="text-white" />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-                <span className="text-xs text-gray-500 leading-relaxed">
-                  {t('reg_agree')}{' '}
-                  <span className="font-bold text-[#800000]">{t('reg_terms')}</span>
-                </span>
-              </button>
-
-              {/* Submit */}
-              <motion.button
-                type="submit"
-                disabled={loading}
-                whileHover={!loading ? { scale: 1.02 } : {}}
-                whileTap={!loading ? { scale: 0.98 } : {}}
-                className={`
-                  w-full h-11 rounded-xl font-bold text-sm border-0
-                  flex items-center justify-center gap-2
-                  transition-colors duration-200
-                  ${loading
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm hover:shadow-md cursor-pointer'
+                {/* Password */}
+                <InputField
+                  label={t('reg_password')}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  icon={Lock}
+                  rightEl={
+                    <button type="button" onClick={() => setShowPassword((p) => !p)}
+                      className="text-gray-400 hover:text-[#800000] transition-colors duration-150 border-0 bg-transparent p-0">
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
                   }
-                `}
-              >
-                {loading ? (
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
-                ) : (
-                  <>
-                    {t('reg_create_btn')}
-                    <ArrowRight size={16} />
-                  </>
-                )}
-              </motion.button>
+                />
 
-              {/* Login link */}
-              <p className="text-center text-xs text-gray-500 pt-1">
-                {t('reg_already_member')}{' '}
+                {/* Validation pills — single row, no wrap */}
+                <AnimatePresence>
+                  {password && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
+                        {passwordPills.map(({ label, done }) => (
+                          <motion.span
+                            key={label}
+                            animate={{ backgroundColor: done ? '#dcfce7' : '#f3f4f6' }}
+                            transition={{ duration: 0.25 }}
+                            className={`inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap shrink-0 ${done ? 'text-green-700' : 'text-gray-400'}`}
+                          >
+                            {done ? <CheckCircle2 size={10} /> : <Circle size={10} />}
+                            {label}
+                          </motion.span>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Confirm password */}
+                <InputField
+                  label={t('reg_confirm_password')}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  type={showConfirm ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  icon={Lock}
+                  rightEl={
+                    <button type="button" onClick={() => setShowConfirm((p) => !p)}
+                      className="text-gray-400 hover:text-[#800000] transition-colors duration-150 border-0 bg-transparent p-0">
+                      {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  }
+                />
+
+                {/* Match indicator */}
+                <AnimatePresence>
+                  {confirmPassword && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0  }}
+                      exit={{ opacity: 0 }}
+                      className={`text-xs font-semibold flex items-center gap-1.5 -mt-1 ${password === confirmPassword ? 'text-green-600' : 'text-red-500'}`}
+                    >
+                      {password === confirmPassword
+                        ? <><CheckCircle2 size={11} /> Passwords match</>
+                        : <><Circle size={11} /> Passwords don't match</>
+                      }
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+
+                {/* Error */}
+                <AnimatePresence>
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0  }}
+                      exit={{ opacity: 0 }}
+                      className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold text-center"
+                    >
+                      {error}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Terms */}
                 <button
                   type="button"
-                  onClick={() => navigate('/login')}
-                  className="font-bold text-[#800000] hover:text-[#6a0000] transition-colors duration-150 border-0 bg-transparent"
+                  onClick={() => setAgree((a) => !a)}
+                  className="flex items-start gap-3 w-full text-left border-0 bg-transparent cursor-pointer"
                 >
-                  {t('reg_login_now')}
+                  <motion.div
+                    animate={{
+                      backgroundColor: agree ? '#800000' : '#ffffff',
+                      borderColor:     agree ? '#800000' : '#d1d5db',
+                    }}
+                    transition={{ duration: 0.2 }}
+                    className="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5"
+                  >
+                    <AnimatePresence>
+                      {agree && (
+                        <motion.div
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0, opacity: 0 }}
+                          transition={{ duration: 0.15 }}
+                        >
+                          <CheckCircle2 size={12} className="text-white" />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                  <span className="text-xs text-gray-500 leading-relaxed">
+                    {t('reg_agree')}{' '}
+                    <span className="font-bold text-[#800000]">{t('reg_terms')}</span>
+                  </span>
                 </button>
-              </p>
 
-            </form>
-          </motion.div>
+                {/* Submit */}
+                <motion.button
+                  type="submit"
+                  disabled={loading}
+                  whileHover={!loading ? { scale: 1.02 } : {}}
+                  whileTap={!loading ? { scale: 0.98 } : {}}
+                  className={`w-full h-11 rounded-xl font-bold text-sm border-0 flex items-center justify-center gap-2 transition-colors duration-200
+                    ${loading ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm cursor-pointer'}`}
+                >
+                  {loading
+                    ? <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
+                    : <>{t('reg_create_btn')}<ArrowRight size={16} /></>
+                  }
+                </motion.button>
 
-          {/* Footer */}
-          <div className="flex items-center justify-center gap-2 mt-5">
-            <Shield size={14} className="text-green-500" />
-            <span className="text-xs font-semibold text-gray-400">Authorized Access Only</span>
+                {/* Login link */}
+                <p className="text-center text-xs text-gray-500 pt-0.5">
+                  {t('reg_already_member')}{' '}
+                  <button type="button" onClick={() => navigate('/login')}
+                    className="font-bold text-[#800000] hover:text-[#6a0000] transition-colors duration-150 border-0 bg-transparent">
+                    {t('reg_login_now')}
+                  </button>
+                </p>
+
+              </form>
+            </motion.div>
           </div>
+        </div>
 
+        {/* Fixed footer inside right panel */}
+        <div className="border-t border-black/[0.06] bg-white py-3.5 flex items-center justify-center gap-2 shrink-0">
+          <Shield size={14} className="text-green-500" />
+          <span className="text-xs font-semibold text-gray-500">Authorized Access Only</span>
         </div>
       </div>
     </div>
