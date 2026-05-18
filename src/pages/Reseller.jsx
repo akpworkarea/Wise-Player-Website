@@ -21,41 +21,38 @@ const stagger = {
   viewport:    { once: true },
 };
 
-// ── Pricing tiers ─────────────────────────────────────────────
+// ── Pricing tiers — total computed per row ────────────────────
 const tiers = [
-  { qty: "10",         unitPrice: "€2.50", total: "€25"  },
-  { qty: "10 – 50",   unitPrice: "€2.20", total: "—"    },
-  { qty: "50 – 100",  unitPrice: "€2.00", total: "—"    },
-  { qty: "100 – 200", unitPrice: "€1.75", total: "—"    },
-  { qty: "200 – 500", unitPrice: "€1.50", total: "—"    },
-  { qty: "500 – 1000",unitPrice: "€1.25", total: "—"    },
-  { qty: "1000+",     unitPrice: "€1.00", total: "custom"},
+  { qty: "10",          unitPrice: 2.50, fixedTotal: 25,   fixedQty: 10   },
+  { qty: "10 – 50",    unitPrice: 2.20, fixedTotal: null,  fixedQty: null },
+  { qty: "50 – 100",   unitPrice: 2.00, fixedTotal: null,  fixedQty: null },
+  { qty: "100 – 200",  unitPrice: 1.75, fixedTotal: null,  fixedQty: null },
+  { qty: "200 – 500",  unitPrice: 1.50, fixedTotal: null,  fixedQty: null },
+  { qty: "500 – 1000", unitPrice: 1.25, fixedTotal: null,  fixedQty: null },
+  { qty: "1000+",      unitPrice: 1.00, fixedTotal: null,  fixedQty: null, custom: true },
 ];
 
-const getUnitPrice = (qty) => {
-  if (qty === 10)              return 2.50;
-  if (qty > 10  && qty <= 50)  return 2.20;
-  if (qty > 50  && qty <= 100) return 2.00;
-  if (qty > 100 && qty <= 200) return 1.75;
-  if (qty > 200 && qty <= 500) return 1.50;
-  if (qty > 500 && qty <= 1000)return 1.25;
-  if (qty > 1000)              return 1.00;
-  return 0;
-};
+const getUnitPrice = () => {}; // kept for compatibility
 
 // ─────────────────────────────────────────────────────────────
 const Reseller = () => {
   const { t }    = useTranslation();
   const navigate = useNavigate();
-  const [quantity, setQuantity] = useState("");
+  const [rowQtys, setRowQtys] = useState({});
 
-  const numericQty = Number(quantity);
-  const unitPrice  = getUnitPrice(numericQty);
-  const total      = numericQty * unitPrice;
-  const hasCalc    = numericQty >= 10 && unitPrice > 0;
+  const updateRowQty = (i, val) => setRowQtys((prev) => ({ ...prev, [i]: val }));
+
+  const getRowTotal = (tier, i) => {
+    if (tier.fixedTotal) return { val: tier.fixedTotal, show: true };
+    if (tier.custom) return { val: null, show: false };
+    const q = Number(rowQtys[i]);
+    if (!q || q <= 0) return { val: null, show: false };
+    return { val: +(q * tier.unitPrice).toFixed(2), show: true };
+  };
 
   return (
-    <div className="bg-[#f4f4f7] min-h-screen pb-16">
+    <>
+    <div className="bg-[#f4f4f7] min-h-screen pb-[72px]">
 
       {/* ── HERO CARD ──────────────────────────────────────── */}
       <section className="max-w-2xl mx-auto px-4 pt-10 sm:pt-14">
@@ -250,39 +247,83 @@ const Reseller = () => {
               <thead>
                 <tr className="bg-gray-50 border-b border-black/[0.06]">
                   <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">{t('resellerpage.qty')}</th>
-                  <th className="px-6 py-3 text-center text-xs font-bold text-gray-400 uppercase tracking-widest">{t('resellerpage.unit_price')}</th>
+                  <th className="px-5 py-3 text-center text-xs font-bold text-gray-400 uppercase tracking-widest">{t('resellerpage.unit_price')}</th>
+                  <th className="px-5 py-3 text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Your Qty</th>
                   <th className="px-6 py-3 text-right text-xs font-bold text-gray-400 uppercase tracking-widest">{t('resellerpage.total_label')}</th>
                 </tr>
               </thead>
               <tbody>
-                {tiers.map(({ qty, unitPrice: up, total: tot }, i) => (
-                  <motion.tr
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.05, duration: 0.3 }}
-                    className="border-b border-black/[0.04] hover:bg-[#800000]/[0.02] transition-colors duration-150"
-                  >
-                    <td className="px-6 py-4 font-bold text-[#1a1a1a]">{qty}</td>
-                    <td className="px-6 py-4 text-center font-bold text-[#800000]">{up}</td>
-                    <td className="px-6 py-4 text-right">
-                      {tot === 'custom' ? (
-                        <a
-                          href="https://wa.me/212676076001?text=Hi%20I%20want%20custom%20pricing%20for%201000%2B%20codes"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-green-600 font-bold no-underline hover:text-green-700 transition-colors"
-                        >
-                          <MessageCircle size={14} />
-                          {t('resellerpage.custom')}
-                        </a>
-                      ) : (
-                        <span className="text-gray-600 font-semibold">{tot}</span>
-                      )}
-                    </td>
-                  </motion.tr>
-                ))}
+                {tiers.map((tier, i) => {
+                  const rowTotal = getRowTotal(tier, i);
+                  const isFixed  = !!tier.fixedTotal;
+                  return (
+                    <motion.tr
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.05, duration: 0.3 }}
+                      className="border-b border-black/[0.04] hover:bg-[#800000]/[0.02] transition-colors duration-150"
+                    >
+                      {/* Qty range */}
+                      <td className="px-6 py-3 font-bold text-[#1a1a1a] whitespace-nowrap">{tier.qty}</td>
+
+                      {/* Unit price */}
+                      <td className="px-5 py-3 text-center font-bold text-[#800000]">
+                        €{tier.unitPrice.toFixed(2)}
+                      </td>
+
+                      {/* Your qty input */}
+                      <td className="px-5 py-3 text-center">
+                        {isFixed ? (
+                          <span className="inline-flex items-center justify-center w-20 h-8 rounded-lg bg-gray-100 text-xs font-bold text-gray-400">
+                            {tier.fixedQty}
+                          </span>
+                        ) : tier.custom ? (
+                          <span className="inline-flex items-center justify-center w-20 h-8 rounded-lg bg-gray-100 text-xs font-semibold text-gray-400">
+                            —
+                          </span>
+                        ) : (
+                          <input
+                            type="number"
+                            min="1"
+                            value={rowQtys[i] || ''}
+                            onChange={(e) => updateRowQty(i, e.target.value)}
+                            placeholder="Qty"
+                            className="w-20 h-8 px-2 rounded-lg border-2 border-gray-200 bg-white text-xs font-bold text-center text-[#1a1a1a] outline-none focus:border-[#800000] focus:ring-1 focus:ring-[#800000]/15 transition-colors duration-200 placeholder:text-gray-300"
+                          />
+                        )}
+                      </td>
+
+                      {/* Total */}
+                      <td className="px-6 py-3 text-right">
+                        {tier.custom ? (
+                          <a
+                            href="https://wa.me/212676076001?text=Hi%20I%20want%20custom%20pricing%20for%201000%2B%20codes"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-green-600 font-bold no-underline hover:text-green-700 transition-colors"
+                          >
+                            <MessageCircle size={14} />
+                            {t('resellerpage.custom')}
+                          </a>
+                        ) : rowTotal.show ? (
+                          <motion.span
+                            key={rowTotal.val}
+                            initial={{ opacity: 0, y: -4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="font-black text-[#800000]"
+                          >
+                            €{rowTotal.val.toFixed(2)}
+                          </motion.span>
+                        ) : (
+                          <span className="text-gray-300 font-semibold text-xs">enter qty</span>
+                        )}
+                      </td>
+                    </motion.tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -296,80 +337,36 @@ const Reseller = () => {
               </div>
             ))}
           </div>
+
         </motion.div>
       </section>
-
-      {/* ── CALCULATOR ─────────────────────────────────────── */}
-      <section className="max-w-md mx-auto px-4">
-        <motion.div
-          {...fadeUp}
-          className="bg-white rounded-2xl border border-black/[0.06] shadow-sm p-6 sm:p-8"
-        >
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-9 h-9 rounded-xl bg-[#800000]/[0.08] flex items-center justify-center">
-              <Zap size={18} className="text-[#800000]" />
-            </div>
-            <h3 className="font-extrabold text-[#1a1a1a] text-base tracking-tight">
-              Price Calculator
-            </h3>
-          </div>
-
-          <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
-            Quantity (min. 10)
-          </label>
-          <input
-            type="number"
-            min="10"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            placeholder="e.g. 50"
-            className="w-full h-11 px-4 rounded-xl border-2 border-gray-200 bg-white text-sm text-[#1a1a1a] outline-none focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15 transition-colors duration-200 placeholder:text-gray-300 mb-4"
-          />
-
-          {hasCalc ? (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-xl bg-[#800000]/[0.04] border border-[#800000]/15 p-4 space-y-2"
-            >
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500 font-medium">Unit price</span>
-                <span className="font-bold text-[#800000]">€{unitPrice.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500 font-medium">Quantity</span>
-                <span className="font-bold text-[#1a1a1a]">{numericQty}</span>
-              </div>
-              <div className="h-px bg-[#800000]/15 my-1" />
-              <div className="flex justify-between">
-                <span className="font-extrabold text-[#1a1a1a]">Total</span>
-                <span className="font-black text-[#800000] text-lg">€{total.toFixed(2)}</span>
-              </div>
-            </motion.div>
-          ) : (
-            <div className="rounded-xl bg-gray-50 border border-gray-200 p-4 text-center text-xs text-gray-400 font-semibold">
-              Enter quantity ≥ 10 to see pricing
-            </div>
-          )}
-        </motion.div>
-      </section>
-
-      {/* ── FOOTER ─────────────────────────────────────────── */}
-      <div className="max-w-4xl mx-auto px-4 mt-10 pt-6 border-t border-black/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3">
-        <p className="text-xs text-gray-400 font-semibold uppercase tracking-widest">
-          © {new Date().getFullYear()} WisePlayer
-        </p>
-        <div className="flex items-center gap-5">
-          <a href="#" className="text-xs font-semibold text-gray-400 uppercase tracking-wide hover:text-[#800000] transition-colors duration-150 no-underline">
-            {t('playlist.footer_privacy')}
-          </a>
-          <a href="#" className="text-xs font-semibold text-gray-400 uppercase tracking-wide hover:text-[#800000] transition-colors duration-150 no-underline">
-            {t('playlist.footer_terms')}
-          </a>
-        </div>
-      </div>
 
     </div>
+
+      {/* ── FOOTER — fixed to bottom ──────────────────────── */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-black/[0.06] py-3 px-4 z-50">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-1.5 max-w-4xl mx-auto">
+          <p className="text-xs text-gray-400 font-medium">
+            &copy; {new Date().getFullYear()} {t('playlist.footerCopyRight')}
+          </p>
+          <div className="flex items-center gap-4">
+            {[
+              t('playlist.footer_privacy'),
+              t('playlist.footer_terms'),
+              t('playlist.footer_helpdesk'),
+            ].map((label) => (
+              <a
+                key={label}
+                href="#"
+                className="text-xs font-semibold text-gray-400 uppercase tracking-wide hover:text-[#800000] transition-colors duration-150 no-underline"
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
