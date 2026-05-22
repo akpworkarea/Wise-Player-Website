@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { UserPlus, Pencil } from "lucide-react";
-import { motion } from "framer-motion";
+import { UserPlus, Pencil, Search, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { MdClose } from "react-icons/md";
 import {
   createReseller,
@@ -18,79 +18,61 @@ const SubresellerDashboard = () => {
 
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-
   const [openModel, setOpenModel] = useState(false);
   const [transferModal, setTransferModal] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
-
-  // EDIT STATE
   const [editModal, setEditModal] = useState(false);
   const [editUserId, setEditUserId] = useState(null);
-  const [editData, setEditData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-  });
-
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-    fullName: "",
-  });
-
+  const [editData, setEditData] = useState({ fullName: "", email: "", password: "" });
+  const [formData, setFormData] = useState({ username: "", password: "", fullName: "" });
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-
-  const maroonMain = "#800000";
-
-  // FETCH
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchField, setSearchField] = useState("all");
 
-const fetchdata = async (page = currentPage) => {
-  try {
-    const backendPage = page - 1;
+  // ── Fetch — clean replace per page (no merge needed, backend is stable) ──
+  const fetchdata = async (page = currentPage) => {
+    try {
+      const res = await getAllResellerInfo(page - 1);
+      const incoming = res?.data?.content ?? [];
+      setTotalPages(res?.data?.totalPages || 1);
+      // Simple replace — each page is its own dataset
+      setUsers(Array.isArray(incoming) ? incoming : []);
+    } catch (err) {
+      console.error(err);
+      setUsers([]);
+    }
+  };
 
-    const res = await getAllResellerInfo(backendPage);
+  // Fetch when page changes
+  useEffect(() => {
+    fetchdata(currentPage);
+  }, [currentPage]);
 
-    const usersData = res?.data?.content ?? [];
-
-    setUsers(Array.isArray(usersData) ? usersData : []);
-
-    setTotalPages(res?.data?.totalPages || 1);
-
-  } catch (err) {
-    console.error(err);
-    setUsers([]);
-  }
-};
-
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, searchField]);
+  // ── Client-side search ──
+  const filteredUsers = users.filter((user) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    if (searchField === "name") return user.fullName?.toLowerCase().includes(q);
+    if (searchField === "username") return user.username?.toLowerCase().includes(q);
+    if (searchField === "id") return user.id?.toLowerCase().includes(q);
+    if (searchField === "status") return (user.active ? "active" : "inactive").includes(q);
+    return (
+      user.fullName?.toLowerCase().includes(q) ||
+      user.username?.toLowerCase().includes(q) ||
+      user.id?.toLowerCase().includes(q)
+    );
+  });
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     setCopiedId(text);
-
-    setTimeout(() => {
-      setCopiedId(null);
-    }, 1500);
-  };
-
-useEffect(() => {
-  fetchdata(currentPage);
-}, [currentPage]);
-
-  // CREATE
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const res = await createReseller(formData);
-
-    if (res.success) {
-      setOpenModel(false);
-      setFormData({ username: "", password: "", fullName: "" });
-      await fetchdata();
-      await refetchDashboard();
-    } else {
-      setError(res.message);
-    }
+    setTimeout(() => setCopiedId(null), 1500);
   };
 
   const truncateId = (id, start = 8, end = 5) => {
@@ -99,40 +81,42 @@ useEffect(() => {
     return `${id.slice(0, start)}...${id.slice(-end)}`;
   };
 
-
-  // EDIT OPEN
-  const handleEditOpen = (user) => {
-    setEditUserId(user.id);
-    setEditData({
-      fullName: user.fullName || "",
-      email: user.email || "",
-      password: "",
-    });
-    setEditModal(true);
-  };
-
-  // UPDATE
-  const handleUpdate = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const payload = {
-      fullName: editData.fullName,
-      email: editData.email,
-    };
-
-    if (editData.password) payload.password = editData.password;
-
-    const res = await updateSubReseller(editUserId, payload);
-
+    const res = await createReseller(formData);
     if (res.success) {
-      setEditModal(false);
-      await fetchdata();
+      setOpenModel(false);
+      setFormData({ username: "", password: "", fullName: "" });
+      setError("");
+      setCurrentPage(1);          // go back to page 1
+      fetchdata(1);               // fetch page 1 fresh
+      await refetchDashboard();
     } else {
       setError(res.message);
     }
   };
 
-  // TRANSFER
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    const payload = { fullName: editData.fullName, email: editData.email };
+    if (editData.password) payload.password = editData.password;
+    const res = await updateSubReseller(editUserId, payload);
+    if (res.success) {
+      setEditModal(false);
+      setError("");
+      fetchdata(currentPage);     // refresh current page in-place
+    } else {
+      setError(res.message);
+    }
+  };
+
+
+  const handleEditOpen = (user) => {
+    setEditUserId(user.id);
+    setEditData({ fullName: user.fullName || "", email: user.email || "", password: "" });
+    setEditModal(true);
+  };
+
   const handleOpenTransfer = (user) => {
     setSelectedUser({
       fullName: user.fullName,
@@ -143,383 +127,516 @@ useEffect(() => {
     setTransferModal(true);
   };
 
-  
-
   const getStatusBadge = (active) => (
-    <span
-      className={`px-2 py-1 text-xs rounded-full font-semibold ${active
-        ? "bg-green-100 text-green-700"
-        : "bg-red-100 text-red-600"
-        }`}
-    >
+    <span className={`px-2.5 py-1 text-xs rounded-full font-bold ${active ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"
+      }`}>
       {active ? t("active") : t("inactive")}
     </span>
   );
 
+  const CopyButton = ({ value }) => (
+    <div className="relative inline-flex">
+      <button
+        onClick={() => copyToClipboard(value)}
+        className="text-[10px] border border-gray-300 px-2 py-0.5 rounded hover:bg-red-50 hover:border-[#800000] hover:text-[#800000] transition text-gray-500"
+      >
+        {copiedId === value ? t("admin_dashboard.copied") : t("admin_dashboard.copy")}
+      </button>
+      {copiedId === value && (
+        <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap z-10">
+          {t("admin_dashboard.copied")}
+        </span>
+      )}
+    </div>
+  );
+
+  const inputCls = "w-full px-4 py-3 bg-[#f4f4f7] border border-gray-200 rounded-xl focus:border-[#800000] focus:outline-none transition text-sm font-semibold text-gray-800";
+
+  const searchFields = [
+    { value: "all", label: t("all") || "All" },
+    { value: "name", label: t("name") || "Name" },
+    { value: "username", label: t("username") || "Username" },
+    { value: "id", label: t("id_label") || "ID" },
+    { value: "status", label: t("status") || "Status" },
+  ];
+
   return (
-    <div className="min-h-screen w-full bg-[#f4f4f7] p-4">
+    <div className="min-h-screen w-full bg-[#f4f4f7] p-4 space-y-5">
 
-      {/* HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      {/* ══════════════════════════════════════════════
+          HEADER: title LEFT  |  search + button RIGHT
+      ══════════════════════════════════════════════ */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
-        <div>
-          <h3 className="font-bold" style={{ color: maroonMain }}>
+        {/* Title — left */}
+        <div className="shrink-0">
+          <h3 className="font-bold text-[#800000] text-lg">
             {t("subreseller_management")}
           </h3>
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 text-sm mt-0.5">
             {t("manage_subreseller")}
           </p>
         </div>
 
-        <button
-          onClick={() => setOpenModel(true)}
-          className="bg-[#800000] text-white px-4 py-2 rounded-[10px] flex items-center gap-2 hover:bg-[#660000] transition"
-        >
-          <UserPlus size={16} />
-          {t("create_subreseller")}
-        </button>
+        {/* Search + Create — right */}
+        <div className="flex flex-col sm:flex-row gap-3 lg:items-center">
 
+          {/* Search bar — select + input as one pill */}
+          <div className="flex flex-1 rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm min-w-0">
+
+            {/* Custom styled select with maroon chevron */}
+            <div className="relative shrink-0 border-r border-gray-200">
+              <select
+                value={searchField}
+                onChange={(e) => setSearchField(e.target.value)}
+                className="appearance-none bg-gray-50 text-xs font-bold text-gray-600 pl-3 pr-7 py-2.5 focus:outline-none cursor-pointer h-full"
+              >
+                {searchFields.map((f) => (
+                  <option key={f.value} value={f.value}>{f.label}</option>
+                ))}
+              </select>
+              {/* Maroon chevron replaces default browser arrow */}
+              <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#800000]">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                  <path
+                    d="M2 3.5L5 6.5L8 3.5"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Text input */}
+            <div className="relative flex-1 min-w-0">
+              <Search
+                size={13}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={`Search by ${searchFields.find(f => f.value === searchField)?.label?.toLowerCase()}...`}
+                className="w-full pl-8 pr-7 py-2.5 text-sm text-gray-700 bg-white focus:outline-none placeholder-gray-400"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#800000] transition"
+                >
+                  <X size={13} />
+                </button>
+              )}
+            </div>
+
+          </div>
+
+          {/* Create button */}
+          <button
+            onClick={() => setOpenModel(true)}
+            className="flex items-center justify-center gap-2 bg-[#800000] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#6a0000] transition active:scale-95 shrink-0 whitespace-nowrap"
+          >
+            <UserPlus size={16} />
+            {t("create_subreseller")}
+          </button>
+
+        </div>
       </div>
 
-      {/* TABLE */}
-      <div className="hidden md:block bg-white rounded-xl shadow border p-2 overflow-x-auto">
-        <table className="table table-hover text-center align-middle mb-0">
+      {/* Active filter pill */}
+      {searchQuery && (
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-500">
+            {filteredUsers.length} result{filteredUsers.length !== 1 ? "s" : ""} for
+          </span>
+          <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
+            {searchFields.find(f => f.value === searchField)?.label}: "{searchQuery}"
+            <button onClick={() => setSearchQuery("")}>
+              <X size={11} />
+            </button>
+          </span>
+        </div>
+      )}
 
-          <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
-            <tr>
-              <th className="text-start">{t("user_details")}</th>
-              <th>{t("status")}</th>
-              <th>{t("created")}</th>
-              <th>{t("coin")}</th>
-              <th>{t("action")}</th>
+      {/* ══════════════════════════════════════════════
+          DESKTOP + TABLET TABLE  (md+)
+          table-fixed + colgroup = zero horizontal scroll
+      ══════════════════════════════════════════════ */}
+      <div className="hidden md:block bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+        <table className="w-full text-sm table-fixed">
+          <colgroup>
+            <col style={{ width: "36%" }} />
+            <col style={{ width: "12%" }} />
+            <col style={{ width: "17%" }} />
+            <col style={{ width: "10%" }} />
+            <col style={{ width: "25%" }} />
+          </colgroup>
+
+          <thead>
+            <tr className="bg-gray-100 border-b border-gray-200">
+              <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600">
+                {t("user_details")}
+              </th>
+              <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-gray-600">
+                {t("status")}
+              </th>
+              <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-gray-600">
+                {t("created")}
+              </th>
+              <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-gray-600">
+                {t("coin")}
+              </th>
+              <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-gray-600">
+                {t("action")}
+              </th>
             </tr>
           </thead>
 
-          <tbody>
-            {users.map((user) => (
-              <tr className="border-t hover:bg-gray-50 transition" key={user.id}>
-                <td className="px-4 py-3 text-left">
-                  <div className="font-semibold">{user.fullName}</div>
-                  <div className="text-xs text-gray-500 flex items-center gap-2 flex-wrap">
-                    {t("username_label")}:
-                    <span className="text-blue-600">{user.username}</span>
-
-                    <div className="relative">
-                      <button
-                        onClick={() => copyToClipboard(user.username)}
-                        className="text-[10px] border px-2 py-0.5 rounded text-black-500 hover:bg-blue-50 transition"
-                      >
-                        Copy
-                      </button>
-
-                      {copiedId === user.username && (
-                        <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
-                          Copied!
-                        </span>
-                      )}
+          <tbody className="divide-y divide-gray-100">
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map((user, idx) => (
+                <tr
+                  key={user.id}
+                  className={`group transition-colors duration-150 hover:bg-red-50/30 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50/60"
+                    }`}
+                >
+                  {/* User details */}
+                  <td className="px-4 py-3.5 text-left">
+                    <div className="font-bold text-gray-800 text-sm truncate mb-1">
+                      {user.fullName}
                     </div>
-                  </div>
-                  <div className="text-xs text-gray-500 flex items-center gap-2 flex-wrap">
-                    {t("id_label")}:
-                    <span
-                      className="text-blue-600 cursor-pointer"
-                      title={user.id}
-                    >
-                      {truncateId(user.id)}
+
+                    {/* Username */}
+                    <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+                      <span className="text-[11px] text-gray-400 font-medium">
+                        {t("username_label")}:
+                      </span>
+                      <span className="text-[11px] text-blue-600 font-semibold">
+                        {user.username}
+                      </span>
+                      <CopyButton value={user.username} />
+                    </div>
+
+                    {/* ID — maroon matching dashboard device ID brand color */}
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[11px] text-gray-400 font-medium">
+                        {t("id_label")}:
+                      </span>
+                      <span
+                        className="text-[11px] text-[#800000] font-semibold cursor-default"
+                        title={user.id}
+                      >
+                        {truncateId(user.id)}
+                      </span>
+                      <CopyButton value={user.id} />
+                    </div>
+                  </td>
+
+                  {/* Status */}
+                  <td className="px-4 py-3.5 text-center">
+                    {getStatusBadge(user.active)}
+                  </td>
+
+                  {/* Created */}
+                  <td className="px-4 py-3.5 text-center text-xs text-gray-500">
+                    {formatDate(user.createdAt)}
+                  </td>
+
+                  {/* Coins */}
+                  <td className="px-4 py-3.5 text-center">
+                    <span className="font-black text-[#800000] text-sm">
+                      {user.credits ?? 0}
                     </span>
+                  </td>
 
-                    <div className="relative">
+                  {/* Actions */}
+                  <td className="px-4 py-3.5 text-center">
+                    <div className="flex justify-center gap-2">
                       <button
-                        onClick={() => copyToClipboard(user.id)}
-                        className="text-[10px] border px-2 py-0.5 rounded text-black-500 hover:bg-blue-50 transition"
+                        onClick={() => handleOpenTransfer(user)}
+                        className="px-3 py-1.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] text-xs font-bold transition active:scale-95 shadow-sm"
                       >
-                        Copy
+                        {t("transfer")}
                       </button>
-
-                      {copiedId === user.id && (
-                        <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
-                          Copied!
-                        </span>
-                      )}
+                      <button
+                        onClick={() => handleEditOpen(user)}
+                        className="p-1.5 rounded-lg border border-gray-200 hover:border-[#800000] hover:text-[#800000] hover:bg-red-50 text-gray-500 transition active:scale-95"
+                        title={t("edit")}
+                      >
+                        <Pencil size={13} />
+                      </button>
                     </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="py-12 text-center">
+                  <div className="flex flex-col items-center gap-2 text-gray-400">
+                    <Search size={28} className="opacity-40" />
+                    <p className="font-semibold text-sm">
+                      {searchQuery ? `No results for "${searchQuery}"` : t("no_data")}
+                    </p>
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery("")}
+                        className="text-xs text-[#800000] font-bold hover:underline"
+                      >
+                        Clear search
+                      </button>
+                    )}
                   </div>
                 </td>
-
-                <td>{getStatusBadge(user.active)}</td>
-                <td>{formatDate(user.createdAt)}</td>
-
-                <td className="font-semibold text-gray-800">
-                  {user.credits ?? 0}
-                </td>
-
-                {/* ✅ FIXED ACTION COLUMN */}
-                <td>
-                  <div className="flex justify-center gap-2">
-
-                    <button
-                      onClick={() => handleOpenTransfer(user)}
-                      className="px-3 py-1.5 rounded-md bg-[#800000] text-white hover:bg-[#660000] text-xs"
-                    >
-                      💰 {t("transfer")}
-                    </button>
-
-                    <button
-                      onClick={() => handleEditOpen(user)}
-                      className="px-3 py-1.5 rounded-md border border-gray-300 hover:bg-gray-100 text-xs"
-                    >
-                      <Pencil size={12} />
-                    </button>
-
-                  </div>
-                </td>
-
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* mobile view */}
-
-      <div className="block md:hidden space-y-4 p-2">
-        {users.map((user) => (
-          <div key={user.id} className="p-4 bg-white rounded-xl shadow space-y-3">
-
-            {/* TOP ROW */}
-            <div className="flex justify-between items-center">
-              <span className="font-semibold text-sm break-words">
-                {user.fullName}
-              </span>
-
-              {getStatusBadge(user.active)}
-            </div>
-
-            {/* DETAILS */}
-            <div className="text-sm text-gray-600 space-y-1">
-
-              <p className="flex items-center gap-2 flex-wrap">
-                <span className="font-medium">ID:</span>
-
-                <span className="text-blue-800">
-                  {truncateId(user.id)}
+      {/* ══════════════════════════════════════════════
+          MOBILE CARDS  (< md)
+      ══════════════════════════════════════════════ */}
+      <div className="md:hidden space-y-3">
+        {filteredUsers.length > 0 ? (
+          filteredUsers.map((user) => (
+            <div
+              key={user.id}
+              className="bg-white p-4 rounded-xl shadow border border-gray-200 space-y-3"
+            >
+              {/* Top: name + status */}
+              <div className="flex justify-between items-center">
+                <span className="font-bold text-sm text-gray-800 truncate pr-2">
+                  {user.fullName}
                 </span>
+                {getStatusBadge(user.active)}
+              </div>
 
-                <div className="relative">
-                  <button
-                    onClick={() => copyToClipboard(user.id)}
-                    className="text-[10px] border px-2 py-0.5 rounded text-black-500 hover:bg-blue-50 transition"
+              {/* Details */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-medium text-gray-500">ID:</span>
+                  <span
+                    className="text-xs text-[#800000] font-semibold"
+                    title={user.id}
                   >
-                    Copy
-                  </button>
-
-                  {copiedId === user.id && (
-                    <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
-                      Copied!
-                    </span>
-                  )}
+                    {truncateId(user.id)}
+                  </span>
+                  <CopyButton value={user.id} />
                 </div>
-              </p>
-
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-medium">{t("username_label")}:</span>
-                <span className="text-blue-800">{user.username}</span>
-
-                <div className="relative">
-                  <button
-                    onClick={() => copyToClipboard(user.username)}
-                    className="text-[10px] border px-2 py-0.5 rounded text-black-500 hover:bg-blue-50"
-                  >
-                    Copy
-                  </button>
-
-                  {copiedId === user.username && (
-                    <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap">
-                      Copied!
-                    </span>
-                  )}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-medium text-gray-500">
+                    {t("username_label")}:
+                  </span>
+                  <span className="text-xs text-blue-600 font-semibold">
+                    {user.username}
+                  </span>
+                  <CopyButton value={user.username} />
+                </div>
+                <div className="flex items-center gap-4 flex-wrap">
+                  <p className="text-xs text-gray-500">
+                    <span className="font-medium text-gray-600">{t("created")}:</span>{" "}
+                    {formatDate(user.createdAt)}
+                  </p>
+                  <p className="text-xs">
+                    <span className="font-medium text-gray-600">{t("coin")}:</span>{" "}
+                    <span className="font-black text-[#800000]">{user.credits ?? 0}</span>
+                  </p>
                 </div>
               </div>
 
-              <p>
-                <span className="font-medium">{t("created")}:</span>{" "}
-                {formatDate(user.createdAt)}
-              </p>
-
-              <p>
-                <span className="font-medium">{t("coin")}:</span>{" "}
-                {user.credits ?? 0}
-              </p>
-
+              {/* Actions */}
+              <div className="flex gap-2 pt-1">
+                <button
+                  onClick={() => handleOpenTransfer(user)}
+                  className="flex-1 py-2 rounded-xl bg-[#800000] text-white text-sm font-bold hover:bg-[#6a0000] transition active:scale-95"
+                >
+                  {t("transfer")}
+                </button>
+                <button
+                  onClick={() => handleEditOpen(user)}
+                  className="flex-1 py-2 rounded-xl border border-gray-200 text-sm font-semibold hover:border-[#800000] hover:text-[#800000] hover:bg-red-50 transition active:scale-95"
+                >
+                  {t("edit")}
+                </button>
+              </div>
             </div>
-
-            {/* ACTIONS */}
-            <div className="flex gap-2 pt-2">
+          ))
+        ) : (
+          <div className="flex flex-col items-center gap-2 py-12 text-gray-400">
+            <Search size={28} className="opacity-40" />
+            <p className="font-semibold text-sm">
+              {searchQuery ? `No results for "${searchQuery}"` : t("no_data")}
+            </p>
+            {searchQuery && (
               <button
-                onClick={() => handleOpenTransfer(user)}
-                className="flex-1 py-2 rounded-md bg-[#800000] text-white text-sm"
+                onClick={() => setSearchQuery("")}
+                className="text-xs text-[#800000] font-bold hover:underline"
               >
-                {t("transfer")}
+                Clear search
               </button>
-
-              <button
-                onClick={() => handleEditOpen(user)}
-                className="flex-1 py-2 rounded-md border text-sm"
-              >
-                {t("edit")}
-              </button>
-            </div>
-
+            )}
           </div>
-        ))}
+        )}
       </div>
 
-      {/* CREATE MODAL */}
-      {openModel && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black/70 z-50">
-          <motion.form
-            onSubmit={handleSubmit}
-            className="bg-white p-4 rounded-xl shadow"
-            style={{ width: "400px" }}
+      {/* ── PAGINATION ── */}
+      {totalPages > 1 && !searchQuery && (
+        <div className="flex justify-center items-center gap-3 p-3 flex-wrap">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => p - 1)}
+            className="text-xs border border-gray-300 px-3 py-1.5 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
           >
-            <div className="flex justify-content-between mb-3">
-              <h5>{t("create_subreseller")}</h5>
-              <MdClose onClick={() => setOpenModel(false)} />
-            </div>
-
-            {error && <div className="text-danger">{error}</div>}
-
-            <input
-              className="form-control my-2"
-              placeholder={t("username")}
-              value={formData.username}
-              onChange={(e) =>
-                setFormData({ ...formData, username: e.target.value })
-              }
-            />
-
-            <input
-              className="form-control my-2"
-              type="password"
-              placeholder={t("password")}
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-            />
-
-            <input
-              className="form-control my-2"
-              placeholder={t("full_name")}
-              value={formData.fullName}
-              onChange={(e) =>
-                setFormData({ ...formData, fullName: e.target.value })
-              }
-            />
-
-            <button className="btn btn-primary w-100 mt-2">
-              {t("submit")}
-            </button>
-          </motion.form>
+            {t("transaction.prev")}
+          </button>
+          <span className="text-sm font-semibold text-gray-700">
+            {t("transaction.page")} {currentPage} {t("transaction.of")} {totalPages}
+          </span>
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((p) => p + 1)}
+            className="text-xs border border-gray-300 px-3 py-1.5 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+          >
+            {t("transaction.next")}
+          </button>
         </div>
       )}
 
-      {/* EDIT MODAL */}
-      {editModal && (
-        <div className="position-fixed top-0 start-0 w-100 h-100 flex justify-content-center align-items-center"
-          style={{ background: "rgba(0,0,0,0.7)", zIndex: 99999 }}>
-          <motion.form
-            onSubmit={handleUpdate}
-            className="bg-white p-4 rounded-xl shadow"
-            style={{ width: "400px" }}
+      {/* ── CREATE MODAL ── */}
+      <AnimatePresence>
+        {openModel && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
           >
-            <div className="flex justify-content-between mb-3">
-              <h5>{t("update")}</h5>
-              <MdClose onClick={() => setEditModal(false)} />
-            </div>
+            <motion.div
+              initial={{ scale: 0.95, y: 16 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 16 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+            >
+              <div className="bg-[#800000] px-6 py-4 flex items-center justify-between">
+                <h5 className="text-white font-bold text-base">
+                  {t("create_subreseller")}
+                </h5>
+                <button
+                  onClick={() => { setOpenModel(false); setError(""); }}
+                  className="text-white hover:bg-white/20 p-1.5 rounded-full transition"
+                >
+                  <MdClose size={20} />
+                </button>
+              </div>
+              <form onSubmit={handleSubmit} className="p-6 space-y-3">
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-2 rounded-lg">
+                    {error}
+                  </div>
+                )}
+                <input
+                  className={inputCls}
+                  placeholder={t("username")}
+                  value={formData.username}
+                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                />
+                <input
+                  className={inputCls}
+                  type="password"
+                  placeholder={t("password")}
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                />
+                <input
+                  className={inputCls}
+                  placeholder={t("full_name")}
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                />
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-[#800000] text-white font-bold rounded-xl hover:bg-[#6a0000] transition active:scale-95 mt-1"
+                >
+                  {t("submit")}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-            <input
-              className="form-control my-2"
-              value={editData.fullName}
-              onChange={(e) =>
-                setEditData({ ...editData, fullName: e.target.value })
-              }
-            />
+      {/* ── EDIT MODAL ── */}
+      <AnimatePresence>
+        {editModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 16 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 16 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+            >
+              <div className="bg-[#800000] px-6 py-4 flex items-center justify-between">
+                <h5 className="text-white font-bold text-base">
+                  {t("update")}
+                </h5>
+                <button
+                  onClick={() => { setEditModal(false); setError(""); }}
+                  className="text-white hover:bg-white/20 p-1.5 rounded-full transition"
+                >
+                  <MdClose size={20} />
+                </button>
+              </div>
+              <form onSubmit={handleUpdate} className="p-6 space-y-3">
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-2 rounded-lg">
+                    {error}
+                  </div>
+                )}
+                <input
+                  className={inputCls}
+                  placeholder={t("full_name")}
+                  value={editData.fullName}
+                  onChange={(e) => setEditData({ ...editData, fullName: e.target.value })}
+                />
+                <input
+                  className={inputCls}
+                  type="password"
+                  placeholder={t("password")}
+                  value={editData.password}
+                  onChange={(e) => setEditData({ ...editData, password: e.target.value })}
+                />
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-[#800000] text-white font-bold rounded-xl hover:bg-[#6a0000] transition active:scale-95 mt-1"
+                >
+                  {t("update")}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-            {/* <input
-              className="form-control my-2"
-              value={editData.email}
-              onChange={(e) =>
-                setEditData({ ...editData, email: e.target.value })
-              }
-            /> */}
-
-            <input
-              className="form-control my-2"
-              type="password"
-              placeholder={t("password")}
-              value={editData.password}
-              onChange={(e) =>
-                setEditData({ ...editData, password: e.target.value })
-              }
-            />
-
-            <button className="btn btn-primary w-100 mt-2">
-              {t("update")}
-            </button>
-          </motion.form>
-        </div>
-      )}
-
-      {/* ✅ CONSISTENT PAGINATION (UserManagement style) */}
-     {totalPages > 1 && (
-  <div className="flex justify-center items-center gap-3 p-4 flex-wrap">
-
-    <button
-      disabled={currentPage === 1}
-      onClick={() => setCurrentPage((p) => p - 1)}
-      className={`px-4 py-1.5 rounded-md border transition
-        ${
-          currentPage === 1
-            ? "opacity-40 cursor-not-allowed"
-            : "hover:bg-gray-200 hover:border-gray-400"
-        }
-      `}
-    >
-      Prev
-    </button>
-
-    <span className="font-medium text-sm">
-      Page {currentPage} of {totalPages}
-    </span>
-
-    <button
-      disabled={currentPage === totalPages}
-      onClick={() => setCurrentPage((p) => p + 1)}
-      className={`px-4 py-1.5 rounded-md border transition
-        ${
-          currentPage === totalPages
-            ? "opacity-40 cursor-not-allowed"
-            : "hover:bg-gray-200 hover:border-gray-400"
-        }
-      `}
-    >
-      Next
-    </button>
-
-  </div>
-)}
-
-      {/* TRANSFER */}
+      {/* ── TRANSFER MODAL ── */}
       <TransferModal
         open={transferModal}
         onClose={() => setTransferModal(false)}
         selectedUser={selectedUser}
         availableCredits={selectedUser?.credits}
         refreshData={async () => {
-          await fetchdata();
+          await fetchdata(currentPage);   // already correct, just needs clean fetch
           await refetchDashboard();
         }}
       />
+
     </div>
   );
 };

@@ -121,6 +121,7 @@
     "available_credits": "Verfügbares Guthaben",
     "enter_amount": "Betrag eingeben",
     "Transfer": "Übertragen",
+    
     "cancel": "Abbrechen",
     "common": {
       "something_wrong": "Etwas ist schiefgelaufen"
@@ -423,6 +424,7 @@
   "reg_terms": "Allgemeinen Geschäftsbedingungen",
   "reg_create_btn": "Konto erstellen",
   "reg_already_member": "Haben Sie bereits ein Konto?",
-  "reg_login_now": "Jetzt anmelden"
-  
+  "reg_login_now": "Jetzt anmelden",
+  "your_balance": "Ihr Guthaben",
+   "transfer_credits": "Guthaben übertragen"
 }

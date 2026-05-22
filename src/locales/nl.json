@@ -412,5 +412,7 @@
   "reg_terms": "Algemene voorwaarden",
   "reg_create_btn": "Account aanmaken",
   "reg_already_member": "Heb je al een account?",
-  "reg_login_now": "Nu inloggen"
+  "reg_login_now": "Nu inloggen",
+  "your_balance": "Uw saldo",
+  "transfer_credits": "Credits overdragen"
 }

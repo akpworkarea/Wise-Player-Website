@@ -7,7 +7,7 @@ export const TransitionHistoryData = async (pageNo) => {
   try {
     // ya jahan store kiya hai
 
-    const response = await api.get(`/api/reseller/credits/transactions?page=${pageNo}&size=10`, {
+    const response = await api.get(`/api/reseller/credits/transactions?page=${pageNo}&size=20`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

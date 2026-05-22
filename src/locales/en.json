@@ -1,5 +1,6 @@
 {
   "nav_home": "Home",
+  "your_balance": "Your Balance",
   "nav_upload_list": "Upload List",
   "nav_activation": "Activation",
   "nav_reseller": "Reseller",
@@ -180,7 +181,6 @@
   "panel": "Panel",
   "admin_user": "Admin User",
   "online": "Online",
-  "total_users": "Total Users",
   "active_subs": "Active Subs",
   "pending_req": "Pending Req.",
   "total_coins": "Total Coins",

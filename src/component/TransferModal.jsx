@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { MdClose } from "react-icons/md";
 import { transferCredits } from "../auth/reSeller";
 import { useTranslation } from "react-i18next";
@@ -12,11 +12,9 @@ const TransferModal = ({
   refreshData,
 }) => {
   const { t } = useTranslation();
-
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
 
-  // Reset state when modal opens or user changes
   useEffect(() => {
     if (open) {
       setAmount("");
@@ -24,120 +22,139 @@ const TransferModal = ({
     }
   }, [open, selectedUser]);
 
-  if (!open) return null;
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const numAmount = Number(amount);
 
-    // validation
     if (!numAmount || numAmount <= 0) {
       setError(t("enter_valid_amount"));
       return;
     }
-
     if (numAmount > availableCredits) {
       setError(t("not_enough_credits"));
       return;
     }
 
-    const payload = {
+    const res = await transferCredits({
       subResellerId: selectedUser.id,
       amount: numAmount,
-    };
-
-    const res = await transferCredits(payload);
+    });
 
     if (res.success) {
       setAmount("");
       setError("");
       onClose();
-
-      if (refreshData) {
-        await refreshData();
-      }
+      if (refreshData) await refreshData();
     } else {
       setError(res.message || t("transfer_failed"));
     }
   };
 
   return (
-    <div className="fixed inset-0 d-flex justify-content-center align-items-center bg-black bg-opacity-75 z-50 px-3">
-
-      <motion.form
-        onSubmit={handleSubmit}
-        initial={{ opacity: 0, scale: 0.85 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-white p-4 rounded-4 shadow"
-        style={{
-          width: "100%",
-          maxWidth: "380px",
-          fontFamily: "Inter, sans-serif",
-        }}
-      >
-
-        {/* HEADER */}
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h5 className="fw-bold m-0">{t("transfer_credits")}</h5>
-          <MdClose
-            onClick={onClose}
-            style={{ cursor: "pointer", fontSize: "20px" }}
-          />
-        </div>
-
-        {/* ERROR */}
-        {error && (
-          <div className="alert alert-danger py-2 mb-3">
-            {error}
-          </div>
-        )}
-
-        {/* USER INFO */}
-        <div className="mb-2">
-          <div className="text-muted small">{t("user")}</div>
-          <div className="fw-semibold">
-            {selectedUser?.fullName}
-          </div>
-        </div>
-
-        {/* AVAILABLE COINS */}
-        <div className="mb-3">
-          <div className="text-muted small">{t("available_credits")}</div>
-          <div className="fw-bold text-success">
-            {selectedUser?.subResellerCredits ?? 0}
-          </div>
-        </div>
-
-        {/* INPUT */}
-        <input
-          type="number"
-          className="form-control mb-3"
-          placeholder={t("enter_amount")}
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-
-        {/* BUTTONS */}
-        <div className="d-flex gap-2">
-          <button
-            type="submit"
-            className="btn btn-success w-100 fw-semibold"
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+        >
+          <motion.div
+            initial={{ scale: 0.95, y: 16 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.95, y: 16 }}
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
           >
-            {t("transfer")}
-          </button>
+            {/* ── MODAL HEADER — maroon bar, same as Create/Edit modals ── */}
+            <div className="bg-[#800000] px-6 py-4 flex items-center justify-between">
+              <h5 className="text-white font-bold text-base">
+                {t("transfer_credits")}
+              </h5>
+              <button
+                type="button"
+                onClick={onClose}
+                className="text-white hover:bg-white/20 p-1.5 rounded-full transition"
+              >
+                <MdClose size={20} />
+              </button>
+            </div>
 
-          <button
-            type="button"
-            className="btn btn-secondary w-100"
-            onClick={onClose}
-          >
-            {t("cancel")}
-          </button>
-        </div>
+            {/* ── MODAL BODY ── */}
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
 
-      </motion.form>
-    </div>
+              {/* Error */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-2 rounded-lg">
+                  {error}
+                </div>
+              )}
+
+              {/* User info row */}
+              <div className="flex items-center justify-between bg-[#f4f4f7] border border-gray-200 rounded-xl px-4 py-3">
+                <div>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">
+                    {t("user")}
+                  </p>
+                  <p className="text-sm font-bold text-gray-800">
+                    {selectedUser?.fullName}
+                  </p>
+                </div>
+
+                {/* Sub-reseller's current coin balance */}
+                <div className="text-right">
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">
+                    {t("available_credits")}
+                  </p>
+                  <p className="text-base font-black text-[#800000]">
+                    {selectedUser?.subResellerCredits ?? 0}
+                  </p>
+                </div>
+              </div>
+
+              {/* Your available coins */}
+              <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-100 rounded-lg">
+                <span className="w-2 h-2 rounded-full bg-[#800000] shrink-0" />
+                <p className="text-xs text-[#800000] font-semibold">
+                  {t("your_balance")}: {availableCredits ?? 0} {t("coins")}
+                </p>
+              </div>
+
+              {/* Amount input */}
+              <div className="relative">
+                <input
+                  type="number"
+                  placeholder={t("enter_amount")}
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#f4f4f7] border border-gray-200 rounded-xl focus:border-[#800000] focus:outline-none transition text-base font-semibold text-gray-800 pr-16"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-semibold uppercase tracking-wider pointer-events-none">
+                  {t("coins")}
+                </span>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-3 pt-1">
+                <button
+                  type="submit"
+                  className="flex-1 py-3 bg-[#800000] text-white font-bold rounded-xl hover:bg-[#6a0000] transition active:scale-95 text-sm"
+                >
+                  {t("transfer")}
+                </button>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex-1 py-3 border border-gray-300 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition active:scale-95 text-sm"
+                >
+                  {t("cancel")}
+                </button>
+              </div>
+
+            </form>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

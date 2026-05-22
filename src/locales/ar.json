@@ -403,5 +403,7 @@
   "reg_terms": "الشروط والأحكام",
   "reg_create_btn": "إنشاء حساب",
   "reg_already_member": "هل لديك حساب بالفعل؟",
-  "reg_login_now": "سجّل الدخول الآن"
+  "reg_login_now": "سجّل الدخول الآن",
+   "your_balance": "رصيدك",
+   "transfer_credits": "تحويل الرصيد"
 }

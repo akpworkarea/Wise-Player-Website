@@ -404,6 +404,7 @@
   "reg_terms": "Termini e condizioni",
   "reg_create_btn": "Crea account",
   "reg_already_member": "Hai già un account?",
-  "reg_login_now": "Accedi ora"
-
+  "reg_login_now": "Accedi ora",
+   "transfer_credits": "Trasferire crediti",
+   "your_balance": "Il tuo saldo"
 }

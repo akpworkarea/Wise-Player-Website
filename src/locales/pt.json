@@ -412,5 +412,7 @@
   "reg_terms": "Termos e condições",
   "reg_create_btn": "Criar conta",
   "reg_already_member": "Já tem uma conta?",
-  "reg_login_now": "Entrar agora"
+  "reg_login_now": "Entrar agora",
+   "your_balance": "Seu saldo",
+   "transfer_credits": "Transferir créditos"
 }

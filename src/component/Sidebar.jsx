@@ -1,253 +1,186 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
-  LayoutDashboard,
-  Users,
-  Layers,
-  Clock,
-  LogOut,
-  ShoppingCart,
-  Menu,
-  X,
-  CirclePlus,
-} from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { useTranslation } from "react-i18next";
+  LayoutDashboard, Users, Layers, Clock,
+  LogOut, ShoppingCart, CirclePlus, Menu, X, Flame,
+} from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const Sidebar = ({
-  collapsed,
-  setCollapsed,
-  mobileOpen,
-  setMobileOpen,
-}) => {
-  const navigate = useNavigate();
-  const location = useLocation();
+const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
+  const navigate  = useNavigate();
+  const location  = useLocation();
   const { userRole } = useAuth();
   const { t } = useTranslation();
 
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
-
-
-  const maroonMain = "#800000";
-
   const menuItems = [
-    { path: "/dashboard", label: t("dashboard"), icon: LayoutDashboard },
-    { path: "/users", label: t("device_management"), icon: Users },
-
-    userRole === "RESELLER" && {
-      path: "/subreseller",
-      label: t("sub_reseller"),
-      icon: Layers,
-    },
-
-    { path: "/requests", label: t("activation_requests"), icon: Clock },
-    { path: "/transition-history", label: t("transaction_history"), icon: CirclePlus },
-    { path: "/purchase-credit", label: t("purchase_credit"), icon: ShoppingCart },
-    { path: "/logout", label: t("logout"), icon: LogOut },
+    { path: '/dashboard',           label: t('dashboard'),             icon: LayoutDashboard },
+    { path: '/users',               label: t('device_management'),     icon: Users           },
+    userRole === 'RESELLER' && {
+      path: '/subreseller',         label: t('sub_reseller'),          icon: Layers          },
+    { path: '/requests',            label: t('activation_requests'),   icon: Clock           },
+    { path: '/transition-history',  label: t('transaction_history'),   icon: CirclePlus      },
+    { path: '/purchase-credit',     label: t('purchase_credit'),       icon: ShoppingCart    },
+    { path: '/logout',              label: t('logout'),                icon: LogOut          },
   ].filter(Boolean);
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/");
+    navigate('/');
   };
 
   return (
     <>
-      {/* MOBILE BUTTON */}
-      {mobileOpen && (
-  <div
-    className="fixed inset-0 bg-black/40 z-[2000] md:hidden"
-    onClick={() => setMobileOpen(false)}
-  />
-)}
+      {/* ── MOBILE OVERLAY ───────────────────────────────── */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/50 z-[2000] md:hidden"
+            onClick={() => setMobileOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
-<div
-  className={`
-    fixed top-0 left-0 h-full z-[3000]
-    transition-all duration-300
-    flex flex-col
-
-    bg-[#800000]
-
-    ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
-    md:translate-x-0
-
-    ${collapsed ? "md:w-[90px]" : "md:w-[260px]"}
-    w-[260px]
-  `}
->
-
-      {/* SIDEBAR */}
-      
-
-        {/* HEADER */}
-        <div className="d-flex align-items-center justify-content-between px-3 py-3 text-white">
+      {/* ── SIDEBAR ──────────────────────────────────────── */}
+      <div
+        className={`
+          fixed top-0 left-0 h-full z-[3000] flex flex-col
+          bg-[#800000] transition-all duration-300
+          ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:translate-x-0
+          ${collapsed ? 'md:w-[80px]' : 'md:w-[260px]'}
+          w-[260px]
+        `}
+      >
+        {/* Header */}
+        <div className={`flex items-center px-4 py-4 border-b border-white/10 ${collapsed ? 'justify-center' : 'justify-between'}`}>
           {!collapsed && (
-            <h5 className="m-0 fw-bold" style={{ letterSpacing: "0.5px" }}>
-              RESELLER
-              <span style={{ color: "#ffc107", marginLeft: 4 }}>HUB</span>
-            </h5>
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+                <Flame size={20} fill="white" color="white" />
+              </div>
+              <div className="leading-none">
+                <span className="block text-sm font-black text-white tracking-tight">
+                  RESELLER <span className="text-yellow-400">HUB</span>
+                </span>
+                <span className="block text-[10px] font-bold text-white/40 tracking-[2px] uppercase mt-0.5">
+                  WisePlayer
+                </span>
+              </div>
+            </div>
           )}
 
-          <div className={`flex items-center gap-2 ${collapsed ? "justify-center w-full" : ""}`}>
-            <Menu
-              onClick={() => setCollapsed(!collapsed)}
-              style={{ cursor: "pointer" }}
-            />
-
-          </div>
+          {/* Collapse / close toggle */}
+          <button
+            onClick={() => collapsed ? setCollapsed(false) : mobileOpen ? setMobileOpen(false) : setCollapsed(true)}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors duration-150 border-0 bg-transparent"
+          >
+            {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
         </div>
 
-        {/* MENU */}
-        <div className="d-flex flex-column mt-2">
+        {/* Menu items */}
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
+            const isLogout = item.path === '/logout';
 
             return (
-              <div key={item.path} style={{ padding: "4px 10px" }}>
-                <button
-                  onClick={() => {
-                    if (item.path === "/logout") {
-                      setShowLogoutPopup(true);
-                    } else {
-                      navigate(item.path);
-                      setMobileOpen(false);
-                    }
-                  }}
-                  className="w-100 border-0 d-flex align-items-center"
-                  style={{
-                    borderRadius: "12px 0 0 12px",
-                    padding: collapsed ? "12px 0" : "12px 14px",
-                    justifyContent: collapsed ? "center" : "flex-start",
-                    background: isActive
-                      ? "#ffffff"
-                      : "transparent",
-                    color: isActive ? maroonMain : "#ffffff",
-                    transition: "all 0.25s ease",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    lineHeight: "1.2",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.background =
-                        "rgba(255,255,255,0.15)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.background = "transparent";
-                    }
-                  }}
-                >
-                  <item.icon size={20} />
-
-                  {!collapsed && (
-                    <span
-                      className="ms-3"
-                      style={{
-                        whiteSpace: "nowrap",
-overflow: "hidden",
-textOverflow: "ellipsis",
-                      }}
-                    >
-                      {item.label}
-                    </span>
-                  )}
-                </button>
-              </div>
+              <button
+                key={item.path}
+                onClick={() => {
+                  if (isLogout) {
+                    setShowLogoutPopup(true);
+                  } else {
+                    navigate(item.path);
+                    setMobileOpen(false);
+                  }
+                }}
+                className={`
+                  w-full flex items-center gap-3 rounded-xl border-0
+                  transition-all duration-200
+                  ${collapsed ? 'justify-center px-0 py-3' : 'px-3 py-2.5'}
+                  ${isActive
+                    ? 'bg-white text-[#800000] font-bold shadow-sm'
+                    : isLogout
+                      ? 'text-white/60 hover:text-white hover:bg-white/10'
+                      : 'text-white/80 hover:text-white hover:bg-white/10'
+                  }
+                `}
+                title={collapsed ? item.label : undefined}
+              >
+                <item.icon size={19} className="shrink-0" />
+                {!collapsed && (
+                  <span className="text-sm font-semibold truncate">{item.label}</span>
+                )}
+              </button>
             );
           })}
-        </div>
+        </nav>
+
+        {/* Sidebar footer */}
+        {!collapsed && (
+          <div className="px-4 py-4 border-t border-white/10">
+            <p className="text-[10px] text-white/30 font-semibold tracking-[2px] uppercase text-center">
+              © {new Date().getFullYear()} WisePlayer
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* 🔥 LOGOUT MODAL */}
-      {showLogoutPopup && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.55)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 2000,
-            padding: "20px",
-          }}
-        >
-          <div
-            style={{
-              background: "#fff",
-              borderRadius: "16px",
-              padding: "26px",
-              width: "100%",
-              maxWidth: "360px",
-              textAlign: "center",
-              boxShadow: "0 12px 35px rgba(0,0,0,0.18)",
-              fontFamily: "Inter, sans-serif",
-            }}
+      {/* ── LOGOUT MODAL ─────────────────────────────────── */}
+      <AnimatePresence>
+        {showLogoutPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 z-[4000] flex items-center justify-center px-4"
           >
-            {/* ICON */}
-            <div
-              style={{
-                width: 50,
-                height: 50,
-                borderRadius: "50%",
-                background: "#fdecea",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: "0 auto 10px",
-              }}
+            <motion.div
+              initial={{ scale: 0.92, y: 16, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+              className="bg-white rounded-2xl border border-black/[0.06] shadow-xl p-7 w-full max-w-[340px] text-center"
             >
-              <LogOut color="#dc3545" size={22} />
-            </div>
+              {/* Icon */}
+              <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                <LogOut size={22} className="text-red-500" />
+              </div>
 
-            <h5 className="fw-bold mb-2">
-              {t("confirm_logout")}
-            </h5>
+              <h5 className="text-base font-extrabold text-[#1a1a1a] mb-1">
+                {t('confirm_logout')}
+              </h5>
+              <p className="text-sm text-gray-500 mb-6">
+                {t('are_you_sure_logout')}
+              </p>
 
-            <p className="text-muted mb-4" style={{ fontSize: "14px" }}>
-              {t("are_you_sure_logout")}
-            </p>
-
-            <div className="d-flex gap-2">
-              <button
-                onClick={() => setShowLogoutPopup(false)}
-                className="btn w-50"
-                style={{
-                  background: "#f1f5f9",
-                  color: "#475569",
-                  borderRadius: "10px",
-                  fontWeight: "600",
-                  fontSize: "14px",
-                  border: "1px solid #e2e8f0",
-                }}
-              >
-                {t("cancel")}
-              </button>
-
-              <button
-                onClick={() => {
-                  setShowLogoutPopup(false);
-                  handleLogout();
-                }}
-                className="btn w-50 text-white"
-                style={{
-                  background: "#dc3545",
-                  borderRadius: "10px",
-                  fontWeight: "600",
-                  fontSize: "14px",
-                  boxShadow: "0 4px 12px rgba(220, 53, 69, 0.2)",
-                }}
-              >
-                {t("logout")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowLogoutPopup(false)}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors duration-150 border-0"
+                >
+                  {t('cancel')}
+                </button>
+                <button
+                  onClick={() => { setShowLogoutPopup(false); handleLogout(); }}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 transition-colors duration-150 border-0 shadow-sm"
+                >
+                  {t('logout')}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

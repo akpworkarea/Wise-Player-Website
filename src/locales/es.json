@@ -112,6 +112,7 @@
     "available_credits": "Créditos disponibles",
     "enter_amount": "Ingrese la cantidad",
     "transfer": "Transferir",
+    
     "cancel": "Cancelar",
     "common": {
       "something_wrong": "Algo salió mal"
@@ -413,6 +414,7 @@
   "reg_terms": "Términos y condiciones",
   "reg_create_btn": "Crear cuenta",
   "reg_already_member": "¿Ya tienes una cuenta?",
-  "reg_login_now": "Iniciar sesión ahora"
-
+  "reg_login_now": "Iniciar sesión ahora",
+  "your_balance": "Tu saldo",
+  "transfer_credits": "Transferir créditos"
 }
