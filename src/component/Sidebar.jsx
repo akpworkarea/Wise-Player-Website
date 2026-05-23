@@ -9,22 +9,22 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { userRole } = useAuth();
   const { t } = useTranslation();
 
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
   const menuItems = [
-    { path: '/dashboard',           label: t('dashboard'),             icon: LayoutDashboard },
-    { path: '/users',               label: t('device_management'),     icon: Users           },
+    { path: '/dashboard',          label: t('dashboard'),           icon: LayoutDashboard },
+    { path: '/users',              label: t('device_management'),   icon: Users           },
     userRole === 'RESELLER' && {
-      path: '/subreseller',         label: t('sub_reseller'),          icon: Layers          },
-    { path: '/requests',            label: t('activation_requests'),   icon: Clock           },
-    { path: '/transition-history',  label: t('transaction_history'),   icon: CirclePlus      },
-    { path: '/purchase-credit',     label: t('purchase_credit'),       icon: ShoppingCart    },
-    { path: '/logout',              label: t('logout'),                icon: LogOut          },
+      path: '/subreseller',        label: t('sub_reseller'),        icon: Layers          },
+    { path: '/requests',           label: t('activation_requests'), icon: Clock           },
+    { path: '/transition-history', label: t('transaction_history'), icon: CirclePlus      },
+    { path: '/purchase-credit',    label: t('purchase_credit'),     icon: ShoppingCart    },
+    { path: '/logout',             label: t('logout'),              icon: LogOut          },
   ].filter(Boolean);
 
   const handleLogout = () => {
@@ -34,7 +34,7 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
 
   return (
     <>
-      {/* ── MOBILE OVERLAY ───────────────────────────────── */}
+      {/* ── MOBILE OVERLAY ── */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -48,14 +48,14 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
         )}
       </AnimatePresence>
 
-      {/* ── SIDEBAR ──────────────────────────────────────── */}
+      {/* ── SIDEBAR ── */}
       <div
         className={`
           fixed top-0 left-0 h-full z-[3000] flex flex-col
           bg-[#800000] transition-all duration-300
           ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
           md:translate-x-0
-          ${collapsed ? 'md:w-[80px]' : 'md:w-[260px]'}
+          ${collapsed ? 'md:w-[72px]' : 'md:w-[240px] lg:w-[260px]'}
           w-[260px]
         `}
       >
@@ -77,7 +77,6 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
             </div>
           )}
 
-          {/* Collapse / close toggle */}
           <button
             onClick={() => collapsed ? setCollapsed(false) : mobileOpen ? setMobileOpen(false) : setCollapsed(true)}
             className="w-8 h-8 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors duration-150 border-0 bg-transparent"
@@ -86,7 +85,7 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
           </button>
         </div>
 
-        {/* Menu items */}
+        {/* Nav items */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
@@ -110,7 +109,7 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
                   ${isActive
                     ? 'bg-white text-[#800000] font-bold shadow-sm'
                     : isLogout
-                      ? 'text-white/60 hover:text-white hover:bg-white/10'
+                      ? 'text-white/80 hover:text-white hover:bg-white/10'
                       : 'text-white/80 hover:text-white hover:bg-white/10'
                   }
                 `}
@@ -125,7 +124,7 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
           })}
         </nav>
 
-        {/* Sidebar footer */}
+        {/* Footer */}
         {!collapsed && (
           <div className="px-4 py-4 border-t border-white/10">
             <p className="text-[10px] text-white/30 font-semibold tracking-[2px] uppercase text-center">
@@ -135,7 +134,11 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
         )}
       </div>
 
-      {/* ── LOGOUT MODAL ─────────────────────────────────── */}
+      {/* ── LOGOUT MODAL ──
+          The outer motion.div is the FULL-SCREEN backdrop + centering layer.
+          The inner div is the card. This is the same pattern used in every
+          other modal across the app (SubresellerDashboard, UserManagement etc.)
+      ── */}
       <AnimatePresence>
         {showLogoutPopup && (
           <motion.div
@@ -147,36 +150,42 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
             <motion.div
               initial={{ scale: 0.92, y: 16, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.92, opacity: 0 }}
+              exit={{ scale: 0.92, y: 16, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-              className="bg-white rounded-2xl border border-black/[0.06] shadow-xl p-7 w-full max-w-[340px] text-center"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-[340px] overflow-hidden"
             >
-              {/* Icon */}
-              <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
-                <LogOut size={22} className="text-red-500" />
+              {/* Maroon header — matches all modals in the app */}
+              <div className="bg-[#800000] px-6 pt-6 pb-5 flex flex-col items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                  <LogOut size={22} className="text-white" />
+                </div>
+                <h5 className="text-base font-extrabold text-white">
+                  {t('confirm_logout')}
+                </h5>
               </div>
 
-              <h5 className="text-base font-extrabold text-[#1a1a1a] mb-1">
-                {t('confirm_logout')}
-              </h5>
-              <p className="text-sm text-gray-500 mb-6">
-                {t('are_you_sure_logout')}
-              </p>
+              {/* Body */}
+              <div className="px-6 pt-5 pb-6 flex flex-col items-center gap-5">
+                <p className="text-sm text-gray-500 text-center">
+                  {t('are_you_sure_logout')}
+                </p>
 
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowLogoutPopup(false)}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors duration-150 border-0"
-                >
-                  {t('cancel')}
-                </button>
-                <button
-                  onClick={() => { setShowLogoutPopup(false); handleLogout(); }}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 transition-colors duration-150 border-0 shadow-sm"
-                >
-                  {t('logout')}
-                </button>
+                <div className="flex gap-3 w-full">
+                  <button
+                    onClick={() => setShowLogoutPopup(false)}
+                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-gray-600 border border-gray-200 hover:bg-gray-50 transition active:scale-95"
+                  >
+                    {t('cancel')}
+                  </button>
+                  <button
+                    onClick={() => { setShowLogoutPopup(false); handleLogout(); }}
+                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-[#800000] hover:bg-[#6a0000] transition active:scale-95"
+                  >
+                    {t('logout')}
+                  </button>
+                </div>
               </div>
+
             </motion.div>
           </motion.div>
         )}

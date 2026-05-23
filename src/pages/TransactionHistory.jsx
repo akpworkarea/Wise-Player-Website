@@ -23,14 +23,30 @@ function TransitionHistory() {
         res = await TransitionHistoryData(pageNo);
       }
       if (!res?.success) return;
-      setData(res.data.content || []);
+
+      const incoming = res.data.content || [];
       setTotalPages(res.data.totalPages || 0);
+
+      setData((prev) => {
+        if (prev.length === 0) return incoming;
+        const freshMap = {};
+        incoming.forEach((r) => { freshMap[r.id] = r; });
+        const merged = prev.map((r) =>
+          freshMap[r.id] ? { ...r, ...freshMap[r.id] } : r
+        );
+        const existingIds = new Set(prev.map((r) => r.id));
+        incoming.forEach((r) => {
+          if (!existingIds.has(r.id)) merged.push(r);
+        });
+        return merged;
+      });
     } catch (err) {
       console.error(err);
     }
   };
 
   useEffect(() => {
+    setData([]);
     fetchData(page);
   }, [page, refreshTransactions]);
 
@@ -47,12 +63,17 @@ function TransitionHistory() {
       : Math.ceil((data?.length || 0) / itemsPerPage);
   const showPagination = computedTotalPages > 1;
 
-  // Shared copy button used in both table and cards
+  const typeBadgeClass = (type) => {
+    if (type === "PURCHASE")  return "bg-red-600";
+    if (type === "DEDUCTION") return "bg-orange-500";
+    return "bg-blue-600";
+  };
+
   const CopyButton = ({ id }) => (
-    <div className="relative inline-flex items-center">
+    <div className="relative inline-flex items-center shrink-0">
       <button
         onClick={() => copyToClipboard(id)}
-        className="text-[10px] border border-gray-300 px-2 py-0.5 rounded hover:bg-red-50 hover:border-[#800000] hover:text-[#800000] transition text-gray-500"
+        className="text-[10px] border border-gray-300 px-2 py-0.5 rounded hover:bg-red-50 hover:border-[#800000] hover:text-[#800000] transition text-gray-500 whitespace-nowrap"
       >
         {copiedId === id ? t("admin_dashboard.copied") : t("admin_dashboard.copy")}
       </button>
@@ -65,48 +86,55 @@ function TransitionHistory() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f4f4f7] w-full p-4 sm:p-6">
+    <div className="min-h-screen bg-[#f4f4f7] w-full p-4 sm:p-6 space-y-5">
 
-      <h2 className="text-lg sm:text-xl font-bold text-[#800000] mb-5">
+      <h2 className="text-lg sm:text-xl font-bold text-[#800000]">
         {t("transaction.transaction_history")}
       </h2>
 
-      {/* ── MOBILE CARDS (< 700px) ── */}
-      <div className="block lg:hidden space-y-3">
+      {/* ════════════════════════════════════════════
+          MOBILE CARDS  (< 768px)
+          - Card has overflow-hidden — nothing escapes
+          - Row 1: ID + copy on own line (flex-nowrap + min-w-0)
+          - Row 2: type badge + amount
+          - All text has truncate + w-full
+      ════════════════════════════════════════════ */}
+      <div className="md:hidden space-y-3">
         {data.length > 0 ? (
           data.map((item) => (
             <div
               key={item.id}
-              className="bg-white rounded-xl shadow border border-gray-200 p-4"
+              className="bg-white rounded-xl shadow border border-gray-200 p-4 overflow-hidden"
             >
-              {/* Top row: ID + copy + badge */}
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-gray-800">
-                    #{item.id}
-                  </span>
-                  <CopyButton id={item.id} />
-                </div>
+              {/* Row 1: ID + copy — own full row, nothing competing */}
+              <div className="flex items-center gap-2 flex-nowrap min-w-0 mb-2">
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-bold text-white ${
-                    item.type === "PURCHASE" ? "bg-red-600" : "bg-blue-600"
-                  }`}
+                  className="text-sm font-bold text-[#800000] truncate min-w-0 max-w-[160px]"
+                  title={String(item.id)}
+                >
+                  #{item.id}
+                </span>
+                <CopyButton id={item.id} />
+              </div>
+
+              {/* Row 2: type badge + amount */}
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span
+                  className={`inline-block min-w-[96px] text-center px-2 py-1 rounded-full text-xs font-bold text-white shrink-0 ${typeBadgeClass(item.type)}`}
                 >
                   {item.type}
                 </span>
+                <p className="text-xl font-bold text-[#800000] shrink-0">
+                  €{item.amount}
+                </p>
               </div>
 
-              {/* Amount */}
-              <p className="text-xl font-bold text-[#800000] mt-2">
-                €{item.amount}
-              </p>
-
-              {/* Notes + date */}
-              <div className="mt-3 pt-3 border-t border-gray-100 space-y-1">
-                <p className="text-sm text-gray-600 font-semibold">
+              {/* Row 3: notes + date */}
+              <div className="pt-3 border-t border-gray-100 space-y-1">
+                <p className="text-sm text-gray-600 font-semibold truncate w-full">
                   {item.notes}
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-400 truncate w-full">
                   {new Date(item.createdAt).toLocaleString()}
                 </p>
               </div>
@@ -119,20 +147,23 @@ function TransitionHistory() {
         )}
       </div>
 
-      {/* ── DESKTOP TABLE (lg+ / 1024px+) ── */}
-      {/* 
-        Tablet fix: instead of a min-width table that forces horizontal scroll,
-        we use table-fixed with percentage-based column widths so it always
-        fits the container between 700–1100px without scrolling.
-      */}
-      <div className="hidden lg:block bg-white rounded-xl shadow border border-gray-200">
+      {/* ════════════════════════════════════════════
+          TABLET + DESKTOP TABLE  (md+ / 768px+)
+
+          Type col = 24%, Notes = 22%
+          Badge uses min-w-[96px] for uniform size
+          px-2 md:px-3 reduces padding at tablet sizes
+          ID cell: flex-nowrap + min-w-0 on both
+                   container and span — copy never wraps
+      ════════════════════════════════════════════ */}
+      <div className="hidden md:block bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
         <table className="w-full text-sm table-fixed">
           <colgroup>
-            <col className="w-[22%]" />  {/* ID + copy */}
-            <col className="w-[14%]" />  {/* Amount */}
-            <col className="w-[16%]" />  {/* Type */}
-            <col className="w-[28%]" />  {/* Notes */}
-            <col className="w-[20%]" />  {/* Date */}
+            <col style={{ width: "20%" }} /> {/* ID + copy */}
+            <col style={{ width: "12%" }} /> {/* Amount    */}
+            <col style={{ width: "24%" }} /> {/* Type      */}
+            <col style={{ width: "22%" }} /> {/* Notes     */}
+            <col style={{ width: "22%" }} /> {/* Date      */}
           </colgroup>
 
           <thead className="bg-gray-100">
@@ -146,7 +177,7 @@ function TransitionHistory() {
               ].map((col) => (
                 <th
                   key={col}
-                  className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-gray-600"
+                  className="px-2 md:px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-gray-600"
                 >
                   {col}
                 </th>
@@ -154,45 +185,55 @@ function TransitionHistory() {
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className="divide-y divide-gray-100">
             {data.length > 0 ? (
               data.map((item, idx) => (
                 <tr
                   key={item.id}
-                  className={`border-t border-gray-100 text-center ${
-                    idx % 2 === 1 ? "bg-gray-50" : "bg-white"
+                  className={`text-center transition-colors duration-150 hover:bg-red-50/30 ${
+                    idx % 2 === 1 ? "bg-gray-50/60" : "bg-white"
                   }`}
                 >
-                  {/* ID cell with copy button */}
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="font-bold text-gray-800 truncate">
+                  {/* ID + copy — min-w-0 on both so ID truncates before
+                      pushing the copy button out of the column */}
+                  <td className="px-2 md:px-3 py-3.5">
+                    <div className="flex items-center justify-center gap-1.5 flex-nowrap min-w-0">
+                      <span
+                        className="font-bold text-[#800000] truncate min-w-0"
+                        title={String(item.id)}
+                      >
                         {item.id}
                       </span>
                       <CopyButton id={item.id} />
                     </div>
                   </td>
 
-                  <td className="px-4 py-3 font-bold text-[#800000]">
+                  {/* Amount */}
+                  <td className="px-2 md:px-3 py-3.5 font-black text-[#800000]">
                     €{item.amount}
                   </td>
 
-                  <td className="px-4 py-3">
+                  {/* Type — min-w-[96px] gives all badges same minimum width */}
+                  <td className="px-2 md:px-3 py-3.5">
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-bold text-white ${
-                        item.type === "PURCHASE" ? "bg-red-600" : "bg-blue-600"
-                      }`}
+                      className={`inline-block min-w-[96px] text-center px-2 py-1 rounded-full text-xs font-bold text-white ${typeBadgeClass(item.type)}`}
                     >
                       {item.type}
                     </span>
                   </td>
 
-                  <td className="px-4 py-3 font-semibold text-gray-700 truncate">
-                    {item.notes}
+                  {/* Notes — block + truncate, clips within column */}
+                  <td className="px-2 md:px-3 py-3.5 text-left">
+                    <span className="block font-semibold text-gray-700 truncate w-full">
+                      {item.notes}
+                    </span>
                   </td>
 
-                  <td className="px-4 py-3 text-xs text-gray-500">
-                    {new Date(item.createdAt).toLocaleString()}
+                  {/* Date */}
+                  <td className="px-2 md:px-3 py-3.5 text-xs text-gray-500">
+                    <span className="block truncate w-full">
+                      {new Date(item.createdAt).toLocaleString()}
+                    </span>
                   </td>
                 </tr>
               ))
@@ -212,16 +253,16 @@ function TransitionHistory() {
 
       {/* ── PAGINATION ── */}
       {showPagination && (
-        <div className="flex justify-center items-center gap-3 pt-5 flex-wrap">
+        <div className="flex justify-center items-center gap-3 pt-2 flex-wrap">
           <button
             disabled={page === 0}
             onClick={() => setPage((p) => p - 1)}
-            className="px-4 py-1.5 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            className="text-xs border border-gray-300 px-3 py-1.5 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
           >
             {t("transaction.prev")}
           </button>
 
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-semibold text-gray-700">
             {t("transaction.page")} {page + 1} {t("transaction.of")}{" "}
             {computedTotalPages}
           </span>
@@ -229,7 +270,7 @@ function TransitionHistory() {
           <button
             disabled={page + 1 === computedTotalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="px-4 py-1.5 text-sm border border-gray-800 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            className="text-xs border border-gray-300 px-3 py-1.5 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
           >
             {t("transaction.next")}
           </button>

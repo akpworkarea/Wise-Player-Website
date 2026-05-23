@@ -244,7 +244,7 @@ export default function PurchaseCredit() {
         <motion.h1
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-lg sm:text-xl font-bold text-gray-800"
+          className="text-lg sm:text-xl font-bold text-[#800000]"
         >
           {t("purchaseCredit.credits_system")}
         </motion.h1>
