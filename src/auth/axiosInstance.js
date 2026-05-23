@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 const BASE_URL = 'https://api.wise-player.com';
 
 const apiService = axios.create({
@@ -12,13 +13,13 @@ const apiService = axios.create({
 apiService.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
-    
+
     if (token && token !== "undefined" && token !== "null") {
       config.headers.Authorization = `Bearer ${token}`;
     } else {
       delete config.headers.Authorization;
     }
-    
+
     return config;
   },
   (error) => {
@@ -31,12 +32,18 @@ apiService.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response && error.response.status === 401) {
+
+    if (error.response?.status === 401) {
+
+      // logout user
+      localStorage.clear();
+
+      // redirect to login page
+      window.location.href = "/login";
     }
+
     return Promise.reject(error);
   }
 );
 
 export default apiService;
-
-
