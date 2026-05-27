@@ -13,35 +13,29 @@ const apiService = axios.create({
 apiService.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
-
     if (token && token !== "undefined" && token !== "null") {
       config.headers.Authorization = `Bearer ${token}`;
     } else {
       delete config.headers.Authorization;
     }
-
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 apiService.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
-
     if (error.response?.status === 401) {
-
-      // logout user
-      localStorage.clear();
-
-      // redirect to login page
-      window.location.href = "/login";
+      // ── FIX: don't redirect if this IS the login request ──
+      // Without this, wrong credentials cause an instant redirect
+      // before the component can show the error toast
+      const isLoginRequest = error.config?.url?.includes('/api/reseller/login');
+      if (!isLoginRequest) {
+        localStorage.clear();
+        window.location.href = "/login";
+      }
     }
-
     return Promise.reject(error);
   }
 );
