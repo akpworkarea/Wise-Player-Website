@@ -10,7 +10,6 @@ import { useDashboard } from '../context/dashboardContext';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 
-// ── Outside component — stable references ─────────────────────
 const availableLanguages = [
   { code: 'en', name: 'English',    flag: '🇺🇸', image: 'https://flagcdn.com/w40/us.png' },
   { code: 'fr', name: 'Français',   flag: '🇫🇷', image: 'https://flagcdn.com/w40/fr.png' },
@@ -23,9 +22,9 @@ const availableLanguages = [
 ];
 
 const brandFeatures = [
-  { icon: Shield,       text: 'Secure reseller portal'   },
-  { icon: CheckCircle2, text: 'Full dashboard access'    },
-  { icon: Flame,        text: 'Premium streaming tools'  },
+  { icon: Shield,       text: 'Secure reseller portal'  },
+  { icon: CheckCircle2, text: 'Full dashboard access'   },
+  { icon: Flame,        text: 'Premium streaming tools' },
 ];
 
 const viewVariants = {
@@ -34,7 +33,6 @@ const viewVariants = {
   exit:    { opacity: 0, x: -20, transition: { duration: 0.16 } },
 };
 
-// ── Reusable Input — outside to prevent remount ───────────────
 const InputField = ({ label, value, onChange, type = 'text', placeholder, icon: Icon, rightEl }) => (
   <div>
     <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
@@ -59,12 +57,10 @@ const InputField = ({ label, value, onChange, type = 'text', placeholder, icon: 
   </div>
 );
 
-// ── Lang + Home top bar — shared pattern ──────────────────────
 const TopBar = ({ i18n, isLangOpen, setIsLangOpen, navigate }) => {
   const currentLang = availableLanguages.find((l) => l.code === i18n.language);
   return (
     <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
-      {/* Home */}
       <button
         onClick={() => navigate('/home')}
         className="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-black/[0.08] shadow-sm text-[#1a1a1a] hover:border-[#800000]/40 hover:text-[#800000] transition-all duration-200"
@@ -72,7 +68,6 @@ const TopBar = ({ i18n, isLangOpen, setIsLangOpen, navigate }) => {
         <Home size={16} />
       </button>
 
-      {/* Lang */}
       <div className="relative">
         <button
           onClick={() => setIsLangOpen(!isLangOpen)}
@@ -101,16 +96,24 @@ const TopBar = ({ i18n, isLangOpen, setIsLangOpen, navigate }) => {
                       localStorage.setItem('lang', lang.code);
                       setIsLangOpen(false);
                     }}
-                    className={`w-full flex items-center justify-between px-4 py-3 border-0 transition-colors duration-150 ${active ? 'bg-[#800000]/[0.04]' : 'bg-white hover:bg-gray-50'}`}
+                    className={`w-full flex items-center justify-between px-4 py-3 border-0 transition-colors duration-150 ${
+                      active ? 'bg-[#800000]/[0.04]' : 'bg-white hover:bg-gray-50'
+                    }`}
                   >
                     <div className="flex items-center gap-3">
-                      <img src={lang.image} alt={lang.name} className="w-6 h-6 rounded-full object-cover border border-gray-100" />
+                      <img
+                        src={lang.image}
+                        alt={lang.name}
+                        className="w-6 h-6 rounded-full object-cover border border-gray-100"
+                      />
                       <div className="text-left">
                         <p className="text-xs font-bold text-[#1a1a1a] leading-none">{lang.flag}</p>
                         <p className="text-[11px] text-gray-400 mt-0.5">{lang.name}</p>
                       </div>
                     </div>
-                    {active && <div className="w-2 h-2 rounded-full bg-[#800000] shadow-[0_0_0_3px_rgba(128,0,0,0.12)]" />}
+                    {active && (
+                      <div className="w-2 h-2 rounded-full bg-[#800000] shadow-[0_0_0_3px_rgba(128,0,0,0.12)]" />
+                    )}
                   </button>
                 );
               })}
@@ -122,10 +125,9 @@ const TopBar = ({ i18n, isLangOpen, setIsLangOpen, navigate }) => {
   );
 };
 
-// ═══════════════════════════════════════════════════════════════
 const LoginPage = () => {
-  const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
+  const { t, i18n }    = useTranslation();
+  const navigate        = useNavigate();
   const { refetchDashboard } = useDashboard();
   const { setUserRole } = useAuth();
 
@@ -142,11 +144,14 @@ const LoginPage = () => {
     setTimeout(() => setToast(null), 3000);
   };
 
+  // ── FIX: interceptor no longer swallows 401 for login endpoint,
+  //    so catch block now runs and error message reaches showToast ──
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     const result = await loginReseller({ username, password });
     setLoading(false);
+
     if (result.success) {
       showToast('Success! Redirecting...', 'success');
       localStorage.setItem('user', JSON.stringify(result.data));
@@ -155,6 +160,8 @@ const LoginPage = () => {
       await refetchDashboard();
       navigate('/dashboard');
     } else {
+      // This now correctly shows because the interceptor no longer
+      // redirects away before this line can execute
       showToast(result.message || 'Invalid credentials', 'error');
     }
   };
@@ -162,7 +169,10 @@ const LoginPage = () => {
   const handleForgot = (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => { setLoading(false); showToast('Reset link sent!', 'success'); }, 1500);
+    setTimeout(() => {
+      setLoading(false);
+      showToast('Reset link sent!', 'success');
+    }, 1500);
   };
 
   return (
@@ -170,20 +180,17 @@ const LoginPage = () => {
 
       <TopBar i18n={i18n} isLangOpen={isLangOpen} setIsLangOpen={setIsLangOpen} navigate={navigate} />
 
-      {/* ── LEFT BRAND PANEL ─────────────────────────────── */}
+      {/* ── LEFT BRAND PANEL ── */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
         animate={{ opacity: 1,  x: 0   }}
         transition={{ duration: 0.55, ease: 'easeOut' }}
         className="hidden lg:flex lg:w-[40%] bg-[#1a1a1a] flex-col items-center justify-between px-12 py-14 relative overflow-hidden shrink-0"
       >
-        {/* Glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-[#800000]/15 blur-3xl pointer-events-none" />
 
-        {/* Top spacer */}
         <div />
 
-        {/* Center content */}
         <div className="relative z-10 text-center w-full max-w-xs">
           <motion.div
             animate={{ scale: [1, 1.06, 1] }}
@@ -218,21 +225,18 @@ const LoginPage = () => {
           </div>
         </div>
 
-        {/* Fixed bottom footer inside panel */}
         <div className="relative z-10 w-full border-t border-white/[0.06] pt-5 text-center">
           <p className="text-[10px] text-gray-600 tracking-[2px] uppercase">
             © {new Date().getFullYear()} WisePlayer — Premium Access
           </p>
         </div>
 
-        {/* Corner fold */}
         <div className="absolute bottom-0 right-0 w-0 h-0 border-solid border-b-[70px] border-r-[70px] border-b-[#f4f4f7] border-r-transparent border-t-transparent border-l-transparent" />
       </motion.div>
 
-      {/* ── RIGHT FORM PANEL ─────────────────────────────── */}
+      {/* ── RIGHT FORM PANEL ── */}
       <div className="flex-1 flex flex-col min-h-screen lg:min-h-0">
 
-        {/* Scrollable center */}
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-14 sm:py-16 lg:py-10">
           <div className="w-full max-w-sm">
 
@@ -265,9 +269,13 @@ const LoginPage = () => {
 
                 {/* LOGIN */}
                 {view === 'login' ? (
-                  <motion.div key="login" variants={viewVariants} initial="hidden" animate="visible" exit="exit">
-
-                    {/* Centered heading */}
+                  <motion.div
+                    key="login"
+                    variants={viewVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
                     <div className="text-center mb-6">
                       <h5 className="text-xl font-extrabold text-[#1a1a1a] tracking-tight">
                         {t('sign_in_title')}
@@ -293,16 +301,22 @@ const LoginPage = () => {
                         placeholder="Enter password"
                         icon={Lock}
                         rightEl={
-                          <button type="button" onClick={() => setShowPassword((p) => !p)}
-                            className="text-gray-400 hover:text-[#800000] transition-colors duration-150 border-0 bg-transparent p-0">
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword((p) => !p)}
+                            className="text-gray-400 hover:text-[#800000] transition-colors duration-150 border-0 bg-transparent p-0"
+                          >
                             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                           </button>
                         }
                       />
 
                       <div className="flex justify-end">
-                        <button type="button" onClick={() => setView('forgot')}
-                          className="text-xs font-semibold text-gray-500 hover:text-[#800000] transition-colors duration-150 border-0 bg-transparent">
+                        <button
+                          type="button"
+                          onClick={() => setView('forgot')}
+                          className="text-xs font-semibold text-gray-500 hover:text-[#800000] transition-colors duration-150 border-0 bg-transparent"
+                        >
                           {t('forgot_password')}
                         </button>
                       </div>
@@ -311,21 +325,30 @@ const LoginPage = () => {
                         type="submit"
                         disabled={loading}
                         whileHover={!loading ? { scale: 1.02 } : {}}
-                        whileTap={!loading ? { scale: 0.98 } : {}}
+                        whileTap={!loading  ? { scale: 0.98 } : {}}
                         className={`w-full h-11 rounded-xl font-bold text-sm border-0 flex items-center justify-center gap-2 transition-colors duration-200
-                          ${loading ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-[#1a1a1a] hover:bg-black text-white shadow-sm cursor-pointer'}`}
+                          ${loading
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-[#1a1a1a] hover:bg-black text-white shadow-sm cursor-pointer'
+                          }`}
                       >
-                        {loading
-                          ? <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
-                          : <>{t('Sign_in')}<ArrowRight size={16} /></>
-                        }
+                        {loading ? (
+                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                          </svg>
+                        ) : (
+                          <>{t('Sign_in')}<ArrowRight size={16} /></>
+                        )}
                       </motion.button>
                     </form>
 
                     <p className="text-center text-xs text-gray-500 mt-5">
                       Don't have an account?{' '}
-                      <button onClick={() => navigate('/register')}
-                        className="font-bold text-[#800000] hover:text-[#6a0000] transition-colors duration-150 border-0 bg-transparent">
+                      <button
+                        onClick={() => navigate('/register')}
+                        className="font-bold text-[#800000] hover:text-[#6a0000] transition-colors duration-150 border-0 bg-transparent"
+                      >
                         {t('Register')}
                       </button>
                     </p>
@@ -333,15 +356,27 @@ const LoginPage = () => {
 
                 ) : (
                   /* FORGOT */
-                  <motion.div key="forgot" variants={viewVariants} initial="hidden" animate="visible" exit="exit">
-                    <button onClick={() => setView('login')}
-                      className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-[#800000] transition-colors duration-150 mb-5 border-0 bg-transparent">
+                  <motion.div
+                    key="forgot"
+                    variants={viewVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    <button
+                      onClick={() => setView('login')}
+                      className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-[#800000] transition-colors duration-150 mb-5 border-0 bg-transparent"
+                    >
                       <ArrowLeft size={14} />{t('back_to_signin')}
                     </button>
 
                     <div className="text-center mb-6">
-                      <h5 className="text-xl font-extrabold text-[#1a1a1a] tracking-tight">{t('recover_password')}</h5>
-                      <p className="text-sm text-gray-500 mt-1">{t('recover_subtitle')}</p>
+                      <h5 className="text-xl font-extrabold text-[#1a1a1a] tracking-tight">
+                        {t('recover_password')}
+                      </h5>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {t('recover_subtitle')}
+                      </p>
                     </div>
 
                     <form onSubmit={handleForgot} className="space-y-4">
@@ -356,31 +391,39 @@ const LoginPage = () => {
                         type="submit"
                         disabled={loading}
                         whileHover={!loading ? { scale: 1.02 } : {}}
-                        whileTap={!loading ? { scale: 0.98 } : {}}
+                        whileTap={!loading  ? { scale: 0.98 } : {}}
                         className={`w-full h-11 rounded-xl font-bold text-sm border-0 flex items-center justify-center gap-2 transition-colors duration-200
-                          ${loading ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm cursor-pointer'}`}
+                          ${loading
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm cursor-pointer'
+                          }`}
                       >
-                        {loading
-                          ? <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
-                          : t('btn_send_recovery')
-                        }
+                        {loading ? (
+                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                          </svg>
+                        ) : (
+                          t('btn_send_recovery')
+                        )}
                       </motion.button>
                     </form>
                   </motion.div>
                 )}
+
               </AnimatePresence>
             </motion.div>
           </div>
         </div>
 
-        {/* Fixed footer inside right panel */}
+        {/* Footer */}
         <div className="border-t border-black/[0.06] bg-white py-3.5 flex items-center justify-center gap-2">
           <Shield size={14} className="text-green-500" />
           <span className="text-xs font-semibold text-gray-500">Authorized Access Only</span>
         </div>
       </div>
 
-      {/* ── TOAST ────────────────────────────────────────── */}
+      {/* ── TOAST ── */}
       <AnimatePresence>
         {toast && (
           <div className="fixed top-5 left-0 right-0 z-[99999] flex justify-center px-4 pointer-events-none">
@@ -390,13 +433,19 @@ const LoginPage = () => {
               exit={{   opacity: 0, y: -16  }}
               transition={{ duration: 0.25 }}
               className={`pointer-events-auto px-6 py-3 rounded-xl font-bold text-sm text-white shadow-lg
-                ${toast.type === 'success' ? 'bg-green-600' : toast.type === 'error' ? 'bg-red-600' : 'bg-amber-500'}`}
+                ${toast.type === 'success'
+                  ? 'bg-green-600'
+                  : toast.type === 'error'
+                  ? 'bg-red-600'
+                  : 'bg-amber-500'
+                }`}
             >
               {toast.msg}
             </motion.div>
           </div>
         )}
       </AnimatePresence>
+
     </div>
   );
 };
