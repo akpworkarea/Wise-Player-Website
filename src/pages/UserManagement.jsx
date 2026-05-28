@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserPlus, Power, X, Search } from "lucide-react";
+import { UserPlus, Power, X, Search, Filter, ChevronDown } from "lucide-react";
 import toast from "react-hot-toast";
 import {
   subscibedUserinfo,
@@ -16,99 +16,107 @@ import {
 } from "../auth/subReseller/userManagement";
 import { useTranslation } from "react-i18next";
 
+// ─── Constants ────────────────────────────────────────────────────────────────
+const STATUS_OPTIONS = ["", "ACTIVE", "INACTIVE"];
+const SUBSCRIPTION_OPTIONS = ["", "TRIAL", "BASIC", "STANDARD", "PREMIUM"];
+const DEBOUNCE_MS = 450;
+
+// ─── Tiny debounce hook ───────────────────────────────────────────────────────
+function useDebounce(value, delay) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+  return debounced;
+}
+
 function UserManagement() {
   const { t } = useTranslation();
   const { userRole } = useAuth();
 
-  const [totalPages, setTotalPages] = useState(1);
-  const [devices, setDevices] = useState([]);
-  const [allDevices, setAllDevices] = useState([]);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [newUser, setNewUser] = useState({ deviceId: "" });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [totalUser, setTotalUser] = useState(0);
+  // ── Data state ──
+  const [devices, setDevices]       = useState([]);
+  const [totalUser, setTotalUser]   = useState(0);
   const [activeUser, setActiveUser] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loadingData, setLoadingData] = useState(true);
+
+  // ── Filter state ──
+  const [search, setSearch]             = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [subFilter, setSubFilter]       = useState("");
+  const [showFilters, setShowFilters]   = useState(false);
+
+  const debouncedSearch = useDebounce(search, DEBOUNCE_MS);
+
+  // ── UI state ──
+  const [showModal, setShowModal]       = useState(false);
+  const [newUser, setNewUser]           = useState({ deviceId: "" });
+  const [error, setError]               = useState("");
+  const [loading, setLoading]           = useState(false);
   const [confirmModal, setConfirmModal] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState(null);
-  const [copiedId, setCopiedId] = useState(null);
-  const [search, setSearch] = useState("");
-  const [loadingData, setLoadingData] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [copiedId, setCopiedId]         = useState(null);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
 
-  // ── Paginated fetch ──
-  const fetchDashboard = async (page = currentPage) => {
-    setLoadingData(true);
-    try {
-      const backendPage = page - 1;
-      const res = userRole === "SUB_RESELLER"
-        ? await subResellerUserInfo(backendPage)
-        : await subscibedUserinfo(backendPage);
+  const filterRef = useRef(null);
 
-      if (res.success) {
-        const data = res.data?.content || [];
-        // Stable sort by registeredAt so order never changes on refetch
-        const sorted = [...data].sort(
-          (a, b) => new Date(b.registeredAt) - new Date(a.registeredAt)
-        );
-        setDevices(sorted);
-        setTotalUser(res.data.totalElements);
-        setTotalPages(res.data.totalPages);
-        setActiveUser(sorted.filter((u) => u.deviceStatus === "ACTIVE").length);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingData(false);
-    }
-  };
-
-  // ── Fetch ALL for search ──
-  const fetchAllForSearch = async () => {
-    setIsSearchLoading(true);
-    try {
-      const res = userRole === "SUB_RESELLER"
-        ? await subResellerUserInfo(0, 1000)
-        : await subscibedUserinfo(0, 1000);
-
-      if (res.success) {
-        const data = res.data?.content || [];
-        const sorted = [...data].sort(
-          (a, b) => new Date(b.registeredAt) - new Date(a.registeredAt)
-        );
-        setAllDevices(sorted);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsSearchLoading(false);
-    }
-  };
-
-  // On mount
+  // Close filter dropdown on outside click
   useEffect(() => {
-    fetchDashboard(1);
-    fetchAllForSearch();
+    const handler = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setShowFilters(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Page change
-  useEffect(() => {
-    fetchDashboard(currentPage);
-  }, [currentPage]);
+  // ─── Core fetch (server-side search + filters + pagination) ───────────────
+  const fetchPage = useCallback(
+    async (page = 1) => {
+      setLoadingData(true);
+      if (debouncedSearch || statusFilter || subFilter) setIsSearchLoading(true);
+      try {
+        const backendPage = page - 1;
+        const res =
+          userRole === "SUB_RESELLER"
+            ? await subResellerUserInfo(backendPage, 20, debouncedSearch, statusFilter, subFilter)
+            : await subscibedUserinfo(backendPage, 20, debouncedSearch, statusFilter, subFilter);
 
-  // Reset page on search
+        if (res.success) {
+          const data = res.data?.content || [];
+          const sorted = [...data].sort(
+            (a, b) => new Date(b.registeredAt) - new Date(a.registeredAt)
+          );
+          setDevices(sorted);
+          setTotalUser(res.data.totalElements ?? sorted.length);
+          setTotalPages(res.data.totalPages ?? 1);
+          setActiveUser(sorted.filter((u) => u.deviceStatus === "ACTIVE").length);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoadingData(false);
+        setIsSearchLoading(false);
+      }
+    },
+    [debouncedSearch, statusFilter, subFilter, userRole]
+  );
+
+  // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [search]);
+  }, [debouncedSearch, statusFilter, subFilter]);
 
-  // Search uses allDevices; normal view uses paginated devices
-  const filteredDevices = search.trim()
-    ? allDevices.filter((item) =>
-        item.deviceId.toLowerCase().includes(search.toLowerCase())
-      )
-    : devices;
+  // Fetch when page or filters change
+  useEffect(() => {
+    fetchPage(currentPage);
+  }, [currentPage, fetchPage]);
 
+  // ─── Helpers ─────────────────────────────────────────────────────────────
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     setCopiedId(text);
@@ -121,17 +129,26 @@ function UserManagement() {
     return `${id.slice(0, start)}...${id.slice(-end)}`;
   };
 
-  // ── Toggle disable — update in-place, no re-sort ──
+  const activeFiltersCount = [statusFilter, subFilter].filter(Boolean).length;
+
+  const clearAllFilters = () => {
+    setSearch("");
+    setStatusFilter("");
+    setSubFilter("");
+    setShowFilters(false);
+  };
+
+  // ─── Toggle disable ───────────────────────────────────────────────────────
   const handleDisable = async () => {
     if (!selectedDevice) return;
     const deviceId = selectedDevice.deviceId;
 
-    const response = userRole === "SUB_RESELLER"
-      ? await disableSubResellerUser(deviceId)
-      : await DisableUserAccount(deviceId);
+    const response =
+      userRole === "SUB_RESELLER"
+        ? await disableSubResellerUser(deviceId)
+        : await DisableUserAccount(deviceId);
 
     if (response?.success) {
-      // Update devices in-place — row stays in same position
       const toggle = (list) =>
         list.map((item) =>
           item.deviceId === deviceId
@@ -147,13 +164,13 @@ function UserManagement() {
         setActiveUser(updated.filter((u) => u.deviceStatus === "ACTIVE").length);
         return updated;
       });
-      setAllDevices((prev) => toggle(prev));
     }
 
     setConfirmModal(false);
     setSelectedDevice(null);
   };
 
+  // ─── Add user ─────────────────────────────────────────────────────────────
   const handleAddUser = async (e) => {
     e.preventDefault();
     const macRegex =
@@ -172,23 +189,23 @@ function UserManagement() {
       platform: "UNKNOWN",
     };
 
-    const response = userRole === "SUB_RESELLER"
-      ? await createSubResellerUser(payload)
-      : await createUser(newUser.deviceId);
+    const response =
+      userRole === "SUB_RESELLER"
+        ? await createSubResellerUser(payload)
+        : await createUser(newUser.deviceId);
 
     if (response?.success) {
       setShowModal(false);
       setNewUser({ deviceId: "" });
       setError("");
-      fetchDashboard(currentPage);
-      fetchAllForSearch();
+      fetchPage(currentPage);
     } else {
       setError(response?.message);
     }
     setLoading(false);
   };
 
-  // ── Reusable copy button — same pattern across all components ──
+  // ─── Sub-components ───────────────────────────────────────────────────────
   const CopyButton = ({ value }) => (
     <div className="relative inline-flex">
       <button
@@ -205,21 +222,28 @@ function UserManagement() {
     </div>
   );
 
-  // Skeleton row
   const SkeletonRow = () => (
     <tr className="border-t animate-pulse">
-      {[...Array(6)].map((_, i) => (
+      {[...Array(7)].map((_, i) => (
         <td key={i} className="px-4 py-3">
-          <div className="h-3 bg-gray-200 rounded mx-auto" style={{ width: i === 0 ? "80%" : "60%" }} />
+          <div
+            className="h-3 bg-gray-200 rounded mx-auto"
+            style={{ width: i <= 1 ? "80%" : "60%" }}
+          />
         </td>
       ))}
     </tr>
   );
 
+  // ── Filter pill label helpers ──
+  const statusLabel = (s) => s || t("userManagement.all_status") || "All Status";
+  const subLabel    = (s) => s || t("userManagement.all_plans")  || "All Plans";
+
+  // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen w-full bg-[#f4f4f7] p-4 space-y-5">
 
-      {/* ── HEADER ── */}
+      {/* ══ HEADER ══════════════════════════════════════════════════════════ */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
         {/* Title */}
@@ -232,19 +256,23 @@ function UserManagement() {
           </p>
         </div>
 
-        {/* Search + Create */}
+        {/* Search row + Filter + Create */}
         <div className="flex flex-col sm:flex-row gap-3 lg:items-center">
 
           {/* Search bar */}
           <div className="flex flex-1 rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm min-w-0">
             <div className="relative flex-1 min-w-0">
-              {isSearchLoading
-                ? <div className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 border-2 border-[#800000] border-t-transparent rounded-full animate-spin" />
-                : <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-              }
+              {isSearchLoading ? (
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 border-2 border-[#800000] border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Search
+                  size={13}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                />
+              )}
               <input
                 type="text"
-                placeholder={t("userManagement.search_device")}
+                placeholder={t("userManagement.search_device") || "Search by Device ID or MAC…"}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-8 pr-7 py-2.5 text-sm text-gray-700 bg-white focus:outline-none placeholder-gray-400"
@@ -260,6 +288,101 @@ function UserManagement() {
             </div>
           </div>
 
+          {/* Filter dropdown trigger */}
+          <div className="relative shrink-0" ref={filterRef}>
+            <button
+              onClick={() => setShowFilters((v) => !v)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold transition active:scale-95 whitespace-nowrap
+                ${activeFiltersCount > 0
+                  ? "bg-[#800000] text-white border-[#800000]"
+                  : "bg-white text-gray-700 border-gray-200 hover:border-[#800000] hover:text-[#800000]"
+                }`}
+            >
+              <Filter size={14} />
+              {t("userManagement.filters") || "Filters"}
+              {activeFiltersCount > 0 && (
+                <span className="bg-white text-[#800000] text-[10px] font-black px-1.5 py-0.5 rounded-full leading-none">
+                  {activeFiltersCount}
+                </span>
+              )}
+              <ChevronDown
+                size={13}
+                className={`transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            {/* Dropdown panel */}
+            <AnimatePresence>
+              {showFilters && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-full mt-2 z-40 bg-white border border-gray-200 rounded-2xl shadow-xl w-64 p-4 space-y-4"
+                >
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                    {t("userManagement.filter_by") || "Filter by"}
+                  </p>
+
+                  {/* Status filter */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-gray-600">
+                      {t("userManagement.status") || "Status"}
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {STATUS_OPTIONS.map((s) => (
+                        <button
+                          key={s || "all-status"}
+                          onClick={() => setStatusFilter(s)}
+                          className={`text-xs px-3 py-1.5 rounded-full border font-semibold transition
+                            ${statusFilter === s
+                              ? "bg-[#800000] text-white border-[#800000]"
+                              : "bg-gray-50 text-gray-600 border-gray-200 hover:border-[#800000] hover:text-[#800000]"
+                            }`}
+                        >
+                          {s || "All"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Subscription filter */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-gray-600">
+                      {t("userManagement.subscription") || "Subscription"}
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {SUBSCRIPTION_OPTIONS.map((s) => (
+                        <button
+                          key={s || "all-sub"}
+                          onClick={() => setSubFilter(s)}
+                          className={`text-xs px-3 py-1.5 rounded-full border font-semibold transition
+                            ${subFilter === s
+                              ? "bg-[#800000] text-white border-[#800000]"
+                              : "bg-gray-50 text-gray-600 border-gray-200 hover:border-[#800000] hover:text-[#800000]"
+                            }`}
+                        >
+                          {s || "All"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Clear */}
+                  {activeFiltersCount > 0 && (
+                    <button
+                      onClick={clearAllFilters}
+                      className="w-full text-xs font-bold text-[#800000] hover:underline pt-1"
+                    >
+                      {t("userManagement.clear_filters") || "Clear all filters"}
+                    </button>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           {/* Create button */}
           <button
             onClick={() => setShowModal(true)}
@@ -268,24 +391,46 @@ function UserManagement() {
             <UserPlus size={16} />
             {t("userManagement.create_new_device")}
           </button>
-
         </div>
       </div>
 
-      {/* Active filter pill */}
-      {search && (
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">
-            {filteredDevices.length} result{filteredDevices.length !== 1 ? "s" : ""} for
+      {/* ── Active filter pills ── */}
+      {(search || statusFilter || subFilter) && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-gray-500 font-medium">
+            {loadingData ? "Searching…" : `${totalUser} result${totalUser !== 1 ? "s" : ""}`}
           </span>
-          <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
-            "{search}"
-            <button onClick={() => setSearch("")}><X size={11} /></button>
-          </span>
+
+          {search && (
+            <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
+              "{search}"
+              <button onClick={() => setSearch("")}><X size={11} /></button>
+            </span>
+          )}
+          {statusFilter && (
+            <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
+              {statusFilter}
+              <button onClick={() => setStatusFilter("")}><X size={11} /></button>
+            </span>
+          )}
+          {subFilter && (
+            <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
+              {subFilter}
+              <button onClick={() => setSubFilter("")}><X size={11} /></button>
+            </span>
+          )}
+          {(statusFilter || subFilter || search) && (
+            <button
+              onClick={clearAllFilters}
+              className="text-xs text-gray-400 hover:text-[#800000] font-semibold transition"
+            >
+              Clear all
+            </button>
+          )}
         </div>
       )}
 
-      {/* ── STAT TILES — match dashboard stat card style ── */}
+      {/* ══ STAT TILES ═══════════════════════════════════════════════════════ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="bg-white p-4 rounded-xl shadow border border-gray-200">
           <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">
@@ -303,25 +448,22 @@ function UserManagement() {
         </div>
       </div>
 
-      {/* ════════════════════════════════════════════
-          DESKTOP + TABLET TABLE  (md+)
-          table-fixed + colgroup = zero horizontal scroll
-          from 768px to 1920px
-      ════════════════════════════════════════════ */}
-      <div className="hidden md:block bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
-        <table className="w-full text-sm table-fixed">
+      {/* ══ DESKTOP TABLE (md+) ═══════════════════════════════════════════════ */}
+      <div className="hidden md:block bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
+        <table className="w-full text-sm" style={{ minWidth: "720px" }}>
           <colgroup>
-            <col style={{ width: "28%" }} /> {/* Device ID */}
-            <col style={{ width: "12%" }} /> {/* Status */}
-            <col style={{ width: "15%" }} /> {/* Subscription */}
-            <col style={{ width: "15%" }} /> {/* Expires */}
-            <col style={{ width: "18%" }} /> {/* Registered */}
-            <col style={{ width: "12%" }} /> {/* Action */}
+            <col style={{ width: "17%" }} /> {/* MAC Address */}
+            <col style={{ width: "20%" }} /> {/* Device ID   */}
+            <col style={{ width: "11%" }} /> {/* Status      */}
+            <col style={{ width: "12%" }} /> {/* Subscription*/}
+            <col style={{ width: "13%" }} /> {/* Expires     */}
+            <col style={{ width: "16%" }} /> {/* Registered  */}
+            <col style={{ width: "11%" }} /> {/* Action      */}
           </colgroup>
-
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200">
               {[
+                t("userManagement.mac_address") || "MAC Address",
                 t("userManagement.device_id"),
                 t("userManagement.status"),
                 t("userManagement.subscription"),
@@ -342,34 +484,54 @@ function UserManagement() {
           <tbody className="divide-y divide-gray-100">
             {loadingData ? (
               [...Array(6)].map((_, i) => <SkeletonRow key={i} />)
-            ) : filteredDevices.length > 0 ? (
-              filteredDevices.map((item, idx) => (
+            ) : devices.length > 0 ? (
+              devices.map((item, idx) => (
                 <tr
                   key={item.deviceId}
                   className={`text-center transition-colors duration-150 hover:bg-red-50/30 ${
                     idx % 2 === 0 ? "bg-white" : "bg-gray-50/60"
                   }`}
                 >
-                  {/* Device ID + copy */}
-                  <td className="px-4 py-3.5">
-                    <div className="flex items-center justify-center gap-2 flex-wrap">
+                  {/* MAC Address */}
+                  <td className="px-3 py-3.5">
+                    <div className="flex items-center justify-center gap-1.5 min-w-0">
                       <span
-                        className="text-[#800000] font-semibold cursor-default"
+                        className="font-mono text-xs font-semibold text-gray-700 tracking-wide truncate"
+                        title={item.macAddress}
+                      >
+                        {item.macAddress || "—"}
+                      </span>
+                      {item.macAddress && (
+                        <span className="shrink-0">
+                          <CopyButton value={item.macAddress} />
+                        </span>
+                      )}
+                    </div>
+                  </td>
+
+                  {/* Device ID */}
+                  <td className="px-3 py-3.5">
+                    <div className="flex items-center justify-center gap-1.5 min-w-0">
+                      <span
+                        className="text-[#800000] font-semibold text-xs truncate"
                         title={item.deviceId}
                       >
                         {truncateId(item.deviceId)}
                       </span>
-                      <CopyButton value={item.deviceId} />
+                      <span className="shrink-0">
+                        <CopyButton value={item.deviceId} />
+                      </span>
                     </div>
                   </td>
 
-                  {/* Status badge */}
                   <td className="px-4 py-3.5">
-                    <span className={`px-2.5 py-1 text-xs rounded-full font-bold ${
-                      item.deviceStatus === "ACTIVE"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-600"
-                    }`}>
+                    <span
+                      className={`px-2.5 py-1 text-xs rounded-full font-bold ${
+                        item.deviceStatus === "ACTIVE"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-600"
+                      }`}
+                    >
                       {item.deviceStatus}
                     </span>
                   </td>
@@ -386,19 +548,23 @@ function UserManagement() {
                     {formatDate(item.registeredAt)}
                   </td>
 
-                  {/* Toggle action */}
                   <td className="px-4 py-3.5">
                     <div className="flex justify-center">
                       <button
-                        onClick={() => { setSelectedDevice(item); setConfirmModal(true); }}
+                        onClick={() => {
+                          setSelectedDevice(item);
+                          setConfirmModal(true);
+                        }}
                         className={`p-2 rounded-lg border transition active:scale-95 ${
                           item.deviceStatus === "INACTIVE"
                             ? "border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white"
                             : "bg-[#800000] text-white border-[#800000] hover:bg-[#6a0000]"
                         }`}
-                        title={item.deviceStatus === "ACTIVE"
-                          ? t("userManagement.disable")
-                          : t("userManagement.activate")}
+                        title={
+                          item.deviceStatus === "ACTIVE"
+                            ? t("userManagement.disable")
+                            : t("userManagement.activate")
+                        }
                       >
                         <Power size={13} />
                       </button>
@@ -408,18 +574,20 @@ function UserManagement() {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="py-12 text-center">
+                <td colSpan="7" className="py-12 text-center">
                   <div className="flex flex-col items-center gap-2 text-gray-400">
                     <Search size={28} className="opacity-40" />
                     <p className="font-semibold text-sm">
-                      {search ? `No results for "${search}"` : t("userManagement.no_user_found")}
+                      {search || statusFilter || subFilter
+                        ? "No results match your filters"
+                        : t("userManagement.no_user_found")}
                     </p>
-                    {search && (
+                    {(search || statusFilter || subFilter) && (
                       <button
-                        onClick={() => setSearch("")}
+                        onClick={clearAllFilters}
                         className="text-xs text-[#800000] font-bold hover:underline"
                       >
-                        Clear search
+                        Clear filters
                       </button>
                     )}
                   </div>
@@ -430,62 +598,90 @@ function UserManagement() {
         </table>
       </div>
 
-      {/* ════════════════════════════════════════════
-          MOBILE CARDS  (< md)
-      ════════════════════════════════════════════ */}
+      {/* ══ MOBILE CARDS (< md) ══════════════════════════════════════════════ */}
       <div className="md:hidden space-y-3">
         {loadingData ? (
           [...Array(4)].map((_, i) => (
-            <div key={i} className="p-4 bg-white rounded-xl shadow border border-gray-200 animate-pulse space-y-2">
+            <div
+              key={i}
+              className="p-4 bg-white rounded-xl shadow border border-gray-200 animate-pulse space-y-2"
+            >
               <div className="h-4 bg-gray-200 rounded w-1/2" />
               <div className="h-3 bg-gray-200 rounded w-1/3" />
             </div>
           ))
-        ) : filteredDevices.length > 0 ? (
-          filteredDevices.map((item) => (
+        ) : devices.length > 0 ? (
+          devices.map((item) => (
             <div
               key={item.deviceId}
               className="bg-white p-4 rounded-xl shadow border border-gray-200 space-y-3"
             >
-              {/* Top: ID + copy + status */}
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span
-                    className="text-sm font-semibold text-[#800000]"
-                    title={item.deviceId}
-                  >
-                    {truncateId(item.deviceId, 6, 4)}
-                  </span>
-                  <CopyButton value={item.deviceId} />
+              <div className="flex justify-between items-start gap-3">
+                <div className="space-y-1.5 flex-1 min-w-0">
+                  {/* MAC Address — primary identifier */}
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span
+                      className="font-mono text-sm font-bold text-gray-800 tracking-wide truncate"
+                      title={item.macAddress}
+                    >
+                      {item.macAddress || "—"}
+                    </span>
+                    {item.macAddress && (
+                      <span className="shrink-0">
+                        <CopyButton value={item.macAddress} />
+                      </span>
+                    )}
+                  </div>
+                  {/* Device ID — secondary */}
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span
+                      className="text-xs font-semibold text-[#800000] truncate"
+                      title={item.deviceId}
+                    >
+                      {truncateId(item.deviceId, 8, 6)}
+                    </span>
+                    <span className="shrink-0">
+                      <CopyButton value={item.deviceId} />
+                    </span>
+                  </div>
                 </div>
-                <span className={`px-2.5 py-1 text-xs rounded-full font-bold ${
-                  item.deviceStatus === "ACTIVE"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-600"
-                }`}>
+                <span
+                  className={`shrink-0 px-2.5 py-1 text-xs rounded-full font-bold ${
+                    item.deviceStatus === "ACTIVE"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-600"
+                  }`}
+                >
                   {item.deviceStatus}
                 </span>
               </div>
 
-              {/* Details */}
               <div className="text-sm text-gray-500 space-y-1">
                 <p>
-                  <span className="font-medium text-gray-600">{t("userManagement.plan")}:</span>{" "}
+                  <span className="font-medium text-gray-600">
+                    {t("userManagement.plan")}:
+                  </span>{" "}
                   {item.subscriptionType}
                 </p>
                 <p>
-                  <span className="font-medium text-gray-600">{t("userManagement.expires")}:</span>{" "}
+                  <span className="font-medium text-gray-600">
+                    {t("userManagement.expires")}:
+                  </span>{" "}
                   {formatDate(item.expiresAt)}
                 </p>
                 <p>
-                  <span className="font-medium text-gray-600">{t("userManagement.registered")}:</span>{" "}
+                  <span className="font-medium text-gray-600">
+                    {t("userManagement.registered")}:
+                  </span>{" "}
                   {formatDate(item.registeredAt)}
                 </p>
               </div>
 
-              {/* Toggle button */}
               <button
-                onClick={() => { setSelectedDevice(item); setConfirmModal(true); }}
+                onClick={() => {
+                  setSelectedDevice(item);
+                  setConfirmModal(true);
+                }}
                 className={`w-full py-2.5 rounded-xl text-sm font-bold transition active:scale-95 ${
                   item.deviceStatus === "INACTIVE"
                     ? "border border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white"
@@ -500,22 +696,24 @@ function UserManagement() {
           <div className="flex flex-col items-center gap-2 py-12 text-gray-400">
             <Search size={28} className="opacity-40" />
             <p className="font-semibold text-sm">
-              {search ? `No results for "${search}"` : t("userManagement.no_users")}
+              {search || statusFilter || subFilter
+                ? "No results match your filters"
+                : t("userManagement.no_users")}
             </p>
-            {search && (
+            {(search || statusFilter || subFilter) && (
               <button
-                onClick={() => setSearch("")}
+                onClick={clearAllFilters}
                 className="text-xs text-[#800000] font-bold hover:underline"
               >
-                Clear search
+                Clear filters
               </button>
             )}
           </div>
         )}
       </div>
 
-      {/* ── PAGINATION — hidden during search ── */}
-      {totalPages > 1 && !search && (
+      {/* ══ PAGINATION ═══════════════════════════════════════════════════════ */}
+      {totalPages > 1 && (
         <div className="flex justify-center items-center gap-3 p-3 flex-wrap">
           <button
             disabled={currentPage === 1}
@@ -537,7 +735,7 @@ function UserManagement() {
         </div>
       )}
 
-      {/* ── CREATE DEVICE MODAL ── */}
+      {/* ══ CREATE DEVICE MODAL ══════════════════════════════════════════════ */}
       <AnimatePresence>
         {showModal && (
           <motion.div
@@ -590,7 +788,7 @@ function UserManagement() {
         )}
       </AnimatePresence>
 
-      {/* ── CONFIRM TOGGLE MODAL ── */}
+      {/* ══ CONFIRM TOGGLE MODAL ═════════════════════════════════════════════ */}
       <AnimatePresence>
         {confirmModal && (
           <motion.div
@@ -621,7 +819,6 @@ function UserManagement() {
                   </strong>{" "}
                   {t("userManagement.this_user")}?
                 </p>
-
                 <div className="flex gap-3">
                   <button
                     onClick={() => setConfirmModal(false)}
