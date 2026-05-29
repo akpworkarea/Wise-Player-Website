@@ -844,3 +844,281 @@ function UserManagement() {
 }
 
 export default UserManagement;
+
+
+
+
+
+
+// /*import React, { useState, useEffect, useRef, useCallback } from "react";
+// import { motion, AnimatePresence } from "framer-motion";
+// import { UserPlus, Power, X, Search, Filter, ChevronDown } from "lucide-react";
+// import toast from "react-hot-toast";
+// import {
+//   subscibedUserinfo,
+//   DisableUserAccount,
+//   createUser,
+// } from "../auth/userManagement";
+// import { formatDate } from "../auth/utilfunction";
+// import { useAuth } from "../context/AuthContext";
+// import {
+//   createSubResellerUser,
+//   subResellerUserInfo,
+//   disableSubResellerUser,
+// } from "../auth/subReseller/userManagement";
+// import { useTranslation } from "react-i18next";
+
+// // ─── Constants ────────────────────────────────────────────────────────────────
+// const STATUS_OPTIONS = ["", "ACTIVE", "INACTIVE"];
+// const SUBSCRIPTION_OPTIONS = ["", "TRIAL", "BASIC", "STANDARD", "PREMIUM"];
+// const DEBOUNCE_MS = 450;
+
+// // ─── Tiny debounce hook ───────────────────────────────────────────────────────
+// function useDebounce(value, delay) {
+//   const [debounced, setDebounced] = useState(value);
+//   useEffect(() => {
+//     const id = setTimeout(() => setDebounced(value), delay);
+//     return () => clearTimeout(id);
+//   }, [value, delay]);
+//   return debounced;
+// }
+
+// function UserManagement() {
+//   const { t } = useTranslation();
+//   const { userRole } = useAuth();
+
+//   // ── Data state ──
+//   const [devices, setDevices]       = useState([]);
+//   const [totalUser, setTotalUser]   = useState(0);
+//   const [activeUser, setActiveUser] = useState(0);
+//   const [totalPages, setTotalPages] = useState(1);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [loadingData, setLoadingData] = useState(true);
+
+//   // ── Filter state ──
+//   const [search, setSearch]             = useState("");
+//   const [statusFilter, setStatusFilter] = useState("");
+//   const [subFilter, setSubFilter]       = useState("");
+//   const [showFilters, setShowFilters]   = useState(false);
+
+//   const debouncedSearch = useDebounce(search, DEBOUNCE_MS);
+
+//   // ── UI state ──
+//   const [showModal, setShowModal]       = useState(false);
+//   const [newUser, setNewUser]           = useState({ deviceId: "" });
+//   const [error, setError]               = useState("");
+//   const [loading, setLoading]           = useState(false);
+//   const [confirmModal, setConfirmModal] = useState(false);
+//   const [selectedDevice, setSelectedDevice] = useState(null);
+//   const [copiedId, setCopiedId]         = useState(null);
+//   const [isSearchLoading, setIsSearchLoading] = useState(false);
+
+//   const filterRef = useRef(null);
+
+//   // Close filter dropdown on outside click
+//   useEffect(() => {
+//     const handler = (e) => {
+//       if (filterRef.current && !filterRef.current.contains(e.target)) {
+//         setShowFilters(false);
+//       }
+//     };
+//     document.addEventListener("mousedown", handler);
+//     return () => document.removeEventListener("mousedown", handler);
+//   }, []);
+
+//   // ─── Core fetch (server-side search + filters + pagination) ───────────────
+//   const fetchPage = useCallback(
+//     async (page = 1) => {
+//       setLoadingData(true);
+//       if (debouncedSearch || statusFilter || subFilter) setIsSearchLoading(true);
+//       try {
+//         const backendPage = page - 1;
+//         const res =
+//           userRole === "SUB_RESELLER"
+//             ? await subResellerUserInfo(backendPage, 20, debouncedSearch, statusFilter, subFilter)
+//             : await subscibedUserinfo(backendPage, 20, debouncedSearch, statusFilter, subFilter);
+
+//         if (res.success) {
+//           const data = res.data?.content || [];
+//           const sorted = [...data].sort(
+//             (a, b) => new Date(b.registeredAt) - new Date(a.registeredAt)
+//           );
+//           setDevices(sorted);
+//           setTotalUser(res.data.totalElements ?? sorted.length);
+//           setTotalPages(res.data.totalPages ?? 1);
+//           setActiveUser(sorted.filter((u) => u.deviceStatus === "ACTIVE").length);
+//         }
+//       } catch (err) {
+//         console.error(err);
+//       } finally {
+//         setLoadingData(false);
+//         setIsSearchLoading(false);
+//       }
+//     },
+//     [debouncedSearch, statusFilter, subFilter, userRole]
+//   );
+
+//   // Reset to page 1 when filters change
+//   useEffect(() => {
+//     setCurrentPage(1);
+//   }, [debouncedSearch, statusFilter, subFilter]);
+
+//   // Fetch when page or filters change
+//   useEffect(() => {
+//     fetchPage(currentPage);
+//   }, [currentPage, fetchPage]);
+
+//   // ─── Helpers ─────────────────────────────────────────────────────────────
+//   const copyToClipboard = (text) => {
+//     navigator.clipboard.writeText(text);
+//     setCopiedId(text);
+//     setTimeout(() => setCopiedId(null), 1500);
+//   };
+
+//   const truncateId = (id, start = 8, end = 5) => {
+//     if (!id) return "";
+//     if (id.length <= start + end) return id;
+//     return `${id.slice(0, start)}...${id.slice(-end)}`;
+//   };
+
+//   const activeFiltersCount = [statusFilter, subFilter].filter(Boolean).length;
+
+//   const clearAllFilters = () => {
+//     setSearch("");
+//     setStatusFilter("");
+//     setSubFilter("");
+//     setShowFilters(false);
+//   };
+
+//   // ─── Toggle disable ───────────────────────────────────────────────────────
+//   const handleDisable = async () => {
+//     if (!selectedDevice) return;
+//     const deviceId = selectedDevice.deviceId;
+
+//     const response =
+//       userRole === "SUB_RESELLER"
+//         ? await disableSubResellerUser(deviceId)
+//         : await DisableUserAccount(deviceId);
+
+//     if (response?.success) {
+//       const toggle = (list) =>
+//         list.map((item) =>
+//           item.deviceId === deviceId
+//             ? {
+//                 ...item,
+//                 deviceStatus:
+//                   item.deviceStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE",
+//               }
+//             : item
+//         );
+//       setDevices((prev) => {
+//         const updated = toggle(prev);
+//         setActiveUser(updated.filter((u) => u.deviceStatus === "ACTIVE").length);
+//         return updated;
+//       });
+//     }
+
+//     setConfirmModal(false);
+//     setSelectedDevice(null);
+//   };
+
+//   // ─── Add user ─────────────────────────────────────────────────────────────
+//   const handleAddUser = async (e) => {
+//     e.preventDefault();
+//     const macRegex =
+//       /^([0-9A-Fa-f]{2}([:-]?)){5}[0-9A-Fa-f]{2}$|^([0-9A-Fa-f]{4}\.){2}[0-9A-Fa-f]{4}$/;
+
+//     if (!macRegex.test(newUser.deviceId)) {
+//       toast.error(t("userManagement.invalid_mac"));
+//       return;
+//     }
+
+//     setLoading(true);
+//     const payload = {
+//       deviceId: newUser.deviceId,
+//       deviceModel: "Generic Smart Device",
+//       osVersion: "1.0.0",
+//       platform: "UNKNOWN",
+//     };
+
+//     const response =
+//       userRole === "SUB_RESELLER"
+//         ? await createSubResellerUser(payload)
+//         : await createUser(newUser.deviceId);
+
+//     if (response?.success) {
+//       setShowModal(false);
+//       setNewUser({ deviceId: "" });
+//       setError("");
+//       fetchPage(currentPage);
+//     } else {
+//       setError(response?.message);
+//     }
+//     setLoading(false);
+//   };
+
+//   // ─── Sub-components ───────────────────────────────────────────────────────
+//   const CopyButton = ({ value }) => (
+//     <div className="relative inline-flex">
+//       <button
+//         onClick={() => copyToClipboard(value)}
+//         className="text-[10px] border border-gray-300 px-2 py-0.5 rounded hover:bg-red-50 hover:border-[#800000] hover:text-[#800000] transition text-gray-500"
+//       >
+//         {copiedId === value ? t("userManagement.copied") : t("userManagement.copy")}
+//       </button>
+//       {copiedId === value && (
+//         <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap z-10">
+//           {t("userManagement.copied")}
+//         </span>
+//       )}
+//     </div>
+//   );
+
+//   const SkeletonRow = () => (
+//     <tr className="border-t animate-pulse">
+//       {[...Array(7)].map((_, i) => (
+//         <td key={i} className="px-4 py-3">
+//           <div
+//             className="h-3 bg-gray-200 rounded mx-auto"
+//             style={{ width: i <= 1 ? "80%" : "60%" }}
+//           />
+//         </td>
+//       ))}
+//     </tr>
+//   );
+
+//   // ── Filter pill label helpers ──
+//   const statusLabel = (s) => s || t("userManagement.all_status") || "All Status";
+//   const subLabel    = (s) => s || t("userManagement.all_plans")  || "All Plans";
+
+//   // ─── Render ───────────────────────────────────────────────────────────────
+//   return (
+//     <div className="min-h-screen w-full bg-[#f4f4f7] p-4 space-y-5">
+
+//       {/* ══ HEADER ══════════════════════════════════════════════════════════ */}
+//       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+
+//         {/* Title */}
+//         <div className="shrink-0">
+//           <h3 className="font-bold text-[#800000] text-lg">
+//             {t("userManagement.device_management")}
+//           </h3>
+//           <p className="text-gray-500 text-sm mt-0.5">
+//             {t("userManagement.manage_members")}
+//           </p>
+//         </div>
+
+//         {/* Search row + Filter + Create */}
+//         <div className="flex flex-col sm:flex-row gap-3 lg:items-center">
+
+//           {/* Search bar */}
+//           <div className="flex flex-1 rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm min-w-0">
+//             <div className="relative flex-1 min-w-0">
+//               {isSearchLoading ? (
+//                 <div className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 border-2 border-[#800000] border-t-transparent rounded-full animate-spin" />
+//               ) : (
+//                 <Search
+//                   size={13}
+//                   className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+//                 />
+//               )} */
