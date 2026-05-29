@@ -515,12 +515,12 @@ const WisePlayerHome = () => {
 
             {/* Support */}
             <div>
-              <h6 className="font-bold mb-5 uppercase text-[10px] tracking-[3px] text-gray-400">
+              {/* <h6 className="font-bold mb-5 uppercase text-[10px] tracking-[3px] text-gray-400">
                 {t('home.support')}
-              </h6>
+              </h6> */}
               <div className="space-y-4">
                 {/* Reseller */}
-                <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                {/* <div className="flex items-center justify-between pb-3 border-b border-gray-100">
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                     {t('home.reseller')}
                   </span>
@@ -532,7 +532,7 @@ const WisePlayerHome = () => {
                     <Phone size={14} className="text-green-500" />
                     +212 676-076001
                   </a>
-                </div>
+                </div> */}
                 {/* Customer */}
                 <div className="flex items-center justify-between pb-3 border-b border-gray-100">
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">

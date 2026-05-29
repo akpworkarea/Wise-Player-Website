@@ -299,7 +299,7 @@ const Reseller = () => {
                       <td className="px-6 py-3 text-right">
                         {tier.custom ? (
                           <a
-                            href="https://wa.me/212676076001?text=Hi%20I%20want%20custom%20pricing%20for%201000%2B%20codes"
+                            href="https://wa.me/212777754774?text=Hi%20I%20want%20custom%20pricing%20for%201000%2B%20codes"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1.5 text-green-600 font-bold no-underline hover:text-green-700 transition-colors"
