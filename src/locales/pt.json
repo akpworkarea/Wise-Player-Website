@@ -308,7 +308,10 @@
     "prev": "Anterior",
     "page": "Página",
     "of": "de",
-    "next": "Próximo"
+    "next": "Próximo",
+      "subtitle": "Visualize e gerencie suas transações",
+    "search_placeholder": "Pesquisar transações...",
+    "filters": "Filtros"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "Oferta Exclusiva em Grande Quantidade!",

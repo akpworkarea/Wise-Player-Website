@@ -308,7 +308,10 @@
     "prev": "Vorige",
     "page": "Pagina",
     "of": "van",
-    "next": "Volgende"
+    "next": "Volgende",
+     "subtitle": "Bekijk en beheer uw transacties",
+    "search_placeholder": "Transacties zoeken...",
+    "filters": "Filters"
   },
   "contact_Page": {
     "contact_support_center": "SUPPORTCENTRUM",

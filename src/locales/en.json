@@ -518,7 +518,10 @@
     "prev": "Prev",
     "page": "Page",
     "of": "of",
-    "next": "Next"
+    "next": "Next",
+    "subtitle": "View and manage your transactions",
+    "search_placeholder": "Search transactions...",
+    "filters": "Filters"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "Exclusive Bulk Offer!",

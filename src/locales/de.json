@@ -341,7 +341,10 @@
     "prev": "Zurück",
     "page": "Seite",
     "of": "von",
-    "next": "Weiter"
+    "next": "Weiter",
+     "subtitle": "Ihre Transaktionen anzeigen und verwalten",
+    "search_placeholder": "Transaktionen suchen...",
+    "filters": "Filter"
   },
   "subreseller_management": "Unterhändlerverwaltung",
   "manage_subreseller": "Unterhändler und Konten verwalten",

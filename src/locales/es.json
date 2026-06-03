@@ -309,7 +309,10 @@
     "prev": "Anterior",
     "page": "Página",
     "of": "de",
-    "next": "Siguiente"
+    "next": "Siguiente",
+     "subtitle": "Ver y administrar tus transacciones",
+    "search_placeholder": "Buscar transacciones...",
+    "filters": "Filtros"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "¡Oferta Exclusiva por Volumen!",

@@ -274,7 +274,10 @@
     "prev": "Précédent",
     "page": "Page",
     "of": "de",
-    "next": "Suivant"
+    "next": "Suivant",
+    "subtitle": "Afficher et gérer vos transactions",
+    "search_placeholder": "Rechercher des transactions...",
+    "filters": "Filtres"
   },
   "activation": {
     "appName": "WISE ",

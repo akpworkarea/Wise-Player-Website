@@ -299,7 +299,10 @@
     "prev": "السابق",
     "page": "الصفحة",
     "of": "من",
-    "next": "التالي"
+    "next": "التالي",
+    "search_placeholder": "ابحث في المعاملات...",
+    "filters": "الفلاتر",
+     "subtitle": "عرض وإدارة معاملاتك"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "عرض حصري للكميات الكبيرة!",

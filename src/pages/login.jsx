@@ -146,25 +146,24 @@ const LoginPage = () => {
 
   // ── FIX: interceptor no longer swallows 401 for login endpoint,
   //    so catch block now runs and error message reaches showToast ──
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const result = await loginReseller({ username, password });
-    setLoading(false);
+  // LoginPage.jsx
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  const result = await loginReseller({ username, password });
+  setLoading(false);
 
-    if (result.success) {
-      showToast('Success! Redirecting...', 'success');
-      localStorage.setItem('user', JSON.stringify(result.data));
-      setUserRole(result?.data?.role);
-      localStorage.setItem('userName', username);
-      await refetchDashboard();
-      navigate('/dashboard');
-    } else {
-      // This now correctly shows because the interceptor no longer
-      // redirects away before this line can execute
-      showToast(result.message || 'Invalid credentials', 'error');
-    }
-  };
+  if (result.success) {
+    showToast('Success! Redirecting...', 'success');
+    localStorage.setItem('user', JSON.stringify(result.data));
+    setUserRole(result?.data?.role);
+    localStorage.setItem('userName', username);
+    // ✅ Remove await refetchDashboard() — let the dashboard fetch itself
+    navigate('/dashboard');
+  } else {
+    showToast(result.message || 'Invalid credentials', 'error');
+  }
+};
 
   const handleForgot = (e) => {
     e.preventDefault();

@@ -298,7 +298,10 @@
     "prev": "Precedente",
     "page": "Pagina",
     "of": "di",
-    "next": "Successivo"
+    "next": "Successivo",
+     "subtitle": "Visualizza e gestisci le tue transazioni",
+    "search_placeholder": "Cerca transazioni...",
+    "filters": "Filtri"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "Offerta Esclusiva all'Ingrosso!",
