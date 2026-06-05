@@ -307,7 +307,12 @@
     "submit_request": "Anfrage senden",
     "select_plan": "Plan auswählen",
     "submit": "Absenden",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+     "admin_notes": "Administratornotizen",
+    "mac_address": "MAC-Adresse",
+    "filters": "Filter",
+    "manage_activation_requests": "Aktivierungsanfragen verwalten",
+    "search_placeholder": "Anfragen suchen..."
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "Exklusives Großangebot!",

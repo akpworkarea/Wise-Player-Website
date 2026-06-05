@@ -286,7 +286,12 @@
     "submit_request": "إرسال طلب",
     "select_plan": "اختر الخطة",
     "submit": "إرسال",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+     "admin_notes": "ملاحظات المسؤول",
+    "mac_address": "عنوان MAC",
+    "filters": "الفلاتر",
+    "manage_activation_requests": "إدارة طلبات التفعيل",
+    "search_placeholder": "البحث في الطلبات..."
   },
   "transaction": {
     "transaction_history": "سجل المعاملات",

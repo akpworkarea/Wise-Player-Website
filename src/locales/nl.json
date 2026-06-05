@@ -295,7 +295,12 @@
     "submit_request": "Verzoek Indienen",
     "select_plan": "Selecteer Plan",
     "submit": "Indienen",
-    "cancel": "Annuleren"
+    "cancel": "Annuleren",
+     "admin_notes": "Beheerdersnotities",
+    "mac_address": "MAC-adres",
+    "filters": "Filters",
+    "manage_activation_requests": "Activatieverzoeken beheren",
+    "search_placeholder": "Verzoeken zoeken..."
   },
   "transaction": {
     "transaction_history": "Transactiegeschiedenis",

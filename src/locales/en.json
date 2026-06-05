@@ -505,7 +505,12 @@
     "submit_request": "Submit Request",
     "select_plan": "Select Plan",
     "submit": "Submit",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "admin_notes": "Admin Notes",
+    "mac_address": "MAC Address",
+    "filters": "Filters",
+    "manage_activation_requests": "Manage activation requests",
+    "search_placeholder": "Search requests..."
   },
   "transaction": {
     "transaction_history": "Transaction History",

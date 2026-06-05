@@ -295,7 +295,12 @@
     "submit_request": "Enviar Solicitação",
     "select_plan": "Selecionar Plano",
     "submit": "Enviar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+     "admin_notes": "Notas do administrador",
+    "mac_address": "Endereço MAC",
+    "filters": "Filtros",
+    "manage_activation_requests": "Gerenciar solicitações de ativação",
+    "search_placeholder": "Pesquisar solicitações..."
   },
   "transaction": {
     "transaction_history": "Histórico de Transações",

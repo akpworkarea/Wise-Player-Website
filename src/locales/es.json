@@ -296,7 +296,12 @@
     "submit_request": "Enviar Solicitud",
     "select_plan": "Seleccionar Plan",
     "submit": "Enviar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+     "admin_notes": "Notas del administrador",
+    "mac_address": "Dirección MAC",
+    "filters": "Filtros",
+    "manage_activation_requests": "Gestionar solicitudes de activación",
+    "search_placeholder": "Buscar solicitudes..."
   },
   "transaction": {
     "transaction_history": "Historial de Transacciones",
