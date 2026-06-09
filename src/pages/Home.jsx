@@ -555,9 +555,10 @@ const WisePlayerHome = () => {
                   >
                     {t("home.privacyPolicy")}
                   </Link>
-                  <a href="#" className="text-sm text-gray-500 font-semibold hover:text-[#800000] transition-colors">
-                    {t('home.refundPolicy')}
-                  </a>
+                  <Link to="/contact" 
+                    className="text-sm text-gray-500 font-semibold hover:text-[#800000] transition-colors">
+                    {t('home.contactUs')}
+                  </Link>
                 </div>
               </div>
             </div>

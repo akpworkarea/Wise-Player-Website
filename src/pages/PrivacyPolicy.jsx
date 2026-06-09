@@ -103,7 +103,10 @@ export default function PrivacyPolicy() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <div className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur-md">
+      
+
+      <div className="mx-auto max-w-7xl px-5 py-10 md:px-8 lg:px-12">
+        <div className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur-md">
         <div className="mx-auto max-w-7xl px-6 py-5">
           <h1 className="text-2xl font-bold text-slate-900 md:text-4xl">
             Privacy Policy
@@ -114,8 +117,6 @@ export default function PrivacyPolicy() {
           </p>
         </div>
       </div>
-
-      <div className="mx-auto max-w-7xl px-5 py-10 md:px-8 lg:px-12">
         {/* Intro */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

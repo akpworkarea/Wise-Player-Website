@@ -6,6 +6,7 @@ import {
   Flame, ArrowRight, MessageCircle, CheckCircle2,
   Zap, Users, TrendingUp, Star
 } from "lucide-react";
+import Footer from "../component/Footer";
 
 // ── Animation presets ─────────────────────────────────────────
 const fadeUp = {
@@ -346,24 +347,7 @@ const Reseller = () => {
       {/* ── FOOTER — fixed to bottom ──────────────────────── */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-black/[0.06] py-3 px-4 z-50">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-1.5 max-w-4xl mx-auto">
-          <p className="text-xs text-gray-400 font-medium">
-            &copy; {new Date().getFullYear()} {t('playlist.footerCopyRight')}
-          </p>
-          <div className="flex items-center gap-4">
-            {[
-              t('playlist.footer_privacy'),
-              t('playlist.footer_terms'),
-              t('playlist.footer_helpdesk'),
-            ].map((label) => (
-              <a
-                key={label}
-                href="#"
-                className="text-xs font-semibold text-gray-400 uppercase tracking-wide hover:text-[#800000] transition-colors duration-150 no-underline"
-              >
-                {label}
-              </a>
-            ))}
-          </div>
+          <Footer />
         </div>
       </div>
     </>
