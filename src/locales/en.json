@@ -308,6 +308,7 @@
         "desc": "Support for true 4K and 8K resolution for OLED screens."
       }
     ],
+    "contactUs": "Contact Us",
     "payment_success_redirecting": "Payment successful redirecting to the dashboard shortly",
     "system_online": "SYSTEM ONLINE V2.0",
     "type_ultra_fast": "Ultra Fast",
