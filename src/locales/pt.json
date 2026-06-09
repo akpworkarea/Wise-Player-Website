@@ -45,6 +45,7 @@
         "desc": "Suporte real a 4K e 8K para telas OLED."
       }
     ],
+     "contactUs": "Contate-nos",
     "system_online": "SYSTEM ONLINE V2.0",
     "type_ultra_fast": "Ultra Rápido",
     "type_crystal_clear": "Alta Clareza",
@@ -78,7 +79,6 @@
     "available_credits": "Créditos disponíveis",
     "enter_amount": "Insira o valor",
     "transfer": "Transferir",
-    "cancel": "Cancelar",
     "disclaimerText1": "Wise Player não hospeda conteúdo.",
     "disclaimerPoint1": "Não somos responsáveis pelo conteúdo",
     "disclaimerPoint2": "Usuários devem cumprir as leis",
@@ -251,7 +251,9 @@
     "activate": "ativar",
     "this_user": "este usuário?",
     "cancel": "Cancelar",
-    "yes_confirm": "Sim, confirmar"
+    "yes_confirm": "Sim, confirmar",
+    "mac_address": "Endereço MAC",
+    "filters": "Filtros"
   },
   "subreseller_management": "Gerenciamento de Subrevendedores",
   "manage_subreseller": "Gerenciar subrevendedores e contas",
@@ -295,7 +297,12 @@
     "submit_request": "Enviar Solicitação",
     "select_plan": "Selecionar Plano",
     "submit": "Enviar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+     "admin_notes": "Notas do administrador",
+    "mac_address": "Endereço MAC",
+    "filters": "Filtros",
+    "manage_activation_requests": "Gerenciar solicitações de ativação",
+    "search_placeholder": "Pesquisar solicitações..."
   },
   "transaction": {
     "transaction_history": "Histórico de Transações",
@@ -308,7 +315,10 @@
     "prev": "Anterior",
     "page": "Página",
     "of": "de",
-    "next": "Próximo"
+    "next": "Próximo",
+      "subtitle": "Visualize e gerencie suas transações",
+    "search_placeholder": "Pesquisar transações...",
+    "filters": "Filtros"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "Oferta Exclusiva em Grande Quantidade!",

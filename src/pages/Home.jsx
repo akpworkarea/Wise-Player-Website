@@ -4,7 +4,7 @@ import {
   Flame, ShieldCheck, Zap, Monitor, CheckCircle,
   Smartphone, ArrowRight, Phone, Instagram, Twitter, AlertTriangle
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import {Link,useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { validateDevice, checkoutPayment, fetchPublicPlans } from '../auth/apiservice';
 
@@ -53,16 +53,16 @@ const WisePlayerHome = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
- const getApiMessageKey = (msg = '') => {
-  const normalized = msg.toLowerCase();
+  const getApiMessageKey = (msg = '') => {
+    const normalized = msg.toLowerCase();
 
-  if (normalized.includes('device not found')) return 'home.api.device_not_found';
-  if (normalized.includes('invalid device')) return 'home.api.invalid_device';
-  if (normalized.includes('payment')) return 'home.api.payment_failed';
-  if (normalized.includes('plan')) return 'home.api.plans_error';
+    if (normalized.includes('device not found')) return 'home.api.device_not_found';
+    if (normalized.includes('invalid device')) return 'home.api.invalid_device';
+    if (normalized.includes('payment')) return 'home.api.payment_failed';
+    if (normalized.includes('plan')) return 'home.api.plans_error';
 
-  return 'home.api.something_wrong';
-};
+    return 'home.api.something_wrong';
+  };
 
   const [showModal, setShowModal] = useState(false);
   const [toast, setToast] = useState(null);
@@ -83,15 +83,15 @@ const WisePlayerHome = () => {
         const data = await fetchPublicPlans();
         setPlans(data);
       } catch (err) {
-  console.error('ERROR:', err);
+        console.error('ERROR:', err);
 
-  const apiMsg = err.response?.data?.message;
+        const apiMsg = err.response?.data?.message;
 
-  showToast(
-    t(getApiMessageKey(apiMsg || 'plans_error')),
-    'error'
-  );
-}
+        showToast(
+          t(getApiMessageKey(apiMsg || 'plans_error')),
+          'error'
+        );
+      }
     };
     loadPlans();
   }, []);
@@ -109,11 +109,11 @@ const WisePlayerHome = () => {
         setStatusMsg(t('home.status_inactive'));
         setIsActiveDevice(false);
       }
-    }catch (err) {
-  console.error(err);
-  const apiMsg = err.response?.data?.message;
-  showToast(t(getApiMessageKey(apiMsg)), 'error');
-}
+    } catch (err) {
+      console.error(err);
+      const apiMsg = err.response?.data?.message;
+      showToast(t(getApiMessageKey(apiMsg)), 'error');
+    }
   };
 
   const handleProceed = async () => {
@@ -127,10 +127,10 @@ const WisePlayerHome = () => {
         } else {
           showToast(t(getApiMessageKey(res.message)), 'error');
         }
-      }catch (err) {
-  const apiMsg = err.response?.data?.message;
-  showToast(t(getApiMessageKey(apiMsg)), 'error');
-}
+      } catch (err) {
+        const apiMsg = err.response?.data?.message;
+        showToast(t(getApiMessageKey(apiMsg)), 'error');
+      }
     } else {
       navigate('/activation');
     }
@@ -144,22 +144,22 @@ const WisePlayerHome = () => {
 
   // ─── Features data ──────────────────────────────────────────────────────────
   const features = [
-  {
-    icon: <Zap size={36} />,
-    title: t('home.features.0.title'),
-    desc: t('home.features.0.desc')
-  },
-  {
-    icon: <ShieldCheck size={36} />,
-    title: t('home.features.1.title'),
-    desc: t('home.features.1.desc')
-  },
-  {
-    icon: <Monitor size={36} />,
-    title: t('home.features.2.title'),
-    desc: t('home.features.2.desc')
-  }
-];
+    {
+      icon: <Zap size={36} />,
+      title: t('home.features.0.title'),
+      desc: t('home.features.0.desc')
+    },
+    {
+      icon: <ShieldCheck size={36} />,
+      title: t('home.features.1.title'),
+      desc: t('home.features.1.desc')
+    },
+    {
+      icon: <Monitor size={36} />,
+      title: t('home.features.2.title'),
+      desc: t('home.features.2.desc')
+    }
+  ];
 
   return (
     <div className="bg-[#f4f4f7] text-[#1a1a1a] overflow-x-hidden min-h-screen font-sans">
@@ -168,114 +168,114 @@ const WisePlayerHome = () => {
           HERO
       ══════════════════════════════════════════ */}
       <section className="py-8 sm:py-10 md:py-14 bg-[#f4f4f7]">
-  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-12">
 
-      {/* Left */}
-      <motion.div
-        className="w-full lg:w-[55%] flex flex-col items-center lg:items-start text-center lg:text-left"
-        initial="initial"
-        whileInView="whileInView"
-        viewport={{ once: true }}
-        variants={{ whileInView: { transition: { staggerChildren: 0.12 } } }}
-      >
+            {/* Left */}
+            <motion.div
+              className="w-full lg:w-[55%] flex flex-col items-center lg:items-start text-center lg:text-left"
+              initial="initial"
+              whileInView="whileInView"
+              viewport={{ once: true }}
+              variants={{ whileInView: { transition: { staggerChildren: 0.12 } } }}
+            >
 
-        {/* Badge */}
-        <motion.div variants={fadeUp} className="mb-4">
-          <span className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-white border border-black/10 text-[11px] sm:text-sm font-bold tracking-widest text-[#1a1a1a] shadow-sm">
-            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#800000] animate-pulse" />
-            {t('home.system_online')}
-          </span>
-        </motion.div>
+              {/* Badge */}
+              <motion.div variants={fadeUp} className="mb-4">
+                <span className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-white border border-black/10 text-[11px] sm:text-sm font-bold tracking-widest text-[#1a1a1a] shadow-sm">
+                  <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#800000] animate-pulse" />
+                  {t('home.system_online')}
+                </span>
+              </motion.div>
 
-        {/* Heading */}
-        <motion.h1
-          variants={fadeUp}
-          className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight uppercase mb-4"
-        >
-          {t('home.futureIs')}
-          <br className="hidden sm:block" />
-          <span className="block mt-2">
-            <Typewriter
-              texts={[
-                t('home.type_ultra_fast'),
-                t('home.type_crystal_clear'),
-                t('home.type_wise_player')
-              ]}
-            />
-          </span>
-        </motion.h1>
+              {/* Heading */}
+              <motion.h1
+                variants={fadeUp}
+                className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight uppercase mb-4"
+              >
+                {t('home.futureIs')}
+                <br className="hidden sm:block" />
+                <span className="block mt-2">
+                  <Typewriter
+                    texts={[
+                      t('home.type_ultra_fast'),
+                      t('home.type_crystal_clear'),
+                      t('home.type_wise_player')
+                    ]}
+                  />
+                </span>
+              </motion.h1>
 
-        {/* Sub */}
-        <motion.p
-          variants={fadeUp}
-          className="text-gray-500 text-sm sm:text-base md:text-lg mb-6 sm:mb-7 max-w-md"
-        >
-          {t('home.headExperienceText')}
-        </motion.p>
+              {/* Sub */}
+              <motion.p
+                variants={fadeUp}
+                className="text-gray-500 text-sm sm:text-base md:text-lg mb-6 sm:mb-7 max-w-md"
+              >
+                {t('home.headExperienceText')}
+              </motion.p>
 
-        {/* Buttons */}
-        <motion.div
-          variants={fadeUp}
-          className="flex flex-col sm:flex-row w-full sm:w-auto gap-3"
-        >
-          <button className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl font-bold text-sm sm:text-base text-white bg-[#800000] hover:bg-[#6a0000] active:scale-95 transition-all duration-200 shadow-sm">
-            {t('home.headFreeTrial')}
-          </button>
+              {/* Buttons */}
+              <motion.div
+                variants={fadeUp}
+                className="flex flex-col sm:flex-row w-full sm:w-auto gap-3"
+              >
+                <button className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl font-bold text-sm sm:text-base text-white bg-[#800000] hover:bg-[#6a0000] active:scale-95 transition-all duration-200 shadow-sm">
+                  {t('home.headFreeTrial')}
+                </button>
 
-          <button className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl font-bold text-sm sm:text-base border-2 border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white active:scale-95 transition-all duration-200">
-            {t('home.headTutorial')}
-          </button>
-        </motion.div>
-      </motion.div>
+                <button className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl font-bold text-sm sm:text-base border-2 border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white active:scale-95 transition-all duration-200">
+                  {t('home.headTutorial')}
+                </button>
+              </motion.div>
+            </motion.div>
 
-      {/* Right — TV mockup */}
-      <motion.div
-        className="w-full lg:w-[45%] flex justify-center"
-        initial={{ opacity: 0, scale: 0.92 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7, type: 'spring', stiffness: 80 }}
-      >
-        <div className="w-full max-w-sm sm:max-w-md lg:max-w-full">
+            {/* Right — TV mockup */}
+            <motion.div
+              className="w-full lg:w-[45%] flex justify-center"
+              initial={{ opacity: 0, scale: 0.92 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, type: 'spring', stiffness: 80 }}
+            >
+              <div className="w-full max-w-sm sm:max-w-md lg:max-w-full">
 
-          {/* Frame */}
-          <div className="bg-[#111] p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-white/10 shadow-2xl">
-            <div className="relative bg-gray-900 rounded-lg sm:rounded-xl overflow-hidden aspect-video flex items-center justify-center">
+                {/* Frame */}
+                <div className="bg-[#111] p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-white/10 shadow-2xl">
+                  <div className="relative bg-gray-900 rounded-lg sm:rounded-xl overflow-hidden aspect-video flex items-center justify-center">
 
-              <img
-                src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?q=80&w=2070&auto=format&fit=crop"
-                alt="WisePlayer UI"
-                className="absolute inset-0 w-full h-full object-cover opacity-70"
-              />
+                    <img
+                      src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?q=80&w=2070&auto=format&fit=crop"
+                      alt="WisePlayer UI"
+                      className="absolute inset-0 w-full h-full object-cover opacity-70"
+                    />
 
-              <div className="relative z-10 text-center text-white drop-shadow-lg px-3">
-                <Flame
-                  size={40}
-                  className="mx-auto mb-2 text-[#800000] sm:w-[52px] sm:h-[52px]"
-                  fill="#800000"
-                />
-                <p className="font-black tracking-[3px] sm:tracking-[4px] text-xs sm:text-base uppercase">
-                  {t('home.brand_name')}
-                </p>
-                <p className="text-[11px] sm:text-sm opacity-50 mt-1">
-                  {t('home.ready_to_stream')}
-                </p>
+                    <div className="relative z-10 text-center text-white drop-shadow-lg px-3">
+                      <Flame
+                        size={40}
+                        className="mx-auto mb-2 text-[#800000] sm:w-[52px] sm:h-[52px]"
+                        fill="#800000"
+                      />
+                      <p className="font-black tracking-[3px] sm:tracking-[4px] text-xs sm:text-base uppercase">
+                        {t('home.brand_name')}
+                      </p>
+                      <p className="text-[11px] sm:text-sm opacity-50 mt-1">
+                        {t('home.ready_to_stream')}
+                      </p>
+                    </div>
+
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Stand */}
+                <div className="w-20 sm:w-24 h-2 bg-[#111] mx-auto rounded-b-xl" />
+                <div className="w-12 sm:w-16 h-1 bg-[#1a1a1a] mx-auto rounded-full mt-0.5 opacity-30" />
               </div>
+            </motion.div>
 
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent pointer-events-none" />
-            </div>
           </div>
-
-          {/* Stand */}
-          <div className="w-20 sm:w-24 h-2 bg-[#111] mx-auto rounded-b-xl" />
-          <div className="w-12 sm:w-16 h-1 bg-[#1a1a1a] mx-auto rounded-full mt-0.5 opacity-30" />
         </div>
-      </motion.div>
-
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* ══════════════════════════════════════════
           DISCLAIMER
@@ -463,7 +463,7 @@ const WisePlayerHome = () => {
       <section className="py-8 md:py-10 bg-[#f4f4f7]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-center font-extrabold text-2xl sm:text-3xl text-[#1a1a1a] mb-10">
-           {t('home.faq_title')}
+            {t('home.faq_title')}
           </h2>
 
           <div className="space-y-3">
@@ -515,12 +515,12 @@ const WisePlayerHome = () => {
 
             {/* Support */}
             <div>
-              <h6 className="font-bold mb-5 uppercase text-[10px] tracking-[3px] text-gray-400">
+              {/* <h6 className="font-bold mb-5 uppercase text-[10px] tracking-[3px] text-gray-400">
                 {t('home.support')}
-              </h6>
+              </h6> */}
               <div className="space-y-4">
                 {/* Reseller */}
-                <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                {/* <div className="flex items-center justify-between pb-3 border-b border-gray-100">
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                     {t('home.reseller')}
                   </span>
@@ -532,7 +532,7 @@ const WisePlayerHome = () => {
                     <Phone size={14} className="text-green-500" />
                     +212 676-076001
                   </a>
-                </div>
+                </div> */}
                 {/* Customer */}
                 <div className="flex items-center justify-between pb-3 border-b border-gray-100">
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
@@ -549,12 +549,16 @@ const WisePlayerHome = () => {
                 </div>
                 {/* Policies */}
                 <div className="flex gap-5 pt-1">
-                  <a href="#" className="text-sm text-gray-500 font-semibold hover:text-[#800000] transition-colors">
-                    {t('home.privacyPolicy')}
-                  </a>
-                  <a href="#" className="text-sm text-gray-500 font-semibold hover:text-[#800000] transition-colors">
-                    {t('home.refundPolicy')}
-                  </a>
+                  <Link
+                    to="/privacy-policy"
+                    className="text-sm font-semibold text-gray-500 transition-colors hover:text-[#800000]"
+                  >
+                    {t("home.privacyPolicy")}
+                  </Link>
+                  <Link to="/contact" 
+                    className="text-sm text-gray-500 font-semibold hover:text-[#800000] transition-colors">
+                    {t('home.contactUs')}
+                  </Link>
                 </div>
               </div>
             </div>
@@ -566,7 +570,7 @@ const WisePlayerHome = () => {
               </h6>
               <div className="flex gap-3 lg:justify-end">
                 {[
-                  { Icon: Instagram, label: t('home.instagram')},
+                  { Icon: Instagram, label: t('home.instagram') },
                   { Icon: Twitter, label: t('home.twitter') },
                 ].map(({ Icon, label }) => (
                   <a
@@ -621,7 +625,7 @@ const WisePlayerHome = () => {
                     {t('home.device_activation')}
                   </h3>
                   <p className="text-sm text-gray-500">
-                   {t('home.enter_mac_desc')}
+                    {t('home.enter_mac_desc')}
                   </p>
                 </div>
 

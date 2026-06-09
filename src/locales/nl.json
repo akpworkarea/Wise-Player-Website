@@ -45,6 +45,7 @@
         "desc": "Ondersteunt echte 4K en 8K voor OLED-schermen."
       }
     ],
+    "contactUs": "Neem contact op",
     "system_online": "SYSTEM ONLINE V2.0",
     "type_ultra_fast": "Ultra Snel",
     "type_crystal_clear": "Kristalhelder",
@@ -82,7 +83,6 @@
     "check_status": "Status controleren",
     "proceed_payment": "Ga naar betaling",
     "activate_now": "Nu activeren",
-    "cancel": "Annuleren",
     "try_another_mac": "Probeer een andere MAC",
     "transfer_credits": "Credits overdragen",
     "enter_valid_amount": "Voer een geldig bedrag in",
@@ -295,7 +295,12 @@
     "submit_request": "Verzoek Indienen",
     "select_plan": "Selecteer Plan",
     "submit": "Indienen",
-    "cancel": "Annuleren"
+    "cancel": "Annuleren",
+     "admin_notes": "Beheerdersnotities",
+    "mac_address": "MAC-adres",
+    "filters": "Filters",
+    "manage_activation_requests": "Activatieverzoeken beheren",
+    "search_placeholder": "Verzoeken zoeken..."
   },
   "transaction": {
     "transaction_history": "Transactiegeschiedenis",
@@ -308,7 +313,10 @@
     "prev": "Vorige",
     "page": "Pagina",
     "of": "van",
-    "next": "Volgende"
+    "next": "Volgende",
+     "subtitle": "Bekijk en beheer uw transacties",
+    "search_placeholder": "Transacties zoeken...",
+    "filters": "Filters"
   },
   "contact_Page": {
     "contact_support_center": "SUPPORTCENTRUM",

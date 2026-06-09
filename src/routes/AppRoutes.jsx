@@ -19,6 +19,8 @@ import RegisterSuccess from "../pages/ragistersuccess";
 import WisePlayerActivation from "../pages/Activation";
 import WisePlayerUploadList from "../pages/UploadList";
 import WisePlayerUploadPlayList from "../pages/UploadPlayList";
+import PrivacyPolicy from "../pages/PrivacyPolicy";
+
 
 const AppRoutes = () => {
   return (
@@ -36,7 +38,7 @@ const AppRoutes = () => {
         <Route path="/activation" element={<WisePlayerActivation />} />
         <Route path="/upload-list" element={<WisePlayerUploadList />} />
         <Route path="/upload-playlist" element={<WisePlayerUploadPlayList />} />
-
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         {/* ✅ ADMIN ONLY */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/users" element={<UserManagement />} />

@@ -45,6 +45,7 @@
         "desc": "Soporte real para 4K y 8K."
       }
     ],
+    "contactUs": "Contáctanos",
     "system_online": "SISTEMA EN LÍNEA V2.0",
     "type_ultra_fast": "Ultra Rápido",
     "type_crystal_clear": "Alta Claridad",
@@ -112,8 +113,6 @@
     "available_credits": "Créditos disponibles",
     "enter_amount": "Ingrese la cantidad",
     "transfer": "Transferir",
-    
-    "cancel": "Cancelar",
     "common": {
       "something_wrong": "Algo salió mal"
     },
@@ -242,7 +241,9 @@
     "activate": "activar",
     "this_user": "a este usuario?",
     "cancel": "Cancelar",
-    "yes_confirm": "Sí, confirmar"
+    "yes_confirm": "Sí, confirmar",
+    "mac_address": "Dirección MAC",
+    "filters": "Filtros"
   },
   "subreseller_management": "Gestión de Subdistribuidores",
   "manage_subreseller": "Gestionar subdistribuidores y cuentas",
@@ -296,7 +297,12 @@
     "submit_request": "Enviar Solicitud",
     "select_plan": "Seleccionar Plan",
     "submit": "Enviar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+     "admin_notes": "Notas del administrador",
+    "mac_address": "Dirección MAC",
+    "filters": "Filtros",
+    "manage_activation_requests": "Gestionar solicitudes de activación",
+    "search_placeholder": "Buscar solicitudes..."
   },
   "transaction": {
     "transaction_history": "Historial de Transacciones",
@@ -309,7 +315,10 @@
     "prev": "Anterior",
     "page": "Página",
     "of": "de",
-    "next": "Siguiente"
+    "next": "Siguiente",
+     "subtitle": "Ver y administrar tus transacciones",
+    "search_placeholder": "Buscar transacciones...",
+    "filters": "Filtros"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "¡Oferta Exclusiva por Volumen!",

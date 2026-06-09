@@ -213,7 +213,6 @@
   "cancel": "Annuler",
   "overview": "Aperçu",
   "users": "Utilisateurs",
-  "requests": "Demandes",
   "subreseller": "Sous-revendeur",
   "are_you_sure_logout": "Êtes-vous sûr de vouloir vous déconnecter ?",
   "subreseller_management": "Gestion des sous-revendeurs",
@@ -263,6 +262,38 @@
     "unit_price": "Prix Unitaire",
     "contact_for_bulk_bonus": "Contacter pour bonus en gros"
   },
+  "requests": {
+    "request_management": "Gestion des demandes",
+    "new_request": "Nouvelle demande",
+    "all": "Tous",
+    "pending": "En attente",
+    "approved": "Approuvé",
+    "rejected": "Rejeté",
+    "device_id": "ID de l'appareil",
+    "reseller_id": "ID du revendeur",
+    "plan": "Forfait",
+    "credits": "Crédits",
+    "created": "Créé",
+    "status": "Statut",
+    "copy": "Copier",
+    "copied": "Copié !",
+    "no_data_found": "Aucune donnée trouvée",
+    "reseller": "Revendeur",
+    "no_requests": "Aucune demande",
+    "prev": "Préc.",
+    "page": "Page",
+    "of": "sur",
+    "next": "Suiv.",
+    "submit_request": "Soumettre une demande",
+    "select_plan": "Sélectionner un forfait",
+    "submit": "Soumettre",
+    "cancel": "Annuler",
+    "admin_notes": "Notes de l'administrateur",
+    "mac_address": "Adresse MAC",
+    "filters": "Filtres",
+    "manage_activation_requests": "Gérer les demandes d'activation",
+    "search_placeholder": "Rechercher des demandes..."
+  },
   "transaction": {
     "transaction_history": "Historique des Transactions",
     "id": "ID",
@@ -274,7 +305,10 @@
     "prev": "Précédent",
     "page": "Page",
     "of": "de",
-    "next": "Suivant"
+    "next": "Suivant",
+    "subtitle": "Afficher et gérer vos transactions",
+    "search_placeholder": "Rechercher des transactions...",
+    "filters": "Filtres"
   },
   "activation": {
     "appName": "WISE ",
@@ -322,6 +356,7 @@
         "desc": "Prise en charge de la 4K et 8K réelles pour écrans OLED."
       }
     ],
+     "contactUs": "Contactez-nous",
     "system_online": "SYSTÈME EN LIGNE V2.0",
     "type_ultra_fast": "Ultra Rapide",
     "type_crystal_clear": "Clarté Cristalline",
@@ -506,6 +541,8 @@
     "no_devices": "Aucun appareil"
   },
   "userManagement": {
+    "mac_address": "Adresse MAC",
+    "filters": "Filtres",
     "device_management": "Gestion des Appareils",
     "manage_members": "Gérer les membres et les abonnements",
     "search_device": "Rechercher un appareil...",

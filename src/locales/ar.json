@@ -45,6 +45,7 @@
         "desc": "دعم 4K و 8K حقيقي."
       }
     ],
+     "contactUs": "اتصل بنا",
     "system_online": "SYSTEM ONLINE V2.0",
     "type_ultra_fast": "سرعة فائقة",
     "type_crystal_clear": "وضوح عالي",
@@ -200,6 +201,8 @@
     "plan": "الخطة"
   },
   "userManagement": {
+     "mac_address": "عنوان MAC",
+    "filters": "الفلاتر",
     "device_management": "إدارة الأجهزة",
     "manage_members": "إدارة الأعضاء والاشتراكات",
     "search_device": "ابحث عن الجهاز...",
@@ -286,7 +289,12 @@
     "submit_request": "إرسال طلب",
     "select_plan": "اختر الخطة",
     "submit": "إرسال",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+     "admin_notes": "ملاحظات المسؤول",
+    "mac_address": "عنوان MAC",
+    "filters": "الفلاتر",
+    "manage_activation_requests": "إدارة طلبات التفعيل",
+    "search_placeholder": "البحث في الطلبات..."
   },
   "transaction": {
     "transaction_history": "سجل المعاملات",
@@ -299,7 +307,10 @@
     "prev": "السابق",
     "page": "الصفحة",
     "of": "من",
-    "next": "التالي"
+    "next": "التالي",
+    "search_placeholder": "ابحث في المعاملات...",
+    "filters": "الفلاتر",
+     "subtitle": "عرض وإدارة معاملاتك"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "عرض حصري للكميات الكبيرة!",

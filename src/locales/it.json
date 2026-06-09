@@ -45,6 +45,7 @@
         "desc": "Supporto reale 4K e 8K per OLED."
       }
     ],
+    "contactUs": "Contattaci",
     "system_online": "SISTEMA ONLINE V2.0",
     "type_ultra_fast": "Ultra Veloce",
     "type_crystal_clear": "Cristallino",
@@ -112,7 +113,6 @@
     "available_credits": "Crediti disponibili",
     "enter_amount": "Inserisci l'importo",
     "transfer": "Trasferisci",
-    "cancel": "Annulla",
     "common": {
       "something_wrong": "Errore"
     },
@@ -209,6 +209,8 @@
     "no_devices": "Nessun dispositivo"
   },
   "userManagement": {
+     "mac_address": "Indirizzo MAC",
+    "filters": "Filtri",
     "device_management": "Gestione Dispositivi",
     "manage_members": "Gestisci membri e abbonamenti",
     "search_device": "Cerca dispositivo...",
@@ -255,8 +257,6 @@
   "id_label": "ID",
   "transfer": "Trasferisci",
   "edit": "Modifica",
-  "username": "Nome Utente",
-  "password": "Password",
   "full_name": "Nome Completo",
   "submit": "Invia",
   "update": "Aggiorna",
@@ -285,7 +285,12 @@
     "submit_request": "Invia Richiesta",
     "select_plan": "Seleziona Piano",
     "submit": "Invia",
-    "cancel": "Annulla"
+    "cancel": "Annulla",
+    "admin_notes": "Notes de l'administrateur",
+    "mac_address": "Adresse MAC",
+    "filters": "Filtri",
+    "manage_activation_requests": "Gestire le richieste di attivazione",
+    "search_placeholder": "Cerca richieste..."
   },
   "transaction": {
     "transaction_history": "Cronologia Transazioni",
@@ -298,7 +303,10 @@
     "prev": "Precedente",
     "page": "Pagina",
     "of": "di",
-    "next": "Successivo"
+    "next": "Successivo",
+     "subtitle": "Visualizza e gestisci le tue transazioni",
+    "search_placeholder": "Cerca transazioni...",
+    "filters": "Filtri"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "Offerta Esclusiva all'Ingrosso!",

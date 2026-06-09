@@ -349,7 +349,7 @@ export default function PurchaseCredit() {
                       <div className="flex items-center justify-end gap-2">
                         {tier.range === "1000+" && (
   <a
-    href="https://wa.me/212676076001"
+    href="https://wa.me/212777754774"
     target="_blank"
     rel="noopener noreferrer"
     className="bg-green-100 text-green-600 p-1.5 rounded-lg hover:bg-green-600 hover:text-white transition shrink-0"

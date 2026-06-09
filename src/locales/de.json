@@ -45,6 +45,7 @@
         "desc": "Unterstützt echtes 4K und 8K für OLED-Bildschirme."
       }
     ],
+     "contactUs": "Kontakt",
     "dashboard": "Dashboard",
     "device_management": "Geräteverwaltung",
     "sub_reseller": "Unterhändler",
@@ -121,8 +122,6 @@
     "available_credits": "Verfügbares Guthaben",
     "enter_amount": "Betrag eingeben",
     "Transfer": "Übertragen",
-    
-    "cancel": "Abbrechen",
     "common": {
       "something_wrong": "Etwas ist schiefgelaufen"
     },
@@ -280,7 +279,9 @@
     "activate": "aktivieren",
     "this_user": "diesen Benutzer?",
     "cancel": "Abbrechen",
-    "yes_confirm": "Ja, bestätigen"
+    "yes_confirm": "Ja, bestätigen",
+    "mac_address": "MAC-Adresse",
+    "filters": "Filter"
   },
   "requests": {
     "request_management": "Anfragenverwaltung",
@@ -307,7 +308,12 @@
     "submit_request": "Anfrage senden",
     "select_plan": "Plan auswählen",
     "submit": "Absenden",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+     "admin_notes": "Administratornotizen",
+    "mac_address": "MAC-Adresse",
+    "filters": "Filter",
+    "manage_activation_requests": "Aktivierungsanfragen verwalten",
+    "search_placeholder": "Anfragen suchen..."
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "Exklusives Großangebot!",
@@ -341,7 +347,10 @@
     "prev": "Zurück",
     "page": "Seite",
     "of": "von",
-    "next": "Weiter"
+    "next": "Weiter",
+     "subtitle": "Ihre Transaktionen anzeigen und verwalten",
+    "search_placeholder": "Transaktionen suchen...",
+    "filters": "Filter"
   },
   "subreseller_management": "Unterhändlerverwaltung",
   "manage_subreseller": "Unterhändler und Konten verwalten",
@@ -406,8 +415,6 @@
   "recover_password": "Passwort wiederherstellen",
   "recover_subtitle": "Geben Sie Ihren Benutzernamen ein, um Wiederherstellungsanweisungen zu erhalten",
   "btn_send_recovery": "Wiederherstellungslink senden",
-  "username": "Benutzername",
-  "password": "Passwort",
   "authorized_access_only": "Nur autorisierter Zugriff",
   "dont_have_account": "Sie haben noch kein Konto?",
   "success_redirecting": "Erfolgreich! Weiterleitung...",
