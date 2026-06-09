@@ -112,7 +112,6 @@
     "available_credits": "Crediti disponibili",
     "enter_amount": "Inserisci l'importo",
     "transfer": "Trasferisci",
-    "cancel": "Annulla",
     "common": {
       "something_wrong": "Errore"
     },
@@ -209,6 +208,8 @@
     "no_devices": "Nessun dispositivo"
   },
   "userManagement": {
+     "mac_address": "Indirizzo MAC",
+    "filters": "Filtri",
     "device_management": "Gestione Dispositivi",
     "manage_members": "Gestisci membri e abbonamenti",
     "search_device": "Cerca dispositivo...",
@@ -255,8 +256,6 @@
   "id_label": "ID",
   "transfer": "Trasferisci",
   "edit": "Modifica",
-  "username": "Nome Utente",
-  "password": "Password",
   "full_name": "Nome Completo",
   "submit": "Invia",
   "update": "Aggiorna",

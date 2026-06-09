@@ -213,7 +213,6 @@
   "cancel": "Annuler",
   "overview": "Aperçu",
   "users": "Utilisateurs",
-  "requests": "Demandes",
   "subreseller": "Sous-revendeur",
   "are_you_sure_logout": "Êtes-vous sûr de vouloir vous déconnecter ?",
   "subreseller_management": "Gestion des sous-revendeurs",
@@ -541,6 +540,8 @@
     "no_devices": "Aucun appareil"
   },
   "userManagement": {
+    "mac_address": "Adresse MAC",
+    "filters": "Filtres",
     "device_management": "Gestion des Appareils",
     "manage_members": "Gérer les membres et les abonnements",
     "search_device": "Rechercher un appareil...",

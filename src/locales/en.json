@@ -467,7 +467,8 @@
     "page": "Page",
     "of": "of",
     "next": "Next",
-
+  "mac_address": "MAC Address",
+    "filters": "Filters",
   "new_device": "New Device",
   "mac_placeholder": "MAC Address (AA:BB:CC:DD:EE:FF)",
   "processing": "Processing...",

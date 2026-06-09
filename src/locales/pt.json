@@ -78,7 +78,6 @@
     "available_credits": "Créditos disponíveis",
     "enter_amount": "Insira o valor",
     "transfer": "Transferir",
-    "cancel": "Cancelar",
     "disclaimerText1": "Wise Player não hospeda conteúdo.",
     "disclaimerPoint1": "Não somos responsáveis pelo conteúdo",
     "disclaimerPoint2": "Usuários devem cumprir as leis",
@@ -251,7 +250,9 @@
     "activate": "ativar",
     "this_user": "este usuário?",
     "cancel": "Cancelar",
-    "yes_confirm": "Sim, confirmar"
+    "yes_confirm": "Sim, confirmar",
+    "mac_address": "Endereço MAC",
+    "filters": "Filtros"
   },
   "subreseller_management": "Gerenciamento de Subrevendedores",
   "manage_subreseller": "Gerenciar subrevendedores e contas",

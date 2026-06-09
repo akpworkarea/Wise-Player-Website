@@ -200,6 +200,8 @@
     "plan": "الخطة"
   },
   "userManagement": {
+     "mac_address": "عنوان MAC",
+    "filters": "الفلاتر",
     "device_management": "إدارة الأجهزة",
     "manage_members": "إدارة الأعضاء والاشتراكات",
     "search_device": "ابحث عن الجهاز...",

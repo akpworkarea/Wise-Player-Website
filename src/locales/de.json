@@ -121,8 +121,6 @@
     "available_credits": "Verfügbares Guthaben",
     "enter_amount": "Betrag eingeben",
     "Transfer": "Übertragen",
-    
-    "cancel": "Abbrechen",
     "common": {
       "something_wrong": "Etwas ist schiefgelaufen"
     },
@@ -280,7 +278,9 @@
     "activate": "aktivieren",
     "this_user": "diesen Benutzer?",
     "cancel": "Abbrechen",
-    "yes_confirm": "Ja, bestätigen"
+    "yes_confirm": "Ja, bestätigen",
+    "mac_address": "MAC-Adresse",
+    "filters": "Filter"
   },
   "requests": {
     "request_management": "Anfragenverwaltung",
@@ -414,8 +414,6 @@
   "recover_password": "Passwort wiederherstellen",
   "recover_subtitle": "Geben Sie Ihren Benutzernamen ein, um Wiederherstellungsanweisungen zu erhalten",
   "btn_send_recovery": "Wiederherstellungslink senden",
-  "username": "Benutzername",
-  "password": "Passwort",
   "authorized_access_only": "Nur autorisierter Zugriff",
   "dont_have_account": "Sie haben noch kein Konto?",
   "success_redirecting": "Erfolgreich! Weiterleitung...",

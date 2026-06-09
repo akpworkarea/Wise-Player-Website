@@ -112,8 +112,6 @@
     "available_credits": "Créditos disponibles",
     "enter_amount": "Ingrese la cantidad",
     "transfer": "Transferir",
-    
-    "cancel": "Cancelar",
     "common": {
       "something_wrong": "Algo salió mal"
     },
@@ -242,7 +240,9 @@
     "activate": "activar",
     "this_user": "a este usuario?",
     "cancel": "Cancelar",
-    "yes_confirm": "Sí, confirmar"
+    "yes_confirm": "Sí, confirmar",
+    "mac_address": "Dirección MAC",
+    "filters": "Filtros"
   },
   "subreseller_management": "Gestión de Subdistribuidores",
   "manage_subreseller": "Gestionar subdistribuidores y cuentas",

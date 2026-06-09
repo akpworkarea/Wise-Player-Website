@@ -1,68 +1,65 @@
-import axios from 'axios';
 import api from './axiosInstance';
-const token = localStorage.getItem("token");
 
 /**
- * Fetch paginated users with optional server-side filters.
- * @param {number} page        - 0-based page index
- * @param {number} size        - page size (default 20)
- * @param {string} search      - device ID / MAC fragment (optional)
- * @param {string} status      - "ACTIVE" | "INACTIVE" | "" (optional)
- * @param {string} subscription - subscription type string (optional)
+ * Fetch paginated reseller users with optional server-side filters.
+ * @param {number} page           - 0-based page index
+ * @param {number} size           - page size (default 20)
+ * @param {string} search         - MAC address / Device ID partial (?search=)
+ * @param {string} status         - "ACTIVE" | "INACTIVE" | ""
+ * @param {string} subscription   - plan name | ""
+ * @param {string} registeredFrom - YYYY-MM-DD | ""
+ * @param {string} registeredTo   - YYYY-MM-DD | ""
+ * @param {string} expiresFrom    - YYYY-MM-DD | ""
+ * @param {string} expiresTo      - YYYY-MM-DD | ""
  */
 export const subscibedUserinfo = async (
-  page = 0,
-  size = 20,
-  search = "",
-  status = "",
-  subscription = ""
+  page           = 0,
+  size           = 20,
+  search         = "",
+  status         = "",
+  subscription   = "",
+  registeredFrom = "",
+  registeredTo   = "",
+  expiresFrom    = "",
+  expiresTo      = "",
 ) => {
   try {
     const params = new URLSearchParams();
     params.append("page", page);
     params.append("size", size);
-    if (search.trim())       params.append("search", search.trim());
-    if (status)              params.append("status", status);
-    if (subscription)        params.append("subscription", subscription);
+    if (search.trim())   params.append("search",         search.trim());
+    if (status)          params.append("status",         status);
+    if (subscription)    params.append("subscription",   subscription);
+    if (registeredFrom)  params.append("registeredFrom", registeredFrom);
+    if (registeredTo)    params.append("registeredTo",   registeredTo);
+    if (expiresFrom)     params.append("expiresFrom",    expiresFrom);
+    if (expiresTo)       params.append("expiresTo",      expiresTo);
 
     const response = await api.get(`/api/reseller/users?${params.toString()}`);
     return { success: true, data: response.data };
   } catch (error) {
     return {
       success: false,
-      message: error.response?.data?.message || "Failed to fetch dashboard data",
+      message: error.response?.data?.message || "Failed to fetch users",
     };
   }
 };
 
 export const DisableUserAccount = async (deviceId) => {
   try {
-    const response = await api.put(`/api/reseller/users/${deviceId}/disable`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await api.put(`/api/reseller/users/${deviceId}/disable`);
     return { success: true, data: response.data };
   } catch (error) {
     return {
       success: false,
-      message: error.response?.data?.message || "Failed to fetch dashboard data",
+      message: error.response?.data?.message || "Failed to update account",
     };
   }
 };
 
 export const createUser = async (deviceId) => {
   try {
-    const response = await api.post(
-      `/api/reseller/user`,
-      { deviceId },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await api.post(`/api/reseller/user`, { deviceId });
     return { success: true, data: response.data };
   } catch (error) {
     return {
