@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Flame, User, Lock, Eye, EyeOff, ArrowRight,
-  CheckCircle2, Circle, Shield, Home
+  CheckCircle2, Circle, Shield, Home, Mail,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { registerReseller } from '../../auth/apiservice';
@@ -10,30 +10,30 @@ import { useTranslation } from 'react-i18next';
 
 // ── Outside component — stable references ─────────────────────
 const availableLanguages = [
-  { code: 'en', name: 'English',    flag: '🇺🇸', image: 'https://flagcdn.com/w40/us.png' },
-  { code: 'fr', name: 'Français',   flag: '🇫🇷', image: 'https://flagcdn.com/w40/fr.png' },
-  { code: 'es', name: 'Español',    flag: '🇪🇸', image: 'https://flagcdn.com/w40/es.png' },
-  { code: 'de', name: 'Deutsch',    flag: '🇩🇪', image: 'https://flagcdn.com/w40/de.png' },
-  { code: 'it', name: 'Italiano',   flag: '🇮🇹', image: 'https://flagcdn.com/w40/it.png' },
-  { code: 'pt', name: 'Português',  flag: '🇵🇹', image: 'https://flagcdn.com/w40/pt.png' },
+  { code: 'en', name: 'English', flag: '🇺🇸', image: 'https://flagcdn.com/w40/us.png' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷', image: 'https://flagcdn.com/w40/fr.png' },
+  { code: 'es', name: 'Español', flag: '🇪🇸', image: 'https://flagcdn.com/w40/es.png' },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪', image: 'https://flagcdn.com/w40/de.png' },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹', image: 'https://flagcdn.com/w40/it.png' },
+  { code: 'pt', name: 'Português', flag: '🇵🇹', image: 'https://flagcdn.com/w40/pt.png' },
   { code: 'nl', name: 'Nederlands', flag: '🇳🇱', image: 'https://flagcdn.com/w40/nl.png' },
-  { code: 'ar', name: 'العربية',    flag: '🇸🇦', image: 'https://flagcdn.com/w40/sa.png' },
+  { code: 'ar', name: 'العربية', flag: '🇸🇦', image: 'https://flagcdn.com/w40/sa.png' },
 ];
 
 const brandFeatures = [
-  { icon: Shield,       text: 'Secure reseller portal'  },
-  { icon: CheckCircle2, text: 'Full dashboard access'   },
-  { icon: Flame,        text: 'Premium streaming tools' },
+  { icon: Shield, text: 'Secure reseller portal' },
+  { icon: CheckCircle2, text: 'Full dashboard access' },
+  { icon: Flame, text: 'Premium streaming tools' },
 ];
 
 const getValidations = (password, username) => ({
-  hasSpecial:    /[!@#$%^&*(),.?":{}|<>]/.test(password),
-  hasNumber:     /\d/.test(password),
-  hasLower:      /[a-z]/.test(password),
-  hasUpper:      /[A-Z]/.test(password),
+  hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  hasNumber: /\d/.test(password),
+  hasLower: /[a-z]/.test(password),
+  hasUpper: /[A-Z]/.test(password),
   isLengthValid: password.length >= 8,
   usernameLength: username.length >= 1 && username.length <= 30,
-  usernameChars:  /^[a-zA-Z0-9._]*$/.test(username),
+  usernameChars: /^[a-zA-Z0-9._]*$/.test(username),
 });
 
 // ── InputField outside component to prevent remount on render ─
@@ -86,8 +86,8 @@ const TopBar = ({ i18n, isLangOpen, setIsLangOpen, navigate }) => {
           {isLangOpen && (
             <motion.div
               initial={{ opacity: 0, y: -8, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0,  scale: 1    }}
-              exit={{   opacity: 0, y: -8,  scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.96 }}
               transition={{ duration: 0.16 }}
               className="absolute top-12 right-0 w-[200px] bg-white rounded-2xl border border-black/[0.06] shadow-xl overflow-hidden"
             >
@@ -125,27 +125,28 @@ const TopBar = ({ i18n, isLangOpen, setIsLangOpen, navigate }) => {
 // ═══════════════════════════════════════════════════════════════
 const Register = () => {
   const { t, i18n } = useTranslation();
-  const navigate     = useNavigate();
+  const navigate = useNavigate();
 
-  const [isLangOpen,      setIsLangOpen]      = useState(false);
-  const [fullName,        setFullName]         = useState('');
-  const [username,        setUsername]         = useState('');
-  const [password,        setPassword]         = useState('');
-  const [confirmPassword, setConfirmPassword]  = useState('');
-  const [agree,           setAgree]            = useState(false);
-  const [error,           setError]            = useState('');
-  const [showPassword,    setShowPassword]     = useState(false);
-  const [showConfirm,     setShowConfirm]      = useState(false);
-  const [loading,         setLoading]          = useState(false);
+  const [isLangOpen, setIsLangOpen] = useState(false);
+  const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [agree, setAgree] = useState(false);
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
 
   const v = getValidations(password, username);
 
   const passwordPills = [
-    { label: '8+',       done: v.isLengthValid },
-    { label: 'A-Z',      done: v.hasUpper      },
-    { label: 'a-z',      done: v.hasLower      },
-    { label: '0-9',      done: v.hasNumber     },
-    { label: '!@#',      done: v.hasSpecial    },
+    { label: '8+', done: v.isLengthValid },
+    { label: 'A-Z', done: v.hasUpper },
+    { label: 'a-z', done: v.hasLower },
+    { label: '0-9', done: v.hasNumber },
+    { label: '!@#', done: v.hasSpecial },
   ];
 
   const handleSubmit = async (e) => {
@@ -164,11 +165,20 @@ const Register = () => {
       setError(t('reg_err_terms')); return;
     }
     setLoading(true);
-    const result = await registerReseller({ fullName, username, password });
+    const result = await registerReseller({
+      fullName,
+      username,
+      email,
+      password,
+    });
     setLoading(false);
     if (result.success) {
-      navigate('/register-success');
-    } else {
+  navigate('/verify-otp', {
+    state: {
+      email,
+    },
+  });
+}else {
       setError(result.message);
     }
   };
@@ -181,7 +191,7 @@ const Register = () => {
       {/* ── LEFT BRAND PANEL ─────────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
-        animate={{ opacity: 1,  x: 0   }}
+        animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.55, ease: 'easeOut' }}
         className="hidden lg:flex lg:w-[38%] bg-[#1a1a1a] flex-col items-center justify-between px-12 py-14 relative overflow-hidden shrink-0"
       >
@@ -211,7 +221,7 @@ const Register = () => {
               <motion.div
                 key={i}
                 initial={{ opacity: 0, x: -16 }}
-                animate={{ opacity: 1,  x: 0   }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 + i * 0.1, duration: 0.4 }}
                 className="flex items-center gap-3"
               >
@@ -245,7 +255,7 @@ const Register = () => {
             {/* Mobile logo */}
             <motion.div
               initial={{ y: -16, opacity: 0 }}
-              animate={{ y: 0,   opacity: 1  }}
+              animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.4 }}
               className="flex lg:hidden flex-col items-center mb-8"
             >
@@ -263,7 +273,7 @@ const Register = () => {
             {/* Card */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0  }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, delay: 0.1 }}
               className="bg-white rounded-2xl border border-black/[0.06] shadow-sm p-7 sm:p-8 relative"
             >
@@ -298,6 +308,7 @@ const Register = () => {
                       icon={User}
                       maxLength={30}
                     />
+                    
                     {/* Live username feedback */}
                     <AnimatePresence>
                       {username && (
@@ -324,6 +335,13 @@ const Register = () => {
                     </AnimatePresence>
                   </div>
                 </div>
+                <InputField
+                      label="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="example@gmail.com"
+                      icon={Mail}
+                    />
 
                 {/* Password */}
                 <InputField
@@ -389,7 +407,7 @@ const Register = () => {
                   {confirmPassword && (
                     <motion.p
                       initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0  }}
+                      animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
                       className={`text-xs font-semibold flex items-center gap-1.5 -mt-1 ${password === confirmPassword ? 'text-green-600' : 'text-red-500'}`}
                     >
@@ -406,7 +424,7 @@ const Register = () => {
                   {error && (
                     <motion.div
                       initial={{ opacity: 0, y: -6 }}
-                      animate={{ opacity: 1, y: 0  }}
+                      animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
                       className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold text-center"
                     >
@@ -424,7 +442,7 @@ const Register = () => {
                   <motion.div
                     animate={{
                       backgroundColor: agree ? '#800000' : '#ffffff',
-                      borderColor:     agree ? '#800000' : '#d1d5db',
+                      borderColor: agree ? '#800000' : '#d1d5db',
                     }}
                     transition={{ duration: 0.2 }}
                     className="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5"

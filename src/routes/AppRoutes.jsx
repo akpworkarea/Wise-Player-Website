@@ -20,6 +20,7 @@ import WisePlayerActivation from "../pages/Activation";
 import WisePlayerUploadList from "../pages/UploadList";
 import WisePlayerUploadPlayList from "../pages/UploadPlayList";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
+import VerifyOtp from '../pages/VerifyOtp';
 
 
 const AppRoutes = () => {
@@ -47,6 +48,7 @@ const AppRoutes = () => {
         <Route path="/purchase-credit" element={<PurchaseCredit />} />
         <Route path="/transition-history" element={<TransitionHistory />} />
         <Route path="/payment-status" element={<PaymentStatus />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
 
         <Route path="*" element={<Home />} />
       </Routes>

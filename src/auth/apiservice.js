@@ -3,6 +3,13 @@ import api from './axiosInstance';
 export const registerReseller = async (formData) => {
   try {
     const response = await api.post('/api/reseller/register', formData);
+
+    // Store token from register response so verify-email call is authenticated
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data));
+    }
+
     return { success: true, data: response.data };
   } catch (error) {
     return {
@@ -12,20 +19,31 @@ export const registerReseller = async (formData) => {
   }
 };
 
+export const verifyOtp = async (otp) => {
+  try {
+    const response = await api.post('/api/reseller/verify-email', { otp });
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.response?.data?.error   ||
+        (typeof error.response?.data === 'string' ? error.response.data : null) ||
+        'OTP verification failed',
+    };
+  }
+};
+
 export const loginReseller = async (credentials) => {
   try {
     const response = await api.post('/api/reseller/login', credentials);
-
-    // ── FIX: backend may not send a "success" field ──
-    // Only require a token to confirm successful login
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data));
     }
-
     return { success: true, data: response.data };
   } catch (error) {
-    // ── FIX: handle multiple error shapes backend may return ──
     return {
       success: false,
       message:
@@ -39,9 +57,7 @@ export const loginReseller = async (credentials) => {
 
 export const generateDeviceKey = async (macAddress) => {
   try {
-    const response = await api.post('/api/device/key', {
-      deviceId: macAddress,
-    });
+    const response = await api.post('/api/device/key', { deviceId: macAddress });
     return { success: true, data: response.data };
   } catch (error) {
     return {
@@ -51,13 +67,9 @@ export const generateDeviceKey = async (macAddress) => {
   }
 };
 
-// ── FIX: was using raw fetch with hardcoded URL ──
 export const activateDeviceApi = async (deviceId, activationKey) => {
   try {
-    const response = await api.post('/api/device/activate', {
-      deviceId,
-      activationKey,
-    });
+    const response = await api.post('/api/device/activate', { deviceId, activationKey });
     return { success: true, data: response.data };
   } catch (error) {
     return {
@@ -80,23 +92,14 @@ export const validateDevice = async (fingerprint) => {
   }
 };
 
-// ── FIX: was using raw axios import with hardcoded URL ──
 export const saveM3uPlaylist = async (macAddress, playlistData) => {
   try {
-    if (!macAddress) {
-      return { success: false, message: 'MAC address is missing!' };
-    }
+    if (!macAddress) return { success: false, message: 'MAC address is missing!' };
     const response = await api.post(
       `/api/playlist/public/${macAddress}/m3u`,
-      {
-        name: playlistData.name,
-        m3uUrl: playlistData.m3uUrl,
-      }
+      { name: playlistData.name, m3uUrl: playlistData.m3uUrl }
     );
-    return {
-      success: true,
-      message: response.data.message || 'Playlist saved!',
-    };
+    return { success: true, message: response.data.message || 'Playlist saved!' };
   } catch (error) {
     return {
       success: false,
@@ -111,10 +114,7 @@ export const saveM3uPlaylist = async (macAddress, playlistData) => {
 export const checkoutPayment = async ({ deviceId, planName, successUrl, cancelUrl }) => {
   try {
     const response = await api.post('/api/payment/public/checkout', {
-      deviceId,
-      planName,
-      successUrl,
-      cancelUrl,
+      deviceId, planName, successUrl, cancelUrl,
     });
     return { success: true, data: response.data };
   } catch (error) {
@@ -144,9 +144,7 @@ export const submitSupportTicket = async (ticketData) => {
     formData.append('macAddress',  ticketData.macAddress);
     formData.append('inquiryType', ticketData.inquiryType);
     formData.append('message',     ticketData.message);
-    if (ticketData.attachment) {
-      formData.append('attachment', ticketData.attachment);
-    }
+    if (ticketData.attachment) formData.append('attachment', ticketData.attachment);
     const response = await api.post('/api/public/support/ticket', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
@@ -163,10 +161,7 @@ export const downloadInvoicePdf = async (deviceId, invoiceNo) => {
   try {
     const response = await api.get(
       `/api/payment/public/invoice/${invoiceNo}/pdf`,
-      {
-        params: { deviceId, invoiceNo },
-        responseType: 'blob',
-      }
+      { params: { deviceId, invoiceNo }, responseType: 'blob' }
     );
     return { success: true, data: response.data };
   } catch (error) {
