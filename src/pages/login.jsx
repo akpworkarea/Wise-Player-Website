@@ -21,11 +21,7 @@ const availableLanguages = [
   { code: 'ar', name: 'العربية',    flag: '🇸🇦', image: 'https://flagcdn.com/w40/sa.png' },
 ];
 
-const brandFeatures = [
-  { icon: Shield,       text: 'Secure reseller portal'  },
-  { icon: CheckCircle2, text: 'Full dashboard access'   },
-  { icon: Flame,        text: 'Premium streaming tools' },
-];
+
 
 const viewVariants = {
   hidden:  { opacity: 0, x: 20  },
@@ -139,6 +135,13 @@ const LoginPage = () => {
   const [password,     setPassword]     = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+ const brandFeatures = [
+  { icon: Shield,       text: t('secureResellerPortal') },
+  { icon: CheckCircle2, text: t('fullDashboardAccess') },
+  { icon: Flame,        text: t('premiumStreamingTools') },
+];
+
+
   const showToast = (msg, type = 'info') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3000);
@@ -226,7 +229,7 @@ const handleLogin = async (e) => {
 
         <div className="relative z-10 w-full border-t border-white/[0.06] pt-5 text-center">
           <p className="text-[10px] text-gray-600 tracking-[2px] uppercase">
-            © {new Date().getFullYear()} WisePlayer — Premium Access
+            © {new Date().getFullYear()} WisePlayer — {t('premium_access')}
           </p>
         </div>
 
@@ -343,7 +346,7 @@ const handleLogin = async (e) => {
                     </form>
 
                     <p className="text-center text-xs text-gray-500 mt-5">
-                      Don't have an account?{' '}
+                    {t('dont_have_an_account')}{' '}
                       <button
                         onClick={() => navigate('/register')}
                         className="font-bold text-[#800000] hover:text-[#6a0000] transition-colors duration-150 border-0 bg-transparent"
@@ -418,7 +421,7 @@ const handleLogin = async (e) => {
         {/* Footer */}
         <div className="border-t border-black/[0.06] bg-white py-3.5 flex items-center justify-center gap-2">
           <Shield size={14} className="text-green-500" />
-          <span className="text-xs font-semibold text-gray-500">Authorized Access Only</span>
+          <span className="text-xs font-semibold text-gray-500">{t('authorizedAccessOnly')}</span>
         </div>
       </div>
 

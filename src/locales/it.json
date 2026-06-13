@@ -209,7 +209,7 @@
     "no_devices": "Nessun dispositivo"
   },
   "userManagement": {
-     "mac_address": "Indirizzo MAC",
+    "mac_address": "Indirizzo MAC",
     "filters": "Filtri",
     "device_management": "Gestione Dispositivi",
     "manage_members": "Gestisci membri e abbonamenti",
@@ -245,6 +245,13 @@
     "cancel": "Annulla",
     "yes_confirm": "Sì, conferma"
   },
+  "device": "Dispositivo",
+  "device_id": "ID del dispositivo",
+  "reseller_id": "ID del rivenditore",
+  "secureResellerPortal": "Portale Revendedor Sicuro",
+  "fullDashboardAccess": "Acceso Completo al Dashboard",
+  "premiumStreamingTools": "Strumenti di Streaming Premium",
+  "authorizedAccessOnly": "Solo Accesso Autorizzato",
   "subreseller_management": "Gestione Subrivenditori",
   "manage_subreseller": "Gestisci subrivenditori e account",
   "create_subreseller": "Crea Subrivenditore",
@@ -304,7 +311,7 @@
     "page": "Pagina",
     "of": "di",
     "next": "Successivo",
-     "subtitle": "Visualizza e gestisci le tue transazioni",
+    "subtitle": "Visualizza e gestisci le tue transazioni",
     "search_placeholder": "Cerca transazioni...",
     "filters": "Filtri"
   },
@@ -401,7 +408,7 @@
   "success_redirecting": "Successo! Reindirizzamento...",
   "invalid_credentials": "Credenziali non valide",
   "reset_link_sent": "Link di reimpostazione inviato!",
-   "reg_hello": "Ciao,",
+  "reg_hello": "Ciao,",
   "reg_welcome": "Benvenuto",
   "reg_signup_badge": "Registrazione Rivenditore",
   "reg_fullname": "Nome completo",
@@ -413,6 +420,17 @@
   "reg_create_btn": "Crea account",
   "reg_already_member": "Hai già un account?",
   "reg_login_now": "Accedi ora",
-   "transfer_credits": "Trasferire crediti",
-   "your_balance": "Il tuo saldo"
+  "transfer_credits": "Trasferire crediti",
+  "your_balance": "Il tuo saldo",
+  "premium_access": "Accesso Premium",
+  "dont_have_an_account": "Non hai un account?",
+  "all": "Tutti",
+  "active": "Attivo",
+  "inactive": "Inattivo",
+  "all_plans": "Tutti i piani",
+  "registered": "Registrato",
+  "expires": "Scade",
+  "from": "Da",
+  "to": "A",
+  "filter_devices": "Filtra dispositivi"
 }

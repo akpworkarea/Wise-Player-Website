@@ -9,6 +9,7 @@ import { formatDate } from "../auth/utilfunction";
 import { useDashboard } from "../context/dashboardContext";
 import { getActivationRequests, createActivationRequest, getPlans } from "../auth/api/activationRequest";
 import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 // ─── Debounce hook ────────────────────────────────────────────────────────────
 function useDebounce(value, delay) {
@@ -230,7 +231,7 @@ const RequestCard = ({
     {/* Header: status badge */}
     <div className="flex items-center justify-between gap-2">
       <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
-        Request
+        {t('request')}
       </span>
       <StatusBadge status={req.status} />
     </div>
@@ -255,7 +256,7 @@ const RequestCard = ({
       </span>
 
       {/* Device ID */}
-      <span className="text-[11px] font-semibold text-gray-500 leading-none">Device ID</span>
+      <span className="text-[11px] font-semibold text-gray-500 leading-none">{t('device_id')}</span>
       <span className="text-[11px] font-semibold text-[#800000] truncate leading-none"
         title={req.deviceId}>
         {tid(req.deviceId, 10, 6)}
@@ -267,7 +268,7 @@ const RequestCard = ({
       </span>
 
       {/* Reseller ID */}
-      <span className="text-[11px] font-semibold text-gray-500 leading-none">Reseller ID</span>
+      <span className="text-[11px] font-semibold text-gray-500 leading-none">{t('reseller_id')}</span>
       <span className="text-[11px] font-semibold text-blue-600 truncate leading-none"
         title={req.resellerId}>
         {tid(req.resellerId, 8, 5)}

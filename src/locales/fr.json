@@ -1,4 +1,8 @@
 {
+  "secureResellerPortal": "Portail revendeur sécurisé",
+  "fullDashboardAccess": "Accès complet au tableau de bord",
+  "premiumStreamingTools": "Outils de streaming premium",
+  "authorizedAccessOnly": "Accès autorisé uniquement",
   "nav_home": "Accueil",
   "your_balance": "Votre solde",
   "nav_upload_list": "Liste de téléchargement",
@@ -188,7 +192,7 @@
   "active_subs": "Subs Actifs",
   "pending_req": "Demandes en attente",
   "total_coins": "Total des pièces",
-  
+  "device": "Appareil",
   "device_id": "ID de l'appareil",
   "status": "Statut",
   "subscription": "Abonnement",
@@ -241,6 +245,17 @@
   "enter_valid_amount": "Entrez un montant valide",
   "not_enough_credits": "Crédits insuffisants",
   "transfer_failed": "Échec du transfert",
+  "reseller_id": "ID du revendeur",
+  "plans": "Plans",
+  "created": "Créé",
+  "credits": "Crédits",
+  "all": "Tous",
+  "from": "De",
+  "to": "À",
+  "filter_devices": "Filtrer les appareils",
+  "all_plans": "Tous les plans",
+  "dont_have_an_account": "Vous n'avez pas de compte ?",
+  "premium_access": "Accès Premium",
   "purchaseCredit": {
     "exclusive_bulk_offer": "Offre Exclusive en Gros !",
     "special_bonus_available": "Bonus spécial disponible pour votre achat",
@@ -356,7 +371,7 @@
         "desc": "Prise en charge de la 4K et 8K réelles pour écrans OLED."
       }
     ],
-     "contactUs": "Contactez-nous",
+    "contactUs": "Contactez-nous",
     "system_online": "SYSTÈME EN LIGNE V2.0",
     "type_ultra_fast": "Ultra Rapide",
     "type_crystal_clear": "Clarté Cristalline",
@@ -566,16 +581,16 @@
     "of": "de",
     "next": "Suivant",
     "new_device": "Nouvel appareil",
-"mac_placeholder": "Adresse MAC (AA:BB:CC:DD:EE:FF)",
-"processing": "Traitement en cours...",
-"create": "Créer",
-"confirm_action": "Confirmer l'action",
-"are_you_sure": "Êtes-vous sûr de vouloir",
-"disable": "désactiver",
-"activate": "activer",
-"this_user": "cet utilisateur ?",
-"cancel": "Annuler",
-"yes_confirm": "Oui, confirmer"
+    "mac_placeholder": "Adresse MAC (AA:BB:CC:DD:EE:FF)",
+    "processing": "Traitement en cours...",
+    "create": "Créer",
+    "confirm_action": "Confirmer l'action",
+    "are_you_sure": "Êtes-vous sûr de vouloir",
+    "disable": "désactiver",
+    "activate": "activer",
+    "this_user": "cet utilisateur ?",
+    "cancel": "Annuler",
+    "yes_confirm": "Oui, confirmer"
   },
   "playlist": {
     "upload_playlist": "Téléchargez votre playlist",
@@ -599,7 +614,6 @@
     "footerCopyRight": "Wise Player · Tous droits réservés"
   },
   "payment_success_redirecting": "Paiement réussi, redirection vers le tableau de bord sous peu",
-
   "Sign_in": "Se connecter",
   "Register": "S'inscrire",
   "authorized_access_only": "Accès autorisé uniquement",

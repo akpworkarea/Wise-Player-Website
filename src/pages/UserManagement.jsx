@@ -24,8 +24,8 @@ function useDebounce(value, delay) {
 
 // ─── Device status styles ─────────────────────────────────────────────────────
 const DEV_STATUS_STYLE = {
-  ACTIVE:   { pill: "bg-green-100 text-green-700",  dot: "bg-green-500"  },
-  INACTIVE: { pill: "bg-red-100   text-red-600",    dot: "bg-red-500"    },
+  ACTIVE: { pill: "bg-green-100 text-green-700", dot: "bg-green-500" },
+  INACTIVE: { pill: "bg-red-100   text-red-600", dot: "bg-red-500" },
 };
 const devStatusStyle = (s) =>
   DEV_STATUS_STYLE[s] || { pill: "bg-gray-100 text-gray-600", dot: "bg-gray-400" };
@@ -104,70 +104,74 @@ const DeviceCard = ({
   item, copiedId, onCopy, onToggle,
   copyLabel, copiedLabel, truncateId,
   planLabel, expiresLabel, registeredLabel, toggleLabel,
-}) => (
-  <motion.div
-    initial={{ opacity: 0, y: 8 }}
-    animate={{ opacity: 1, y: 0 }}
-    className="bg-white p-4 rounded-xl shadow border border-gray-200 space-y-3"
-  >
-    {/* Header: status badge */}
-    <div className="flex items-center justify-between gap-2">
-      <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Device</span>
-      <DevStatusBadge status={item.deviceStatus} />
-    </div>
-
-    {/* ID rows — 3-col grid: label | value | copy — copy always in same column */}
-    <div className="grid grid-cols-[5rem_1fr_auto] items-center gap-x-2 gap-y-2.5">
-      {/* MAC */}
-      <span className="text-[11px] font-semibold text-gray-500 leading-none">MAC</span>
-      <span className="font-mono text-[11px] font-bold text-gray-800 truncate leading-none" title={item.macAddress}>
-        {item.macAddress || "—"}
-      </span>
-      <span className="justify-self-end">
-        {item.macAddress
-          ? <CopyButton value={item.macAddress} copiedId={copiedId} onCopy={onCopy} copyLabel={copyLabel} copiedLabel={copiedLabel} />
-          : <span className="w-[38px] inline-block" />}
-      </span>
-
-      {/* Device ID */}
-      <span className="text-[11px] font-semibold text-gray-500 leading-none">Device ID</span>
-      <span className="text-[11px] font-semibold text-[#800000] truncate leading-none" title={item.deviceId}>
-        {truncateId(item.deviceId, 10, 6)}
-      </span>
-      <span className="justify-self-end">
-        <CopyButton value={item.deviceId} copiedId={copiedId} onCopy={onCopy} copyLabel={copyLabel} copiedLabel={copiedLabel} />
-      </span>
-    </div>
-
-    {/* Details */}
-    <div className="text-xs text-gray-500 space-y-1.5 pt-2.5 border-t border-gray-100">
-      <div className="flex justify-between gap-2">
-        <span className="font-medium text-gray-600 shrink-0">{planLabel}:</span>
-        <span className="font-semibold text-gray-700 text-right">{item.subscriptionType || "—"}</span>
-      </div>
-      <div className="flex justify-between gap-2">
-        <span className="font-medium text-gray-600 shrink-0">{registeredLabel}:</span>
-        <span className="text-right">{formatDate(item.registeredAt)}</span>
-      </div>
-      <div className="flex justify-between gap-2">
-        <span className="font-medium text-gray-600 shrink-0">{expiresLabel}:</span>
-        <span className="text-right">{formatDate(item.expiresAt)}</span>
-      </div>
-    </div>
-
-    {/* Toggle button */}
-    <button
-      onClick={() => onToggle(item)}
-      className={`w-full py-2.5 rounded-xl text-sm font-bold transition active:scale-95 ${
-        item.deviceStatus === "INACTIVE"
-          ? "border border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white"
-          : "bg-[#800000] text-white hover:bg-[#6a0000]"
-      }`}
+}) => {
+const {t}= useTranslation();
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white p-4 rounded-xl shadow border border-gray-200 space-y-3"
     >
-      {toggleLabel}
-    </button>
-  </motion.div>
-);
+      {/* Header: status badge */}
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('device')}</span>
+        <DevStatusBadge status={item.deviceStatus} />
+      </div>
+
+      {/* ID rows — 3-col grid: label | value | copy — copy always in same column */}
+      <div className="grid grid-cols-[5rem_1fr_auto] items-center gap-x-2 gap-y-2.5">
+        {/* MAC */}
+        <span className="text-[11px] font-semibold text-gray-500 leading-none">MAC</span>
+        <span className="font-mono text-[11px] font-bold text-gray-800 truncate leading-none" title={item.macAddress}>
+          {item.macAddress || "—"}
+        </span>
+        <span className="justify-self-end">
+          {item.macAddress
+            ? <CopyButton value={item.macAddress} copiedId={copiedId} onCopy={onCopy} copyLabel={copyLabel} copiedLabel={copiedLabel} />
+            : <span className="w-[38px] inline-block" />}
+        </span>
+
+        {/* Device ID */}
+        <span className="text-[11px] font-semibold text-gray-500 leading-none">{t('device_id')}</span>
+        <span className="text-[11px] font-semibold text-[#800000] truncate leading-none" title={item.deviceId}>
+          {truncateId(item.deviceId, 10, 6)}
+        </span>
+        <span className="justify-self-end">
+          <CopyButton value={item.deviceId} copiedId={copiedId} onCopy={onCopy} copyLabel={copyLabel} copiedLabel={copiedLabel} />
+        </span>
+      </div>
+
+      {/* Details */}
+      <div className="text-xs text-gray-500 space-y-1.5 pt-2.5 border-t border-gray-100">
+        <div className="flex justify-between gap-2">
+          <span className="font-medium text-gray-600 shrink-0">{planLabel}:</span>
+          <span className="font-semibold text-gray-700 text-right">{item.subscriptionType || "—"}</span>
+        </div>
+        <div className="flex justify-between gap-2">
+          <span className="font-medium text-gray-600 shrink-0">{registeredLabel}:</span>
+          <span className="text-right">{formatDate(item.registeredAt)}</span>
+        </div>
+        <div className="flex justify-between gap-2">
+          <span className="font-medium text-gray-600 shrink-0">{expiresLabel}:</span>
+          <span className="text-right">{formatDate(item.expiresAt)}</span>
+        </div>
+      </div>
+
+      {/* Toggle button */}
+      <button
+        onClick={() => onToggle(item)}
+        className={`w-full py-2.5 rounded-xl text-sm font-bold transition active:scale-95 ${item.deviceStatus === "INACTIVE"
+            ? "border border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white"
+            : "bg-[#800000] text-white hover:bg-[#6a0000]"
+          }`}
+      >
+        {toggleLabel}
+      </button>
+    </motion.div>
+  )
+}
+
+
 
 // ─── EmptyState — MODULE LEVEL ────────────────────────────────────────────────
 const EmptyState = ({ hasFilters, noDataLabel, onClear }) => (
@@ -186,17 +190,19 @@ const EmptyState = ({ hasFilters, noDataLabel, onClear }) => (
 
 // ─── FilterPanelContent — MODULE LEVEL (inputs keep focus, no remount) ────────
 const FilterPanelContent = ({
-  statusFilter,   setStatusFilter,
-  subFilter,      setSubFilter,
+  statusFilter, setStatusFilter,
+  subFilter, setSubFilter,
   registeredFrom, setRegisteredFrom,
-  registeredTo,   setRegisteredTo,
-  expiresFrom,    setExpiresFrom,
-  expiresTo,      setExpiresTo,
+  registeredTo, setRegisteredTo,
+  expiresFrom, setExpiresFrom,
+  expiresTo, setExpiresTo,
   planOptions,
   activeFilterCount,
   clearAll,
 }) => {
-  const STATUS_OPTS = ["", "ACTIVE", "INACTIVE"];
+  
+  const {t} = useTranslation()
+  const STATUS_OPTS = ["", t('active'),  t('inactive')];
   return (
     <div className="space-y-5">
 
@@ -210,7 +216,7 @@ const FilterPanelContent = ({
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition active:scale-95
                   ${isActive ? "bg-[#800000] text-white border-[#800000]" : "bg-gray-50 text-gray-600 border-gray-200 hover:border-[#800000] hover:text-[#800000]"}`}>
                 <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActive ? "bg-white" : s === "ACTIVE" ? "bg-green-500" : s === "INACTIVE" ? "bg-red-500" : "bg-gray-300"}`} />
-                {s || "All"}
+                {s || t('all')}
               </button>
             );
           })}
@@ -228,7 +234,7 @@ const FilterPanelContent = ({
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition active:scale-95
                     ${isActive ? "bg-[#800000] text-white border-[#800000]" : "bg-gray-50 text-gray-600 border-gray-200 hover:border-[#800000] hover:text-[#800000]"}`}>
                   <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActive ? "bg-white" : p ? "bg-[#800000]/40" : "bg-gray-300"}`} />
-                  {p || "All Plans"}
+                  {p || t('all_plans')}
                 </button>
               );
             })}
@@ -237,11 +243,11 @@ const FilterPanelContent = ({
       )}
 
       {/* REGISTERED DATE RANGE */}
-      <FilterSection icon={Calendar} label="Registered">
+      <FilterSection icon={Calendar} label={t('registered')}>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { label: "From", value: registeredFrom, set: setRegisteredFrom, min: undefined },
-            { label: "To",   value: registeredTo,   set: setRegisteredTo,   min: registeredFrom || undefined },
+            { label: t('from'), value: registeredFrom, set: setRegisteredFrom, min: undefined },
+            { label: t('to'), value: registeredTo, set: setRegisteredTo, min: registeredFrom || undefined },
           ].map(({ label, value, set, min }) => (
             <div key={label} className="space-y-1">
               <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide block">{label}</label>
@@ -262,11 +268,11 @@ const FilterPanelContent = ({
       </FilterSection>
 
       {/* EXPIRES DATE RANGE */}
-      <FilterSection icon={Calendar} label="Expires">
+      <FilterSection icon={Calendar} label={t('expires')}>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { label: "From", value: expiresFrom, set: setExpiresFrom, min: undefined },
-            { label: "To",   value: expiresTo,   set: setExpiresTo,   min: expiresFrom || undefined },
+            { label: t('from'), value: expiresFrom, set: setExpiresFrom, min: undefined },
+            { label: t('to'), value: expiresTo, set: setExpiresTo, min: expiresFrom || undefined },
           ].map(({ label, value, set, min }) => (
             <div key={label} className="space-y-1">
               <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide block">{label}</label>
@@ -300,37 +306,37 @@ const FilterPanelContent = ({
 
 // ═════════════════════════════════════════════════════════════════════════════
 function UserManagement() {
-  const { t }        = useTranslation();
+  const { t } = useTranslation();
   const { userRole } = useAuth();
 
   // ── Data ──────────────────────────────────────────────────────────────────
-  const [devices,     setDevices]     = useState([]);
+  const [devices, setDevices] = useState([]);
   const [planOptions, setPlanOptions] = useState([]); // dynamic from API
-  const [totalUser,   setTotalUser]   = useState(0);
-  const [activeUser,  setActiveUser]  = useState(0);
-  const [totalPages,  setTotalPages]  = useState(1);
+  const [totalUser, setTotalUser] = useState(0);
+  const [activeUser, setActiveUser] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingData, setLoadingData] = useState(true);
 
   // ── Search ────────────────────────────────────────────────────────────────
-  const [search,      setSearch]      = useState("");
-  const debouncedSearch               = useDebounce(search, 450);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 450);
 
   // ── Filter panel ──────────────────────────────────────────────────────────
-  const [showFilters,    setShowFilters]    = useState(false);
-  const [statusFilter,   setStatusFilter]   = useState(""); // ?status=
-  const [subFilter,      setSubFilter]      = useState(""); // ?subscription=
+  const [showFilters, setShowFilters] = useState(false);
+  const [statusFilter, setStatusFilter] = useState(""); // ?status=
+  const [subFilter, setSubFilter] = useState(""); // ?subscription=
   const [registeredFrom, setRegisteredFrom] = useState(""); // ?registeredFrom=
-  const [registeredTo,   setRegisteredTo]   = useState(""); // ?registeredTo=
-  const [expiresFrom,    setExpiresFrom]    = useState(""); // ?expiresFrom=
-  const [expiresTo,      setExpiresTo]      = useState(""); // ?expiresTo=
+  const [registeredTo, setRegisteredTo] = useState(""); // ?registeredTo=
+  const [expiresFrom, setExpiresFrom] = useState(""); // ?expiresFrom=
+  const [expiresTo, setExpiresTo] = useState(""); // ?expiresTo=
 
   // ── Modal / confirm ───────────────────────────────────────────────────────
-  const [showModal,      setShowModal]      = useState(false);
-  const [newUser,        setNewUser]        = useState({ deviceId: "" });
-  const [error,          setError]          = useState("");
-  const [loading,        setLoading]        = useState(false);
-  const [confirmModal,   setConfirmModal]   = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [newUser, setNewUser] = useState({ deviceId: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [confirmModal, setConfirmModal] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState(null);
 
   // ── Copy ──────────────────────────────────────────────────────────────────
@@ -352,7 +358,7 @@ function UserManagement() {
   useEffect(() => {
     fetchPublicPlans()
       .then((data) => setPlanOptions((data || []).map((p) => p.name)))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // ── Fetch ─────────────────────────────────────────────────────────────────
@@ -446,16 +452,16 @@ function UserManagement() {
   };
 
   const activeFilterCount = [statusFilter, subFilter, registeredFrom, registeredTo, expiresFrom, expiresTo].filter(Boolean).length;
-  const hasFilters        = !!(debouncedSearch || activeFilterCount);
-  const showPagination    = totalPages > 1;
+  const hasFilters = !!(debouncedSearch || activeFilterCount);
+  const showPagination = totalPages > 1;
 
   const filterProps = {
-    statusFilter,   setStatusFilter,
-    subFilter,      setSubFilter,
+    statusFilter, setStatusFilter,
+    subFilter, setSubFilter,
     registeredFrom, setRegisteredFrom,
-    registeredTo,   setRegisteredTo,
-    expiresFrom,    setExpiresFrom,
-    expiresTo,      setExpiresTo,
+    registeredTo, setRegisteredTo,
+    expiresFrom, setExpiresFrom,
+    expiresTo, setExpiresTo,
     planOptions,
     activeFilterCount,
     clearAll: clearFilters,
@@ -467,10 +473,10 @@ function UserManagement() {
     copyLabel: t("userManagement.copy") || "Copy",
     copiedLabel: t("userManagement.copied") || "Copied!",
     truncateId,
-    planLabel:       t("userManagement.plan")       || "Plan",
-    expiresLabel:    t("userManagement.expires")    || "Expires",
+    planLabel: t("userManagement.plan") || "Plan",
+    expiresLabel: t("userManagement.expires") || "Expires",
     registeredLabel: t("userManagement.registered") || "Registered",
-    toggleLabel:     t("userManagement.toggle_status") || "Toggle Status",
+    toggleLabel: t("userManagement.toggle_status") || "Toggle Status",
   };
 
   const inputCls = "w-full px-4 py-3 bg-[#f4f4f7] border border-gray-200 rounded-xl focus:border-[#800000] focus:outline-none transition text-sm font-semibold text-gray-800";
@@ -554,7 +560,7 @@ function UserManagement() {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <Filter size={14} className="text-[#800000]" />
-                      <span className="text-sm font-bold text-gray-800">Filter Devices</span>
+                      <span className="text-sm font-bold text-gray-800">{t('filter_devices')} </span>
                     </div>
                     <button onClick={() => setShowFilters(false)}
                       className="text-gray-400 hover:text-gray-600 transition p-1 rounded-lg hover:bg-gray-100">
@@ -600,7 +606,7 @@ function UserManagement() {
               <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 shrink-0">
                 <div className="flex items-center gap-2">
                   <Filter size={15} className="text-[#800000]" />
-                  <span className="text-base font-bold text-gray-800">Filter Devices</span>
+                  <span className="text-base font-bold text-gray-800">{t('filter_devices')}</span>
                 </div>
                 <button onClick={() => setShowFilters(false)}
                   className="text-gray-400 hover:text-gray-600 p-1.5 rounded-xl hover:bg-gray-100">
@@ -731,7 +737,7 @@ function UserManagement() {
                       {item.macAddress && (
                         <span className="shrink-0">
                           <CopyButton value={item.macAddress} copiedId={copiedId} onCopy={copyToClipboard}
-                            copyLabel={t("userManagement.copy")||"Copy"} copiedLabel={t("userManagement.copied")||"Copied!"} />
+                            copyLabel={t("userManagement.copy") || "Copy"} copiedLabel={t("userManagement.copied") || "Copied!"} />
                         </span>
                       )}
                     </div>
@@ -745,7 +751,7 @@ function UserManagement() {
                       </span>
                       <span className="shrink-0">
                         <CopyButton value={item.deviceId} copiedId={copiedId} onCopy={copyToClipboard}
-                          copyLabel={t("userManagement.copy")||"Copy"} copiedLabel={t("userManagement.copied")||"Copied!"} />
+                          copyLabel={t("userManagement.copy") || "Copy"} copiedLabel={t("userManagement.copied") || "Copied!"} />
                       </span>
                     </div>
                   </td>
@@ -775,11 +781,10 @@ function UserManagement() {
                     <div className="flex justify-center">
                       <button
                         onClick={() => handleToggle(item)}
-                        className={`p-2 rounded-lg border transition active:scale-95 ${
-                          item.deviceStatus === "INACTIVE"
+                        className={`p-2 rounded-lg border transition active:scale-95 ${item.deviceStatus === "INACTIVE"
                             ? "border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white"
                             : "bg-[#800000] text-white border-[#800000] hover:bg-[#6a0000]"
-                        }`}
+                          }`}
                         title={item.deviceStatus === "ACTIVE" ? t("userManagement.disable") : t("userManagement.activate")}
                       >
                         <Power size={13} />

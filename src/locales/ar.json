@@ -45,7 +45,7 @@
         "desc": "دعم 4K و 8K حقيقي."
       }
     ],
-     "contactUs": "اتصل بنا",
+    "contactUs": "اتصل بنا",
     "system_online": "SYSTEM ONLINE V2.0",
     "type_ultra_fast": "سرعة فائقة",
     "type_crystal_clear": "وضوح عالي",
@@ -201,7 +201,7 @@
     "plan": "الخطة"
   },
   "userManagement": {
-     "mac_address": "عنوان MAC",
+    "mac_address": "عنوان MAC",
     "filters": "الفلاتر",
     "device_management": "إدارة الأجهزة",
     "manage_members": "إدارة الأعضاء والاشتراكات",
@@ -264,6 +264,10 @@
   "submit": "إرسال",
   "update": "تحديث",
   "cancel": "إلغاء",
+  "secureResellerPortal": "بوابة موزع آمنة",
+  "fullDashboardAccess": "وصول كامل للوحة التحكم",
+  "premiumStreamingTools": "أدوات بث مميزة",
+  "authorizedAccessOnly": "للوصول المصرح به فقط",
   "requests": {
     "request_management": "إدارة الطلبات",
     "new_request": "طلب جديد",
@@ -290,7 +294,7 @@
     "select_plan": "اختر الخطة",
     "submit": "إرسال",
     "cancel": "إلغاء",
-     "admin_notes": "ملاحظات المسؤول",
+    "admin_notes": "ملاحظات المسؤول",
     "mac_address": "عنوان MAC",
     "filters": "الفلاتر",
     "manage_activation_requests": "إدارة طلبات التفعيل",
@@ -310,7 +314,7 @@
     "next": "التالي",
     "search_placeholder": "ابحث في المعاملات...",
     "filters": "الفلاتر",
-     "subtitle": "عرض وإدارة معاملاتك"
+    "subtitle": "عرض وإدارة معاملاتك"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "عرض حصري للكميات الكبيرة!",
@@ -403,7 +407,7 @@
   "success_redirecting": "تم بنجاح! جاري التحويل...",
   "invalid_credentials": "بيانات الدخول غير صحيحة",
   "reset_link_sent": "تم إرسال رابط الاستعادة!",
-    "reg_hello": "مرحباً،",
+  "reg_hello": "مرحباً،",
   "reg_welcome": "أهلاً بك",
   "reg_signup_badge": "تسجيل الموزع",
   "reg_fullname": "الاسم الكامل",
@@ -415,6 +419,24 @@
   "reg_create_btn": "إنشاء حساب",
   "reg_already_member": "هل لديك حساب بالفعل؟",
   "reg_login_now": "سجّل الدخول الآن",
-   "your_balance": "رصيدك",
-   "transfer_credits": "تحويل الرصيد"
+  "your_balance": "رصيدك",
+  "transfer_credits": "تحويل الرصيد",
+  "device": "الجهاز",
+  "device_id": "معرّف الجهاز",
+  "ID": "معرّف",
+  "reseller_id": "معرّف البائع",
+  "plans": "الخطط",
+  "created": "تم الإنشاء",
+  "credits": "الأرصدة",
+  "premium_access": "الوصول المميز",
+  "dont_have_an_account": "ليس لديك حساب؟",
+  "all": "الكل",
+  "active": "نشط",
+  "inactive": "غير نشط",
+  "all_plans": "جميع الخطط",
+  "registered": "مسجل",
+  "expires": "تنتهي الصلاحية",
+  "from": "من",
+  "to": "إلى",
+  "filter_devices": "تصفية الأجهزة"
 }

@@ -194,7 +194,10 @@ const SubCard = ({
   user, copiedId, onCopy, onTransfer, onEdit,
   copyLabel, copiedLabel, truncateId,
   transferLabel, editLabel, createdLabel, coinLabel,
-}) => (
+}) =>{
+
+  const {t} = useTranslation()
+  return (
   <motion.div
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
@@ -208,7 +211,7 @@ const SubCard = ({
 
     {/* ID rows — 3-col grid for perfect copy button alignment */}
     <div className="grid grid-cols-[4.5rem_1fr_auto] items-center gap-x-2 gap-y-2">
-      <span className="text-[11px] font-semibold text-gray-500 leading-none">ID</span>
+      <span className="text-[11px] font-semibold text-gray-500 leading-none">{t('ID')}</span>
       <span className="text-[11px] font-semibold text-[#800000] truncate leading-none" title={user.id}>
         {truncateId(user.id, 8, 5)}
       </span>
@@ -217,7 +220,7 @@ const SubCard = ({
           copyLabel={copyLabel} copiedLabel={copiedLabel} />
       </span>
 
-      <span className="text-[11px] font-semibold text-gray-500 leading-none">Username</span>
+      <span className="text-[11px] font-semibold text-gray-500 leading-none">{t('username')}</span>
       <span className="text-[11px] font-semibold text-blue-600 truncate leading-none">
         {user.username}
       </span>
@@ -251,7 +254,8 @@ const SubCard = ({
       </button>
     </div>
   </motion.div>
-);
+  )
+}
 
 // ─── EmptyState — MODULE LEVEL ────────────────────────────────────────────────
 const EmptyState = ({ hasFilters, noDataLabel, onClear }) => (
