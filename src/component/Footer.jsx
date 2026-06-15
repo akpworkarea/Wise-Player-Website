@@ -1,14 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
+import { useTranslation } from "react-i18next";
 const Footer = () => {
+  const { t } = useTranslation();
   const footerLinks = [
     {
-      label: "Privacy Policy",
+      label: t("privacy"),
       path: "/privacy-policy",
     },
     {
-      label: "Contact Us",
+      label: t("contact"),
       path: "/contact",
     },
   ];
@@ -18,7 +19,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
         {/* Copyright */}
         <p className="text-xs text-gray-400 font-medium text-center sm:text-left">
-          © {new Date().getFullYear()} Wise Player. All rights reserved.
+          © {new Date().getFullYear()} Wise Player. {t("rights")}
         </p>
 
         {/* Navigation Links */}

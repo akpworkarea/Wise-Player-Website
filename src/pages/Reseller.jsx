@@ -118,9 +118,9 @@ const Reseller = () => {
       <section className="max-w-4xl mx-auto px-4 mt-6">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            { icon: <Users size={20} className="text-[#800000]" />,      label: "Reseller Network"    },
-            { icon: <TrendingUp size={20} className="text-[#800000]" />, label: "Volume Discounts"   },
-            { icon: <Star size={20} className="text-[#800000]" />,       label: "Premium Support"    },
+            { icon: <Users size={20} className="text-[#800000]" />,      label:   t('resellerpage.reseller_network')  },
+            { icon: <TrendingUp size={20} className="text-[#800000]" />, label:   t('resellerpage.volume_discounts')   },
+            { icon: <Star size={20} className="text-[#800000]" />,       label:   t('resellerpage.premium_support')   },
           ].map(({ icon, label }, i) => (
             <motion.div
               key={i}

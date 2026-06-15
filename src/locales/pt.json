@@ -161,6 +161,9 @@
   "transaction_history": "Histórico de Transações",
   "purchase_credit": "Comprar Crédito",
   "logout": "Sair",
+    "rights": "Todos os direitos reservados.",
+    "privacy": "Política de Privacidade",
+    "contact": "Entre em Contato",
   "confirm_logout": "Confirmar Saída",
   "are_you_sure_logout": "Tem certeza de que deseja sair?",
   "cancel": "Cancelar",
@@ -194,7 +197,10 @@
     "custom": "Personalizado",
     "bonus_msg": "Códigos bônus podem ser incluídos em grandes pedidos",
     "whatsapp_msg": "Pedidos acima de 1000 códigos exigem contato via WhatsApp",
-    "login": "Entrar"
+    "login": "Entrar",
+      "reseller_network": "Rede de Revendedores",
+  "volume_discounts": "Descontos por Volume",
+  "premium_support": "Suporte Premium"
   },
   "admin_dashboard": {
     "panel": "Painel",

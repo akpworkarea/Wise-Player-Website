@@ -184,7 +184,10 @@
     "custom": "Personalizzato",
     "bonus_msg": "Codici bonus possono essere inclusi per grandi ordini",
     "whatsapp_msg": "Ordini sopra 1000 codici richiedono contatto WhatsApp",
-    "login": "Accedi"
+    "login": "Accedi",
+      "reseller_network": "Rete di Rivenditori",
+  "volume_discounts": "Sconti Quantità",
+  "premium_support": "Supporto Premium"
   },
   "admin_dashboard": {
     "panel": "Pannello",
@@ -257,6 +260,9 @@
   "create_subreseller": "Crea Subrivenditore",
   "user_details": "Dettagli Utente",
   "status": "Stato",
+  "rights": "Tutti i diritti riservati.",
+    "privacy": "Informativa sulla privacy",
+    "contact": "Contattaci",
   "created": "Creato",
   "coin": "Credito",
   "action": "Azione",

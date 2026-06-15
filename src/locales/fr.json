@@ -8,6 +8,9 @@
   "nav_upload_list": "Liste de téléchargement",
   "nav_activation": "Activation",
   "nav_reseller": "Revendeur",
+    "rights": "Tous droits réservés.",
+    "privacy": "Politique de confidentialité",
+    "contact": "Contactez-nous",
   "nav_contact": "Contact",
   "uploadList": "Liste de téléchargement",
   "reseller": "Revendeur",
@@ -502,7 +505,10 @@
     "custom": "Personnalisé",
     "bonus_msg": "Des codes bonus peuvent être inclus pour les commandes importantes",
     "whatsapp_msg": "Les commandes de plus de 1000 codes nécessitent un contact WhatsApp",
-    "login": "Connexion"
+    "login": "Connexion",
+     "reseller_network": "Réseau de Revendeurs",
+  "volume_discounts": "Remises sur Volume",
+  "premium_support": "Support Premium"
   },
   "contact_Page": {
     "contact_support_center": "CENTRE D'ASSISTANCE",

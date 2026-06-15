@@ -184,7 +184,10 @@
     "custom": "Op maat",
     "bonus_msg": "Bonuscodes kunnen worden toegevoegd bij grote bestellingen",
     "whatsapp_msg": "Bestellingen boven 1000 codes vereisen WhatsApp contact",
-    "login": "Inloggen"
+    "login": "Inloggen",
+     "reseller_network": "Resellernetwerk",
+  "volume_discounts": "Volumekortingen",
+  "premium_support": "Premium Ondersteuning"
   },
   "admin_dashboard": {
     "panel": "Dashboard",
@@ -253,6 +256,9 @@
   "premiumStreamingTools": "Premium Streaming Tools",
   "authorizedAccessOnly": "Alleen Geautoriseerde Toegang",
   "dashboard": "Dashboard",
+   "rights": "Alle rechten voorbehouden.",
+    "privacy": "Privacybeleid",
+    "contact": "Neem contact met ons op",
   "device_management": "Apparaatbeheer",
   "sub_reseller": "Subverkoper",
   "activation_requests": "Activeringsverzoeken",

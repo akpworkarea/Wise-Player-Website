@@ -193,7 +193,10 @@
     "custom": "Individuell",
     "bonus_msg": "Bonuscodes können bei großen Bestellungen enthalten sein",
     "whatsapp_msg": "Bestellungen über 1000 Codes erfordern WhatsApp Kontakt",
-    "login": "Anmelden"
+    "login": "Anmelden",
+      "reseller_network": "Wiederverkäufernetzwerk",
+  "volume_discounts": "Mengenrabatte",
+  "premium_support": "Premium-Support"
   },
   "admin_dashboard": {
     "panel": "Übersicht",
@@ -369,6 +372,9 @@
   "create_subreseller": "Unterhändler erstellen",
   "user_details": "Benutzerdetails",
   "status": "Status",
+    "rights": "Alle Rechte vorbehalten.",
+    "privacy": "Datenschutzrichtlinie",
+    "contact": "Kontaktieren Sie uns",
   "created": "Erstellt",
   "coin": "Guthaben",
   "action": "Aktion",

@@ -176,7 +176,10 @@
     "custom": "مخصص",
     "bonus_msg": "قد يتم تضمين رموز إضافية للطلبات الكبيرة",
     "whatsapp_msg": "الطلبات التي تزيد عن 1000 رمز تتطلب التواصل عبر واتساب",
-    "login": "تسجيل الدخول"
+    "login": "تسجيل الدخول",
+      "reseller_network": "شبكة الموزعين",
+  "volume_discounts": "خصومات الكميات",
+  "premium_support": "دعم مميز"
   },
   "admin_dashboard": {
     "panel": "لوحة التحكم",
@@ -199,6 +202,7 @@
     "no_devices_found": "لم يتم العثور على أجهزة",
     "no_devices": "لا توجد أجهزة",
     "plan": "الخطة"
+
   },
   "userManagement": {
     "mac_address": "عنوان MAC",
@@ -298,7 +302,22 @@
     "mac_address": "عنوان MAC",
     "filters": "الفلاتر",
     "manage_activation_requests": "إدارة طلبات التفعيل",
-    "search_placeholder": "البحث في الطلبات..."
+    "search_placeholder": "البحث في الطلبات...",
+    
+    "device_status": {
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "pending": "معلق",
+      "suspended": "موقوف",
+      "expired": "منتهي الصلاحية"
+    },
+  "subscription_type": {
+      "basic": "أساسي",
+      "premium": "بريميوم",
+      "trial": "تجريبي",
+      "enterprise": "مؤسسي",
+      "free": "مجاني"
+  }
   },
   "transaction": {
     "transaction_history": "سجل المعاملات",
@@ -426,7 +445,6 @@
   "ID": "معرّف",
   "reseller_id": "معرّف البائع",
   "plans": "الخطط",
-  "created": "تم الإنشاء",
   "credits": "الأرصدة",
   "premium_access": "الوصول المميز",
   "dont_have_an_account": "ليس لديك حساب؟",
@@ -438,5 +456,9 @@
   "expires": "تنتهي الصلاحية",
   "from": "من",
   "to": "إلى",
-  "filter_devices": "تصفية الأجهزة"
+  "filter_devices": "تصفية الأجهزة",
+    "rights": "جميع الحقوق محفوظة.",
+    "privacy": "سياسة الخصوصية",
+    "contact": "اتصل بنا"
 }
+  

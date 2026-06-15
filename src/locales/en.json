@@ -57,6 +57,9 @@
   "configure_playlist_btn": "Configure Playlist",
   "wipe_data_title": "Wipe Data",
   "remove_content_btn": "Remove Content",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Us",
   "wipe_data_warning": "WARNING: THIS ACTION IS PERMANENT",
   "footer_copyright": "Wiseplayer Management Portal. All rights reserved.",
   "footer_privacy": "PRIVACY",
@@ -216,7 +219,6 @@
   "create_subreseller": "Create New Sub-Reseller",
   "user_details": "User Details",
   "email": "Email",
-  "created": "Created",
   "updated": "Updated",
   "coin": "Coin",
   "action": "Action",
@@ -293,8 +295,8 @@
     "keyGenerateFailed": "Failed to generate key",
     "deviceActivated": "Device Activated Successfully",
     "activationFailed": "Activation Failed",
-    "macPlaceholder": "00:00:00:00:00:00",
-    "footer": "Wise Player · All Rights Reserved"
+    "macPlaceholder": "00:00:00:00:00:00"
+
   },
   "home": {
     "headExperienceText": "Experience premium media playback without buffering. Optimized for all high-end Smart TVs.",
@@ -447,7 +449,10 @@
     "custom": "Custom",
     "bonus_msg": "Bonus codes may be included for large orders",
     "whatsapp_msg": "Orders above 1000 codes require WhatsApp contact",
-    "login": "Login"
+    "login": "Login",
+    "reseller_network": "Reseller Network",
+  "volume_discounts": "Volume Discounts",
+  "premium_support": "Premium Support"
   },
   "userManagement": {
     "device_management": "Device Management",

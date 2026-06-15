@@ -50,10 +50,10 @@ export const DashboardProvider = ({ children }) => {
 
     setLoading(false);
   };
-
   useEffect(() => {
     fetchDashboard();
   }, [userRole]);
+
 
   return (
     <DashboardContext.Provider
