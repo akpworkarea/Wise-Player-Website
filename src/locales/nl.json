@@ -187,7 +187,13 @@
     "login": "Inloggen",
      "reseller_network": "Resellernetwerk",
   "volume_discounts": "Volumekortingen",
-  "premium_support": "Premium Ondersteuning"
+  "premium_support": "Premium Ondersteuning",
+    "one_year_access": "1 Jaar Toegang",
+  "instant_activation": "Directe Activering",
+  "full_support": "Volledige Ondersteuning",
+    "two_devices_covered": "2 Apparaten Gedekt",
+  "best_value_deal": "Beste Prijs-Kwaliteitverhouding",
+  "priority_support": "Prioriteitsondersteuning"
   },
   "admin_dashboard": {
     "panel": "Dashboard",

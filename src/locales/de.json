@@ -196,7 +196,13 @@
     "login": "Anmelden",
       "reseller_network": "Wiederverkäufernetzwerk",
   "volume_discounts": "Mengenrabatte",
-  "premium_support": "Premium-Support"
+  "premium_support": "Premium-Support",
+    "one_year_access": "1 Jahr Zugang",
+  "instant_activation": "Sofortige Aktivierung",
+  "full_support": "Vollständiger Support",
+    "two_devices_covered": "2 Geräte Abgedeckt",
+  "best_value_deal": "Bestes Preis-Leistungs-Angebot",
+  "priority_support": "Priorisierter Support"
   },
   "admin_dashboard": {
     "panel": "Übersicht",

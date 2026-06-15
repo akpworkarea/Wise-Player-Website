@@ -200,7 +200,13 @@
     "login": "Entrar",
       "reseller_network": "Rede de Revendedores",
   "volume_discounts": "Descontos por Volume",
-  "premium_support": "Suporte Premium"
+  "premium_support": "Suporte Premium",
+    "one_year_access": "Acesso por 1 Ano",
+  "instant_activation": "Ativação Instantânea",
+  "full_support": "Suporte Completo",
+    "two_devices_covered": "Cobertura para 2 Dispositivos",
+  "best_value_deal": "Melhor Custo-Benefício",
+  "priority_support": "Suporte Prioritário"
   },
   "admin_dashboard": {
     "panel": "Painel",

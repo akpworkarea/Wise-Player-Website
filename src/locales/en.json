@@ -452,7 +452,13 @@
     "login": "Login",
     "reseller_network": "Reseller Network",
   "volume_discounts": "Volume Discounts",
-  "premium_support": "Premium Support"
+  "premium_support": "Premium Support",
+    "one_year_access": "1 Year Access",
+  "instant_activation": "Instant Activation",
+  "full_support": "Full Support",
+    "two_devices_covered": "2 Devices Covered",
+  "best_value_deal": "Best Value Deal",
+  "priority_support": "Priority Support"
   },
   "userManagement": {
     "device_management": "Device Management",

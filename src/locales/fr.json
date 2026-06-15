@@ -508,7 +508,13 @@
     "login": "Connexion",
      "reseller_network": "Réseau de Revendeurs",
   "volume_discounts": "Remises sur Volume",
-  "premium_support": "Support Premium"
+  "premium_support": "Support Premium",
+    "one_year_access": "Accès d’un An",
+  "instant_activation": "Activation Instantanée",
+  "full_support": "Support Complet",
+   "two_devices_covered": "2 Appareils Couverts",
+  "best_value_deal": "Meilleure Offre Qualité-Prix",
+  "priority_support": "Support Prioritaire"
   },
   "contact_Page": {
     "contact_support_center": "CENTRE D'ASSISTANCE",

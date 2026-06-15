@@ -179,7 +179,13 @@
     "login": "تسجيل الدخول",
       "reseller_network": "شبكة الموزعين",
   "volume_discounts": "خصومات الكميات",
-  "premium_support": "دعم مميز"
+  "premium_support": "دعم مميز",
+    "one_year_access": "وصول لمدة سنة",
+  "instant_activation": "تفعيل فوري",
+  "full_support": "دعم كامل",
+    "two_devices_covered": "تغطية جهازين",
+  "best_value_deal": "أفضل عرض قيمة",
+  "priority_support": "دعم ذو أولوية"
   },
   "admin_dashboard": {
     "panel": "لوحة التحكم",
