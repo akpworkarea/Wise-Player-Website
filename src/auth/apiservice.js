@@ -1,16 +1,20 @@
 import api from './axiosInstance';
 
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
 export const registerReseller = async (formData) => {
   try {
     const response = await api.post('/api/reseller/register', formData);
+    const data = response.data;
 
-    // Store token from register response so verify-email call is authenticated
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data));
+    // Store token + user immediately after registration
+    // (same shape as login response)
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data));
     }
 
-    return { success: true, data: response.data };
+    return { success: true, data };
   } catch (error) {
     return {
       success: false,
@@ -19,6 +23,11 @@ export const registerReseller = async (formData) => {
   }
 };
 
+/**
+ * Verify email OTP after registration.
+ * Uses the token stored from the register response.
+ * POST /api/reseller/verify-email  body: { "otp": "499596" }
+ */
 export const verifyOtp = async (otp) => {
   try {
     const response = await api.post('/api/reseller/verify-email', { otp });
@@ -29,7 +38,6 @@ export const verifyOtp = async (otp) => {
       message:
         error.response?.data?.message ||
         error.response?.data?.error   ||
-        (typeof error.response?.data === 'string' ? error.response.data : null) ||
         'OTP verification failed',
     };
   }
@@ -41,7 +49,6 @@ export const loginReseller = async (credentials) => {
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data));
-      
     }
     return { success: true, data: response.data };
   } catch (error) {
@@ -55,6 +62,8 @@ export const loginReseller = async (credentials) => {
     };
   }
 };
+
+// ─── Device ───────────────────────────────────────────────────────────────────
 
 export const generateDeviceKey = async (macAddress) => {
   try {
@@ -93,13 +102,14 @@ export const validateDevice = async (fingerprint) => {
   }
 };
 
+// ─── Playlist ─────────────────────────────────────────────────────────────────
+
 export const saveM3uPlaylist = async (macAddress, playlistData) => {
   try {
     if (!macAddress) return { success: false, message: 'MAC address is missing!' };
-    const response = await api.post(
-      `/api/playlist/public/${macAddress}/m3u`,
-      { name: playlistData.name, m3uUrl: playlistData.m3uUrl }
-    );
+    const response = await api.post(`/api/playlist/public/${macAddress}/m3u`, {
+      name: playlistData.name, m3uUrl: playlistData.m3uUrl,
+    });
     return { success: true, message: response.data.message || 'Playlist saved!' };
   } catch (error) {
     return {
@@ -111,6 +121,8 @@ export const saveM3uPlaylist = async (macAddress, playlistData) => {
     };
   }
 };
+
+// ─── Payment ──────────────────────────────────────────────────────────────────
 
 export const checkoutPayment = async ({ deviceId, planName, successUrl, cancelUrl }) => {
   try {
@@ -136,6 +148,20 @@ export const fetchPublicPlans = async () => {
   }
 };
 
+export const downloadInvoicePdf = async (deviceId, invoiceNo) => {
+  try {
+    const response = await api.get(
+      `/api/payment/public/invoice/${invoiceNo}/pdf`,
+      { params: { deviceId, invoiceNo }, responseType: 'blob' }
+    );
+    return { success: true, data: response.data };
+  } catch (error) {
+    return { success: false, message: 'Download failed' };
+  }
+};
+
+// ─── Support ──────────────────────────────────────────────────────────────────
+
 export const submitSupportTicket = async (ticketData) => {
   try {
     const formData = new FormData();
@@ -155,17 +181,5 @@ export const submitSupportTicket = async (ticketData) => {
       success: false,
       message: error.response?.data?.message || 'Failed to submit ticket',
     };
-  }
-};
-
-export const downloadInvoicePdf = async (deviceId, invoiceNo) => {
-  try {
-    const response = await api.get(
-      `/api/payment/public/invoice/${invoiceNo}/pdf`,
-      { params: { deviceId, invoiceNo }, responseType: 'blob' }
-    );
-    return { success: true, data: response.data };
-  } catch (error) {
-    return { success: false, message: 'Download failed' };
   }
 };

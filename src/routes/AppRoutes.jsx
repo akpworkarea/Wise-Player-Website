@@ -36,6 +36,7 @@ const AppRoutes = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/register-success" element={<RegisterSuccess />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/activation" element={<WisePlayerActivation />} />
         <Route path="/upload-list" element={<WisePlayerUploadList />} />
         <Route path="/upload-playlist" element={<WisePlayerUploadPlayList />} />
@@ -48,7 +49,7 @@ const AppRoutes = () => {
         <Route path="/purchase-credit" element={<PurchaseCredit />} />
         <Route path="/transition-history" element={<TransitionHistory />} />
         <Route path="/payment-status" element={<PaymentStatus />} />
-        <Route path="/verify-otp" element={<VerifyOtp />} />
+        
 
         <Route path="*" element={<Home />} />
       </Routes>
