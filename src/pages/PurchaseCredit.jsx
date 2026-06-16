@@ -36,13 +36,13 @@ const CoinCalculator = ({ onBulkOffer }) => {
   }, [token, payerId, paymentStatus, triggerTransactionRefresh, navigate]);
 
   const tiers = [
-    { min: 10,   max: 10,       rate: 2.5  },
-    { min: 11,   max: 49,       rate: 2.2  },
-    { min: 50,   max: 99,       rate: 2.0  },
-    { min: 100,  max: 199,      rate: 1.75 },
-    { min: 200,  max: 499,      rate: 1.5  },
-    { min: 500,  max: 999,      rate: 1.25 },
-    { min: 1000, max: Infinity, rate: 1.0  },
+    { min: 10, max: 10, rate: 2.5 },
+    { min: 11, max: 49, rate: 2.2 },
+    { min: 50, max: 99, rate: 2.0 },
+    { min: 100, max: 199, rate: 1.75 },
+    { min: 200, max: 499, rate: 1.5 },
+    { min: 500, max: 999, rate: 1.25 },
+    { min: 1000, max: Infinity, rate: 1.0 },
   ];
 
   const calculatePrice = (value) => {
@@ -85,7 +85,6 @@ const CoinCalculator = ({ onBulkOffer }) => {
 
   return (
     <div className="bg-white rounded-xl shadow border border-gray-200 p-5 w-full">
-
       {/* Title row */}
       <div className="flex items-center gap-2 mb-4">
         <div className="p-2 bg-red-50 text-[#800000] rounded-md">
@@ -144,7 +143,6 @@ const CoinCalculator = ({ onBulkOffer }) => {
           {t("purchaseCredit.buy_credits")}
         </button>
       </div>
-
     </div>
   );
 };
@@ -157,23 +155,57 @@ export default function PurchaseCredit() {
   const [bulkOffer, setBulkOffer] = useState(null);
 
   const tiers = [
-    { range: "10",           price: "2.50 EUR", badge: "Standard",   badgeClass: "bg-gray-100 text-gray-500"         },
-    { range: "11 - 49",      price: "2.20 EUR", badge: "Starter",    badgeClass: "bg-blue-50 text-blue-600"          },
-    { range: "50 - 99",      price: "2.00 EUR", badge: "Pro",        badgeClass: "bg-indigo-50 text-indigo-600"      },
-    { range: "100 - 199",    price: "1.75 EUR", badge: "Elite",      badgeClass: "bg-amber-50 text-amber-600"        },
-    { range: "200 - 499",    price: "1.50 EUR", badge: "Wholesale",  badgeClass: "bg-orange-50 text-orange-600"      },
-    { range: "500 - 999",    price: "1.25 EUR", badge: "Mega",       badgeClass: "bg-red-50 text-red-600"            },
-    { range: "1000+",        price: "1.00 EUR", badge: "Enterprise", badgeClass: "bg-red-100 text-[#800000]"         },
+    {
+      range: "10",
+      price: "2.50 EUR",
+      badge: t("purchaseCredit.standard"),
+      badgeClass: "bg-gray-100 text-gray-500",
+    },
+    {
+      range: "11 - 49",
+      price: "2.20 EUR",
+      badge: t("purchaseCredit.starter"),
+      badgeClass: "bg-blue-50 text-blue-600",
+    },
+    {
+      range: "50 - 99",
+      price: "2.00 EUR",
+      badge: t("purchaseCredit.pro"),
+      badgeClass: "bg-indigo-50 text-indigo-600",
+    },
+    {
+      range: "100 - 199",
+      price: "1.75 EUR",
+      badge: t("purchaseCredit.elite"),
+      badgeClass: "bg-amber-50 text-amber-600",
+    },
+    {
+      range: "200 - 499",
+      price: "1.50 EUR",
+      badge: t("purchaseCredit.wholesale"),
+      badgeClass: "bg-orange-50 text-orange-600",
+    },
+    {
+      range: "500 - 999",
+      price: "1.25 EUR",
+      badge: t("purchaseCredit.mega"),
+      badgeClass: "bg-red-50 text-red-600",
+    },
+    {
+      range: "1000+",
+      price: "1.00 EUR",
+      badge: t("purchaseCredit.enterprise"),
+      badgeClass: "bg-red-100 text-[#800000]",
+    },
   ];
 
   const customerPlans = [
-    { label: t("purchaseCredit.one_code_annual"), price: "5.99 EUR"  },
+    { label: t("purchaseCredit.one_code_annual"), price: "5.99 EUR" },
     { label: t("purchaseCredit.two_codes_offer"), price: "14.99 EUR" },
   ];
 
   return (
     <div className="min-h-screen bg-[#f4f4f7] w-full p-4 sm:p-6 space-y-6">
-
       {/* ── BULK OFFER MODAL ── */}
       <AnimatePresence>
         {bulkOffer && (
@@ -216,12 +248,12 @@ export default function PurchaseCredit() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-3">
-  <a
-    href="https://wa.me/212676076001"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition active:scale-95 text-sm"
-  >
+                  <a
+                    href="https://wa.me/212676076001"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition active:scale-95 text-sm"
+                  >
                     <MessageSquare size={18} />
                     <span>{t("purchaseCredit.contact_on_whatsapp")}</span>
                     <ExternalLink size={14} className="opacity-60" />
@@ -308,7 +340,6 @@ export default function PurchaseCredit() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
           {/* Pricing table — table-fixed, no horizontal scroll */}
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <table className="w-full text-sm table-fixed">
@@ -337,10 +368,12 @@ export default function PurchaseCredit() {
                         <span className="font-bold text-gray-800 text-sm">
                           {tier.range}
                         </span>
-                        <span className={[
-                          "text-[10px] uppercase tracking-wider font-black px-2 py-0.5 rounded-full",
-                          tier.badgeClass,
-                        ].join(" ")}>
+                        <span
+                          className={[
+                            "text-[10px] uppercase tracking-wider font-black px-2 py-0.5 rounded-full",
+                            tier.badgeClass,
+                          ].join(" ")}
+                        >
                           {tier.badge}
                         </span>
                       </div>
@@ -348,13 +381,13 @@ export default function PurchaseCredit() {
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         {tier.range === "1000+" && (
-  <a
-    href="https://wa.me/212777754774"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="bg-green-100 text-green-600 p-1.5 rounded-lg hover:bg-green-600 hover:text-white transition shrink-0"
-    title={t("purchaseCredit.contact_for_bulk_bonus")}
-  >
+                          <a
+                            href="https://wa.me/212777754774"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-green-100 text-green-600 p-1.5 rounded-lg hover:bg-green-600 hover:text-white transition shrink-0"
+                            title={t("purchaseCredit.contact_for_bulk_bonus")}
+                          >
                             <MessageSquare size={14} />
                           </a>
                         )}
@@ -373,10 +406,8 @@ export default function PurchaseCredit() {
           <div className="w-full">
             <CoinCalculator onBulkOffer={setBulkOffer} />
           </div>
-
         </div>
       </motion.div>
-
     </div>
   );
 }

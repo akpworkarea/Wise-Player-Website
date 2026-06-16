@@ -154,6 +154,11 @@
       "toggle_menu": "Alternar menu"
     }
   },
+  "Footer": {
+    "rights": "Todos os direitos reservados.",
+    "privacy": "Política de Privacidade",
+    "contact": "Entre em Contato"
+  },
   "dashboard": "Painel",
   "device_management": "Gerenciamento de Dispositivos",
   "sub_reseller": "Sub-revendedor",
@@ -161,11 +166,10 @@
   "transaction_history": "Histórico de Transações",
   "purchase_credit": "Comprar Crédito",
   "logout": "Sair",
-    "rights": "Todos os direitos reservados.",
-    "privacy": "Política de Privacidade",
-    "contact": "Entre em Contato",
+    "filters": "Filtros",
   "confirm_logout": "Confirmar Saída",
   "are_you_sure_logout": "Tem certeza de que deseja sair?",
+    "search_Placeholder": "Pesquisar...",
   "cancel": "Cancelar",
   "uploadlist": {
     "upload_playlist_title": "Carregue a sua playlist",
@@ -369,7 +373,14 @@
     "reseller_pricing": "Preços para Revendedores",
     "quantity_codes": "Quantidade (Códigos)",
     "unit_price": "Preço Unitário",
-    "contact_for_bulk_bonus": "Contato para bônus em grande quantidade"
+    "contact_for_bulk_bonus": "Contato para bônus em grande quantidade",
+      "standard": "Padrão",
+  "starter": "Inicial",
+  "pro": "Profissional",
+  "elite": "Elite",
+  "wholesale": "Atacado",
+  "mega": "Mega",
+  "enterprise": "Empresarial"
   },
   "contact_Page": {
     "contact_support_center": "CENTRO DE SUPORTE",

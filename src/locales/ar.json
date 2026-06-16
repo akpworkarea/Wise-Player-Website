@@ -245,11 +245,14 @@
     "activate": "تفعيل",
     "this_user": "هذا المستخدم؟",
     "cancel": "إلغاء",
-    "yes_confirm": "نعم، تأكيد"
+    "yes_confirm": "نعم، تأكيد",
+      "noResultsMatchFilters": "لا توجد نتائج تطابق عوامل التصفية الخاصة بك",
+  "clearFilters": "مسح عوامل التصفية"
   },
   "dashboard": "لوحة التحكم",
   "device_management": "إدارة الأجهزة",
   "sub_reseller": "موزع فرعي",
+   "filters": "عوامل التصفية",
   "activation_requests": "طلبات التفعيل",
   "transaction_history": "سجل المعاملات",
   "purchase_credit": "شراء الرصيد",
@@ -274,6 +277,7 @@
   "submit": "إرسال",
   "update": "تحديث",
   "cancel": "إلغاء",
+    "search_Placeholder": "بحث...",
   "secureResellerPortal": "بوابة موزع آمنة",
   "fullDashboardAccess": "وصول كامل للوحة التحكم",
   "premiumStreamingTools": "أدوات بث مميزة",
@@ -308,22 +312,7 @@
     "mac_address": "عنوان MAC",
     "filters": "الفلاتر",
     "manage_activation_requests": "إدارة طلبات التفعيل",
-    "search_placeholder": "البحث في الطلبات...",
-    
-    "device_status": {
-      "active": "نشط",
-      "inactive": "غير نشط",
-      "pending": "معلق",
-      "suspended": "موقوف",
-      "expired": "منتهي الصلاحية"
-    },
-  "subscription_type": {
-      "basic": "أساسي",
-      "premium": "بريميوم",
-      "trial": "تجريبي",
-      "enterprise": "مؤسسي",
-      "free": "مجاني"
-  }
+    "search_placeholder": "البحث في الطلبات..."
   },
   "transaction": {
     "transaction_history": "سجل المعاملات",
@@ -360,7 +349,14 @@
     "reseller_pricing": "تسعير البائعين",
     "quantity_codes": "الكمية (الرموز)",
     "unit_price": "سعر الوحدة",
-    "contact_for_bulk_bonus": "تواصل للحصول على مكافأة الكميات"
+    "contact_for_bulk_bonus": "تواصل للحصول على مكافأة الكميات",
+      "standard": "قياسي",
+       "starter": "مبتدئ",
+  "pro": "احترافي",
+  "elite": "نخبة",
+  "wholesale": "الجملة",
+  "mega": "ميجا",
+  "enterprise": "مؤسسة"
   },
   "contact_Page": {
     "contact_support_center": "مركز الدعم",
@@ -411,6 +407,11 @@
     "footer_privacy": "الخصوصية",
     "footer_helpdesk": "مكتب المساعدة",
     "footerCopyRight": "وايز بلاير · جميع الحقوق محفوظة"
+  },
+  "Footer": {
+  "rights": "جميع الحقوق محفوظة.",
+  "privacy": "سياسة الخصوصية",
+  "contact": "اتصل بنا"
   },
   "payment_success_redirecting": "تم الدفع بنجاح، سيتم تحويلك إلى لوحة التحكم قريبًا",
   "total_users": "إجمالي المستخدمين",
@@ -463,8 +464,7 @@
   "from": "من",
   "to": "إلى",
   "filter_devices": "تصفية الأجهزة",
-    "rights": "جميع الحقوق محفوظة.",
-    "privacy": "سياسة الخصوصية",
-    "contact": "اتصل بنا"
+
+  "No_Data_Found": "لم يتم العثور على بيانات"
 }
   

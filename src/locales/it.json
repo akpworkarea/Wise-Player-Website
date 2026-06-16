@@ -254,6 +254,11 @@
     "cancel": "Annulla",
     "yes_confirm": "Sì, conferma"
   },
+  "Footer": {
+  "rights": "Tutti i diritti riservati.",
+    "privacy": "Informativa sulla privacy",
+    "contact": "Contattaci"
+  },
   "device": "Dispositivo",
   "device_id": "ID del dispositivo",
   "reseller_id": "ID del rivenditore",
@@ -266,10 +271,9 @@
   "create_subreseller": "Crea Subrivenditore",
   "user_details": "Dettagli Utente",
   "status": "Stato",
-  "rights": "Tutti i diritti riservati.",
-    "privacy": "Informativa sulla privacy",
-    "contact": "Contattaci",
+   "filters": "Filtri",
   "created": "Creato",
+    "search_Placeholder": "Cerca...",
   "coin": "Credito",
   "action": "Azione",
   "username_label": "Nome Utente",
@@ -346,7 +350,14 @@
     "reseller_pricing": "Prezzi Rivenditore",
     "quantity_codes": "Quantità (Codici)",
     "unit_price": "Prezzo Unitario",
-    "contact_for_bulk_bonus": "Contatta per bonus quantità"
+    "contact_for_bulk_bonus": "Contatta per bonus quantità",
+      "standard": "Standard",
+  "starter": "Base",
+  "pro": "Professionale",
+  "elite": "Elite",
+  "wholesale": "Ingrosso",
+  "mega": "Mega",
+  "enterprise": "Aziendale"
   },
   "contact_Page": {
     "contact_support_center": "CENTRO SUPPORTO",

@@ -454,7 +454,7 @@ const SubresellerDashboard = () => {
               )}
               <input
                 type="text"
-                placeholder={t("search_placeholder") || "Search by name, username or ID…"}
+                placeholder={t("search_Placeholder") || "Search by name, username or ID…"}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-8 pr-7 py-2.5 text-sm text-gray-700 bg-white focus:outline-none placeholder-gray-400"

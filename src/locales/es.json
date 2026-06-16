@@ -267,10 +267,10 @@
   "create_subreseller": "Crear Subdistribuidor",
   "user_details": "Detalles del Usuario",
   "status": "Estado",
-    "rights": "Todos los derechos reservados.",
-    "privacy": "Política de privacidad",
-    "contact": "Contáctenos",
+  "filters": "Filtros",
+
   "created": "Creado",
+    "search_Placeholder": "Buscar...",
   "coin": "Crédito",
   "action": "Acción",
   "username_label": "Nombre de Usuario",
@@ -334,6 +334,11 @@
     "manage_activation_requests": "Gestionar solicitudes de activación",
     "search_placeholder": "Buscar solicitudes..."
   },
+  "Footer": {
+        "rights": "Todos los derechos reservados.",
+    "privacy": "Política de privacidad",
+    "contact": "Contáctenos"
+  },
   "transaction": {
     "transaction_history": "Historial de Transacciones",
     "id": "ID",
@@ -369,7 +374,14 @@
     "reseller_pricing": "Precios para Distribuidores",
     "quantity_codes": "Cantidad (Códigos)",
     "unit_price": "Precio Unitario",
-    "contact_for_bulk_bonus": "Contactar para bono por volumen"
+    "contact_for_bulk_bonus": "Contactar para bono por volumen",
+      "standard": "Estándar",
+  "starter": "Inicial",
+  "pro": "Profesional",
+  "elite": "Élite",
+  "wholesale": "Mayorista",
+  "mega": "Mega",
+  "enterprise": "Empresarial"
   },
   "contact_Page": {
     "contact_support_center": "CENTRO DE SOPORTE",

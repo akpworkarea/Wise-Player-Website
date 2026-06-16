@@ -9,6 +9,7 @@
   "contact": "Contact",
   "wisePlay": "WISE PLAY",
   "login": "Login",
+    "filters": "Filters",
   "secureResellerPortal": "Secure Reseller Portal",
   "fullDashboardAccess": "Full Dashboard Access",
   "premiumStreamingTools": "Premium Streaming Tools",
@@ -57,9 +58,7 @@
   "configure_playlist_btn": "Configure Playlist",
   "wipe_data_title": "Wipe Data",
   "remove_content_btn": "Remove Content",
-    "rights": "All rights reserved.",
-    "privacy": "Privacy Policy",
-    "contact": "Contact Us",
+  
   "wipe_data_warning": "WARNING: THIS ACTION IS PERMANENT",
   "footer_copyright": "Wiseplayer Management Portal. All rights reserved.",
   "footer_privacy": "PRIVACY",
@@ -124,9 +123,15 @@
     "contact_success_title": "Message Sent!",
     "contact_success_msg": "We'll gets back to you soon."
   },
+  "Footer": {
+      "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Us"
+  },
   "tfs_badge": "LIVE 24/7 AVAILABLE",
   "tfs_hero_title": "Entertainment That",
   "tfs_hero_span": "Never Sleeps.",
+   "search_Placeholder": "Search...",
   "tfs_hero_sub": "WisePlayer: Always On, Always Wise. Whether it's a 3 AM marathon or a midday binge, we are online whenever you are.",
   "tfs_btn_start": "Start Watching",
   "tfs_btn_specs": "Technical Specs",
@@ -565,7 +570,14 @@
     "reseller_pricing": "Reseller Pricing",
     "quantity_codes": "Quantity(Codes)",
     "unit_price": "Unit Price",
-    "contact_for_bulk_bonus": "Contact for Bulk Bonus"
+    "contact_for_bulk_bonus": "Contact for Bulk Bonus",
+      "standard": "Standard",
+  "starter": "Starter",
+  "pro": "Pro",
+  "elite": "Elite",
+  "wholesale": "Wholesale",
+  "mega": "Mega",
+  "enterprise": "Enterprise"
   },
   "playlist": {
     "upload_playlist": "Upload your playlist",

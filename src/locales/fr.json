@@ -8,9 +8,8 @@
   "nav_upload_list": "Liste de téléchargement",
   "nav_activation": "Activation",
   "nav_reseller": "Revendeur",
-    "rights": "Tous droits réservés.",
-    "privacy": "Politique de confidentialité",
-    "contact": "Contactez-nous",
+   "filters": "Filtres",
+
   "nav_contact": "Contact",
   "uploadList": "Liste de téléchargement",
   "reseller": "Revendeur",
@@ -278,7 +277,19 @@
     "reseller_pricing": "Tarification Revendeur",
     "quantity_codes": "Quantité (Codes)",
     "unit_price": "Prix Unitaire",
-    "contact_for_bulk_bonus": "Contacter pour bonus en gros"
+    "contact_for_bulk_bonus": "Contacter pour bonus en gros",
+      "standard": "Standard",
+  "starter": "Débutant",
+  "pro": "Professionnel",
+  "elite": "Élite",
+  "wholesale": "Grossiste",
+  "mega": "Méga",
+  "enterprise": "Entreprise"
+  },
+  "Footer": {
+        "rights": "Tous droits réservés.",
+    "privacy": "Politique de confidentialité",
+    "contact": "Contactez-nous"
   },
   "requests": {
     "request_management": "Gestion des demandes",
@@ -632,5 +643,6 @@
   "dont_have_account": "Vous n'avez pas de compte ?",
   "success_redirecting": "Succès ! Redirection...",
   "invalid_credentials": "Identifiants invalides",
-  "reset_link_sent": "Lien de réinitialisation envoyé !"
+  "reset_link_sent": "Lien de réinitialisation envoyé !",
+    "search_Placeholder": "Rechercher..."
 }

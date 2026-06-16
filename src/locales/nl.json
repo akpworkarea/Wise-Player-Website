@@ -252,6 +252,11 @@
     "cancel": "Annuleren",
     "yes_confirm": "Ja, bevestigen"
   },
+  "Footer": {
+   "rights": "Alle rechten voorbehouden.",
+    "privacy": "Privacybeleid",
+    "contact": "Neem contact met ons op"
+  },
   "device": "Apparaat",
   "device_id": "Apparaat-ID",
   "reseller_id": "Reseller-ID",
@@ -261,16 +266,16 @@
   "fullDashboardAccess": "Volledige Dashboard Toegang",
   "premiumStreamingTools": "Premium Streaming Tools",
   "authorizedAccessOnly": "Alleen Geautoriseerde Toegang",
+    "filters": "Filters",
   "dashboard": "Dashboard",
-   "rights": "Alle rechten voorbehouden.",
-    "privacy": "Privacybeleid",
-    "contact": "Neem contact met ons op",
+
   "device_management": "Apparaatbeheer",
   "sub_reseller": "Subverkoper",
   "activation_requests": "Activeringsverzoeken",
   "transaction_history": "Transactiegeschiedenis",
   "purchase_credit": "Krediet kopen",
   "logout": "Uitloggen",
+    "search_Placeholder": "Zoeken...",
   "confirm_logout": "Uitloggen bevestigen",
   "are_you_sure_logout": "Weet u zeker dat u wilt uitloggen?",
   "cancel": "Annuleren",
@@ -387,7 +392,14 @@
     "reseller_pricing": "Wederverkoperprijzen",
     "quantity_codes": "Aantal (Codes)",
     "unit_price": "Eenheidsprijs",
-    "contact_for_bulk_bonus": "Contact voor bulkbonus"
+    "contact_for_bulk_bonus": "Contact voor bulkbonus",
+      "standard": "Standaard",
+  "starter": "Starter",
+  "pro": "Professioneel",
+  "elite": "Elite",
+  "wholesale": "Groothandel",
+  "mega": "Mega",
+  "enterprise": "Zakelijk"
   },
   "playlist": {
     "upload_playlist": "Upload je afspeellijst",

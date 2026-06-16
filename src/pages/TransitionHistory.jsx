@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { TransitionHistoryData } from "../auth/transitionHistory";
 
-
-
 function TransitionHistory() {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
@@ -24,7 +22,9 @@ function TransitionHistory() {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title} className="text-gray-700">Transaction History</h2>
+      <h2 style={styles.title} className="text-gray-700">
+        Transaction History
+      </h2>
 
       <div style={styles.card}>
         <table style={styles.table}>
@@ -42,20 +42,18 @@ function TransitionHistory() {
             {data.length > 0 ? (
               data.map((item) => (
                 <tr key={item.id} style={styles.row} className="py-2 text-sm">
-                  <td style={styles.cellId} className="py-3">{item.id}</td>
-
-                  <td style={styles.amount}>
-                    €{item.amount}
+                  <td style={styles.cellId} className="py-3">
+                    {item.id}
                   </td>
+
+                  <td style={styles.amount}>€{item.amount}</td>
 
                   <td>
                     <span
                       style={{
                         ...styles.badge,
                         background:
-                          item.type === "PURCHASE"
-                            ? "#dc2626"
-                            : "#6b7280",
+                          item.type === "PURCHASE" ? "#dc2626" : "#6b7280",
                       }}
                     >
                       {item.type}
@@ -72,7 +70,7 @@ function TransitionHistory() {
             ) : (
               <tr>
                 <td colSpan="5" style={styles.empty}>
-                  No Data Found
+                  {t("no_data_found")}
                 </td>
               </tr>
             )}
@@ -99,7 +97,7 @@ function TransitionHistory() {
           disabled={page + 1 === totalPages}
           onClick={() => setPage(page + 1)}
           style={styles.btn}
-           className="bg-gray-500"
+          className="bg-gray-500"
         >
           Next ➡
         </button>
@@ -111,9 +109,8 @@ function TransitionHistory() {
 const styles = {
   container: {
     padding: "24px",
-   
+
     minHeight: "100vh",
-   
   },
 
   title: {
@@ -123,7 +120,6 @@ const styles = {
   },
 
   card: {
-   
     borderRadius: "12px",
     padding: "16px",
     boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
@@ -138,12 +134,12 @@ const styles = {
     textAlign: "left",
     borderBottom: "1px solid #374151",
     color: "#9ca3af",
-    padding:"12px 10px"
+    padding: "12px 10px",
   },
 
   row: {
     borderBottom: "1px solid #374151",
-     padding:"10px 10px"
+    padding: "10px 10px",
   },
 
   cellId: {
@@ -193,8 +189,6 @@ const styles = {
     borderRadius: "6px",
     cursor: "pointer",
   },
-
- 
 };
 
 export default TransitionHistory;

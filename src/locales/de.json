@@ -343,7 +343,14 @@
     "reseller_pricing": "Wiederverkäuferpreise",
     "quantity_codes": "Menge (Codes)",
     "unit_price": "Stückpreis",
-    "contact_for_bulk_bonus": "Kontakt für Mengenbonus"
+    "contact_for_bulk_bonus": "Kontakt für Mengenbonus",
+      "standard": "Standard",
+  "starter": "Starter",
+  "pro": "Profi",
+  "elite": "Elite",
+  "wholesale": "Großhandel",
+  "mega": "Mega",
+  "enterprise": "Unternehmen"
   },
   "transaction": {
     "transaction_history": "Transaktionsverlauf",
@@ -361,12 +368,18 @@
     "search_placeholder": "Transaktionen suchen...",
     "filters": "Filter"
   },
+  "Footer": {
+        "rights": "Alle Rechte vorbehalten.",
+    "privacy": "Datenschutzrichtlinie",
+    "contact": "Kontaktieren Sie uns"
+  },
   "reseller_id": "Händler-ID",
   "device": "Gerät",
   "device_id": "Geräte-ID",
   "plans": "Pläne",
   "created": "Erstellt",
   "credits": "Guthaben",
+    "filters": "Filter",
   "premium_access": "Premium-Zugang",
   "dont_have_an_account": "Sie haben kein Konto?",
   "secureResellerPortal": "Sicheres Wiederverkäuferportal",
@@ -378,9 +391,7 @@
   "create_subreseller": "Unterhändler erstellen",
   "user_details": "Benutzerdetails",
   "status": "Status",
-    "rights": "Alle Rechte vorbehalten.",
-    "privacy": "Datenschutzrichtlinie",
-    "contact": "Kontaktieren Sie uns",
+    "search_Placeholder": "Suchen...",
   "created": "Erstellt",
   "coin": "Guthaben",
   "action": "Aktion",

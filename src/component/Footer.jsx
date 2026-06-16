@@ -5,11 +5,11 @@ const Footer = () => {
   const { t } = useTranslation();
   const footerLinks = [
     {
-      label: t("privacy"),
+      label: t("Footer.privacy"),
       path: "/privacy-policy",
     },
     {
-      label: t("contact"),
+      label: t("Footer.contact"),
       path: "/contact",
     },
   ];
@@ -19,7 +19,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
         {/* Copyright */}
         <p className="text-xs text-gray-400 font-medium text-center sm:text-left">
-          © {new Date().getFullYear()} Wise Player. {t("rights")}
+          © {new Date().getFullYear()} Wise Player. {t("Footer.rights")}
         </p>
 
         {/* Navigation Links */}
