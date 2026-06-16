@@ -24,7 +24,7 @@ const adminRoutes = [
   '/purchase-credit', '/transition-history', '/payment-status',
 ];
 
-const hideNavbarRoutes = ['/login', '/register', '/register-success', '/verify-otp'];
+const hideNavbarRoutes = ['/login', '/register', '/register-success', '/verify-otp','/reset-password'];
 
 // ─────────────────────────────────────────────────────────────
 const MainLayout = ({ children }) => {
