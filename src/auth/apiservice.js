@@ -63,6 +63,44 @@ export const loginReseller = async (credentials) => {
   }
 };
 
+/**
+ * Request a password reset email.
+ * POST /api/reseller/forgot-password  body: { "email": "..." }
+ */
+export const forgotPassword = async (email) => {
+  try {
+    const response = await api.post('/api/reseller/forgot-password', { email });
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.response?.data?.error   ||
+        'Failed to send recovery email',
+    };
+  }
+};
+
+/**
+ * Reset password using the token from the recovery email link.
+ * POST /api/reseller/reset-password  body: { "token": "...", "newPassword": "..." }
+ */
+export const resetPassword = async (token, newPassword) => {
+  try {
+    const response = await api.post('/api/reseller/reset-password', { token, newPassword });
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.response?.data?.error   ||
+        'Failed to reset password',
+    };
+  }
+};
+
 // ─── Device ───────────────────────────────────────────────────────────────────
 
 export const generateDeviceKey = async (macAddress) => {

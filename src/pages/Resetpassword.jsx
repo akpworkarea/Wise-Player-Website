@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Flame, User, Lock, Eye, EyeOff, ArrowRight,
-  CheckCircle2, Circle, Shield, Home, Mail
+  Flame, Lock, Eye, EyeOff, ArrowRight, Shield,
+  CheckCircle2, Circle, AlertCircle, Home,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { registerReseller } from '../../auth/apiservice';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { resetPassword } from '../auth/apiservice';
 import { useTranslation } from 'react-i18next';
 
-// ── Outside component — stable references ─────────────────────────────────────
 const availableLanguages = [
   { code: 'en', name: 'English',    flag: '🇺🇸', image: 'https://flagcdn.com/w40/us.png' },
   { code: 'fr', name: 'Français',   flag: '🇫🇷', image: 'https://flagcdn.com/w40/fr.png' },
@@ -20,23 +19,15 @@ const availableLanguages = [
   { code: 'ar', name: 'العربية',    flag: '🇸🇦', image: 'https://flagcdn.com/w40/sa.png' },
 ];
 
-const brandFeatures = [
-  { icon: Shield,       text: 'Secure reseller portal'  },
-  { icon: CheckCircle2, text: 'Full dashboard access'   },
-  { icon: Flame,        text: 'Premium streaming tools' },
-];
-
-const getValidations = (password, username) => ({
-  hasSpecial:     /[!@#$%^&*(),.?":{}|<>]/.test(password),
-  hasNumber:      /\d/.test(password),
-  hasLower:       /[a-z]/.test(password),
-  hasUpper:       /[A-Z]/.test(password),
-  isLengthValid:  password.length >= 8,
-  usernameLength: username.length >= 1 && username.length <= 30,
-  usernameChars:  /^[a-zA-Z0-9._]*$/.test(username),
+const getValidations = (password) => ({
+  hasSpecial:    /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  hasNumber:     /\d/.test(password),
+  hasLower:      /[a-z]/.test(password),
+  hasUpper:      /[A-Z]/.test(password),
+  isLengthValid: password.length >= 8,
 });
 
-const InputField = ({ label, value, onChange, type = 'text', placeholder, icon: Icon, rightEl, maxLength }) => (
+const InputField = ({ label, value, onChange, type = 'text', placeholder, icon: Icon, rightEl }) => (
   <div>
     <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
       {label}
@@ -47,7 +38,7 @@ const InputField = ({ label, value, onChange, type = 'text', placeholder, icon: 
       </span>
       <input
         type={type} value={value} onChange={onChange}
-        placeholder={placeholder} maxLength={maxLength}
+        placeholder={placeholder} required
         className="w-full h-11 pl-10 pr-10 rounded-xl border-2 border-gray-200 bg-white text-sm text-[#1a1a1a] outline-none focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15 transition-colors duration-200 placeholder:text-gray-300"
       />
       {rightEl && <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10">{rightEl}</div>}
@@ -104,24 +95,22 @@ const TopBar = ({ i18n, isLangOpen, setIsLangOpen, navigate }) => {
 };
 
 // ═════════════════════════════════════════════════════════════════════════════
-const Register = () => {
-  const { t, i18n } = useTranslation();
-  const navigate     = useNavigate();
+const ResetPassword = () => {
+  const { t, i18n }      = useTranslation();
+  const navigate          = useNavigate();
+  const [searchParams]    = useSearchParams();
+  const token             = searchParams.get('token') || '';
 
   const [isLangOpen,      setIsLangOpen]      = useState(false);
-  const [fullName,        setFullName]         = useState('');
-  const [email,           setEmail]            = useState('');
-  const [username,        setUsername]         = useState('');
-  const [password,        setPassword]         = useState('');
-  const [confirmPassword, setConfirmPassword]  = useState('');
-  const [agree,           setAgree]            = useState(false);
-  const [error,           setError]            = useState('');
-  const [showPassword,    setShowPassword]     = useState(false);
-  const [showConfirm,     setShowConfirm]      = useState(false);
-  const [loading,         setLoading]          = useState(false);
+  const [newPassword,     setNewPassword]     = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword,    setShowPassword]    = useState(false);
+  const [showConfirm,     setShowConfirm]     = useState(false);
+  const [loading,         setLoading]         = useState(false);
+  const [error,           setError]           = useState('');
+  const [success,         setSuccess]         = useState(false);
 
-  const v = getValidations(password, username);
-
+  const v = getValidations(newPassword);
   const passwordPills = [
     { label: '8+',  done: v.isLengthValid },
     { label: 'A-Z', done: v.hasUpper      },
@@ -133,80 +122,114 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!token) {
+      setError('Invalid or missing reset link. Please request a new one.');
+      return;
+    }
     if (!v.hasSpecial || !v.hasNumber || !v.hasLower || !v.hasUpper || !v.isLengthValid) {
-      setError(t('reg_err_pass_req')); return;
+      setError('Password must meet all the requirements below.');
+      return;
     }
-    if (!v.usernameLength || !v.usernameChars) {
-      setError(t('reg_err_user_format')); return;
+    if (newPassword !== confirmPassword) {
+      setError("Passwords don't match.");
+      return;
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address.'); return;
-    }
-    if (password !== confirmPassword) {
-      setError(t('reg_err_mismatch')); return;
-    }
-    if (!agree) {
-      setError(t('reg_err_terms')); return;
-    }
+
     setLoading(true);
-    // requestAnimationFrame ensures React flushes the loading state to DOM
-    // before the API call blocks — user sees spinner immediately
-    await new Promise((r) => requestAnimationFrame(r));
-    const result = await registerReseller({ fullName, username, email, password });
+    const result = await resetPassword(token, newPassword);
     setLoading(false);
+
     if (result.success) {
-      // Token already saved in apiservice — navigate to OTP verification
-      navigate('/verify-otp');
+      setSuccess(true);
+      setTimeout(() => navigate('/login'), 1800);
     } else {
-      setError(result.message);
+      setError(result.message || 'Failed to reset password. The link may have expired.');
     }
   };
 
+  // ── No token in URL — invalid link state ───────────────────────────────────
+  if (!token) {
+    return (
+      <div className="min-h-screen bg-[#f4f4f7] flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-2xl p-8 shadow-sm border border-black/[0.06] max-w-sm w-full text-center"
+        >
+          <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+            <AlertCircle size={28} className="text-red-500" />
+          </div>
+          <h2 className="text-lg font-black text-gray-900 mb-2">Invalid Reset Link</h2>
+          <p className="text-sm text-gray-500 mb-6">
+            This password reset link is invalid or has expired. Please request a new one.
+          </p>
+          <button onClick={() => navigate('/login')}
+            className="w-full h-11 rounded-xl font-bold text-sm bg-[#800000] hover:bg-[#6a0000] text-white transition-colors border-0 cursor-pointer">
+            Back to Login
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ── Success state ───────────────────────────────────────────────────────
+  if (success) {
+    return (
+      <div className="min-h-screen bg-[#f4f4f7] flex items-center justify-center p-4">
+        <motion.div
+          initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+          className="bg-white rounded-3xl p-10 shadow-xl text-center max-w-sm w-full"
+        >
+          <motion.div
+            initial={{ scale: 0 }} animate={{ scale: 1 }}
+            transition={{ delay: 0.15, type: 'spring', stiffness: 300 }}
+            className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-5"
+          >
+            <CheckCircle2 size={40} className="text-green-600" />
+          </motion.div>
+          <h2 className="text-2xl font-black text-gray-900 mb-2">Password Reset!</h2>
+          <p className="text-gray-500 text-sm mb-6">
+            Your password has been changed successfully. Redirecting to login…
+          </p>
+          <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: '0%' }} animate={{ width: '100%' }}
+              transition={{ duration: 1.8, ease: 'linear' }}
+              className="h-full bg-[#800000] rounded-full"
+            />
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ── Main form ────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#f4f4f7] flex flex-col lg:flex-row overflow-x-hidden">
+
       <TopBar i18n={i18n} isLangOpen={isLangOpen} setIsLangOpen={setIsLangOpen} navigate={navigate} />
 
-      {/* ── LEFT BRAND PANEL (lg+) ── */}
+      {/* ── LEFT BRAND PANEL ── */}
       <motion.div
-        initial={{ opacity: 0, x: -40 }}
-        animate={{ opacity: 1, x: 0 }}
+        initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.55, ease: 'easeOut' }}
-        className="hidden lg:flex lg:w-[38%] bg-[#1a1a1a] flex-col items-center justify-between px-12 py-14 relative overflow-hidden shrink-0"
+        className="hidden lg:flex lg:w-[38%] bg-[#1a1a1a] flex-col items-center justify-center px-12 py-14 relative overflow-hidden shrink-0"
       >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-[#800000]/15 blur-3xl pointer-events-none" />
-        <div />
         <div className="relative z-10 text-center w-full max-w-xs">
           <motion.div
             animate={{ scale: [1, 1.06, 1] }}
             transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
             className="w-20 h-20 rounded-2xl bg-[#800000]/20 border border-[#800000]/30 flex items-center justify-center mx-auto mb-6 shadow-lg"
           >
-            <Flame size={40} fill="#800000" color="#800000" />
+            <Lock size={36} className="text-[#800000]" />
           </motion.div>
-          <h1 className="text-4xl font-black text-white tracking-tight mb-2">
-            WISE <span className="text-[#800000]">PLAYER</span>
+          <h1 className="text-3xl font-black text-white tracking-tight mb-2">
+            WISE<span className="text-[#800000]">PLAYER</span>
           </h1>
-          <p className="text-xs text-gray-500 tracking-[3px] uppercase mb-10">
-            {t('activation.tagline')}
-          </p>
-          <div className="space-y-3 text-left">
-            {brandFeatures.map(({ icon: Icon, text }, i) => (
-              <motion.div key={i}
-                initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 + i * 0.1, duration: 0.4 }}
-                className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-[#800000]/20 flex items-center justify-center shrink-0 border border-[#800000]/20">
-                  <Icon size={16} className="text-[#800000]" />
-                </div>
-                <span className="text-sm font-medium text-gray-300">{text}</span>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-        <div className="relative z-10 w-full border-t border-white/[0.06] pt-5 text-center">
-          <p className="text-[10px] text-gray-600 tracking-[2px] uppercase">
-            © {new Date().getFullYear()} WisePlayer — Premium Access
+          <p className="text-xs text-gray-500 tracking-[3px] uppercase">
+            Secure Password Reset
           </p>
         </div>
         <div className="absolute bottom-0 right-0 w-0 h-0 border-solid border-b-[70px] border-r-[70px] border-b-[#f4f4f7] border-r-transparent border-t-transparent border-l-transparent" />
@@ -214,79 +237,48 @@ const Register = () => {
 
       {/* ── RIGHT FORM PANEL ── */}
       <div className="flex-1 flex flex-col min-h-screen lg:min-h-0">
-        <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 sm:py-14 lg:py-8 overflow-y-auto">
-          <div className="w-full max-w-md">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 sm:py-14 lg:py-8">
+          <div className="w-full max-w-sm">
+
             {/* Mobile logo */}
             <motion.div
               initial={{ y: -16, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.4 }}
-              className="flex lg:hidden flex-col items-center mb-8"
+              className="flex lg:hidden flex-col items-center mb-7"
             >
               <div className="w-14 h-14 rounded-2xl bg-[#1a1a1a] flex items-center justify-center mb-3 shadow-md">
                 <Flame size={28} fill="#800000" color="#800000" />
               </div>
               <h2 className="text-2xl font-black text-[#1a1a1a] tracking-tight">
-                WISE <span className="text-[#800000]">PLAYER</span>
+                WISE<span className="text-[#800000]">PLAYER</span>
               </h2>
-              <p className="text-xs text-gray-400 tracking-widest uppercase mt-1">
-                {t('activation.tagline')}
-              </p>
             </motion.div>
 
-            {/* Card */}
             <motion.div
               initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, delay: 0.1 }}
-              className="bg-white rounded-2xl border border-black/[0.06] shadow-sm p-7 sm:p-8 relative"
+              className="bg-white rounded-2xl border border-black/[0.06] shadow-sm p-7"
             >
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+              <div className="flex flex-col items-center text-center mb-6">
                 <motion.div
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ repeat: Infinity, duration: 2.5 }}
-                  className="px-5 py-1.5 rounded-full bg-[#800000] text-white text-[10px] font-black tracking-widest uppercase shadow-md shadow-[#800000]/25 whitespace-nowrap"
+                  initial={{ scale: 0 }} animate={{ scale: 1 }}
+                  transition={{ delay: 0.15, type: 'spring', stiffness: 280 }}
+                  className="w-14 h-14 rounded-2xl bg-[#800000]/10 flex items-center justify-center mb-3"
                 >
-                  {t('reg_signup_badge')}
+                  <Lock size={24} className="text-[#800000]" />
                 </motion.div>
+                <h5 className="text-xl font-extrabold text-[#1a1a1a] tracking-tight">
+                  Set new password
+                </h5>
+                <p className="text-sm text-gray-500 mt-1">
+                  Choose a strong password for your account.
+                </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-3.5 mt-4">
-                {/* Full name + Username */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  <InputField label={t('reg_fullname')} value={fullName}
-                    onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" icon={User} />
-                  <div>
-                    <InputField label={t('reg_username')} value={username}
-                      onChange={(e) => setUsername(e.target.value)} placeholder="john_doe" icon={User} maxLength={30} />
-                    <AnimatePresence>
-                      {username && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }} className="overflow-hidden">
-                          <div className="flex items-center justify-between mt-1.5 px-1">
-                            <span className={`text-[10px] font-semibold flex items-center gap-1 ${v.usernameChars ? 'text-green-600' : 'text-red-500'}`}>
-                              {v.usernameChars ? <><CheckCircle2 size={10} /> a-z 0-9 . _</> : <><Circle size={10} /> Only a-z 0-9 . _</>}
-                            </span>
-                            <span className={`text-[10px] font-bold ${username.length >= 28 ? 'text-red-500' : 'text-gray-400'}`}>
-                              {username.length}/30
-                            </span>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-
-                {/* Email — full width, OTP will be sent here */}
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <InputField
-                  label={t('reg_email') || 'Email Address'}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  type="email"
-                  placeholder="you@example.com"
-                  icon={Mail}
-                />
-
-                <InputField label={t('reg_password')} value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  label="New Password" value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
                   type={showPassword ? 'text' : 'password'} placeholder="••••••••" icon={Lock}
                   rightEl={
                     <button type="button" onClick={() => setShowPassword((p) => !p)}
@@ -296,8 +288,9 @@ const Register = () => {
                   }
                 />
 
+                {/* Validation pills */}
                 <AnimatePresence>
-                  {password && (
+                  {newPassword && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
                       <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
@@ -314,7 +307,8 @@ const Register = () => {
                   )}
                 </AnimatePresence>
 
-                <InputField label={t('reg_confirm_password')} value={confirmPassword}
+                <InputField
+                  label="Confirm New Password" value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   type={showConfirm ? 'text' : 'password'} placeholder="••••••••" icon={Lock}
                   rightEl={
@@ -328,8 +322,8 @@ const Register = () => {
                 <AnimatePresence>
                   {confirmPassword && (
                     <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                      className={`text-xs font-semibold flex items-center gap-1.5 -mt-1 ${password === confirmPassword ? 'text-green-600' : 'text-red-500'}`}>
-                      {password === confirmPassword
+                      className={`text-xs font-semibold flex items-center gap-1.5 -mt-1 ${newPassword === confirmPassword ? 'text-green-600' : 'text-red-500'}`}>
+                      {newPassword === confirmPassword
                         ? <><CheckCircle2 size={11} /> Passwords match</>
                         : <><Circle size={11} /> Passwords don't match</>}
                     </motion.p>
@@ -345,50 +339,26 @@ const Register = () => {
                   )}
                 </AnimatePresence>
 
-                <button type="button" onClick={() => setAgree((a) => !a)}
-                  className="flex items-start gap-3 w-full text-left border-0 bg-transparent cursor-pointer">
-                  <motion.div
-                    animate={{ backgroundColor: agree ? '#800000' : '#ffffff', borderColor: agree ? '#800000' : '#d1d5db' }}
-                    transition={{ duration: 0.2 }}
-                    className="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5">
-                    <AnimatePresence>
-                      {agree && (
-                        <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                          exit={{ scale: 0, opacity: 0 }} transition={{ duration: 0.15 }}>
-                          <CheckCircle2 size={12} className="text-white" />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                  <span className="text-xs text-gray-500 leading-relaxed">
-                    {t('reg_agree')}{' '}
-                    <span className="font-bold text-[#800000]">{t('reg_terms')}</span>
-                  </span>
-                </button>
-
                 <motion.button type="submit" disabled={loading}
                   whileHover={!loading ? { scale: 1.02 } : {}}
-                  whileTap={!loading ? { scale: 0.98 } : {}}
+                  whileTap={!loading  ? { scale: 0.98 } : {}}
                   className={`w-full h-11 rounded-xl font-bold text-sm border-0 flex items-center justify-center gap-2 transition-colors duration-200
                     ${loading ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm cursor-pointer'}`}>
                   {loading ? (
-                    <>
-                      <svg className="animate-spin h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                      </svg>
-                      <span>Creating account…</span>
-                    </>
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                    </svg>
                   ) : (
-                    <>{t('reg_create_btn')}<ArrowRight size={16} /></>
+                    <>Reset Password<ArrowRight size={16} /></>
                   )}
                 </motion.button>
 
                 <p className="text-center text-xs text-gray-500 pt-0.5">
-                  {t('reg_already_member')}{' '}
+                  Remembered your password?{' '}
                   <button type="button" onClick={() => navigate('/login')}
                     className="font-bold text-[#800000] hover:text-[#6a0000] transition-colors duration-150 border-0 bg-transparent">
-                    {t('reg_login_now')}
+                    Back to Login
                   </button>
                 </p>
               </form>
@@ -398,11 +368,11 @@ const Register = () => {
 
         <div className="border-t border-black/[0.06] bg-white py-3.5 flex items-center justify-center gap-2 shrink-0">
           <Shield size={14} className="text-green-500" />
-          <span className="text-xs font-semibold text-gray-500">Authorized Access Only</span>
+          <span className="text-xs font-semibold text-gray-500">Secure Password Reset</span>
         </div>
       </div>
     </div>
   );
 };
 
-export default Register;
+export default ResetPassword;

@@ -8,7 +8,7 @@ import Dashboard from "../pages/Dashboard";
 import UserManagement from "../pages/UserManagement";
 import Reseller from "../pages/Reseller";
 import Login from "../pages/login";
-import Register from "../pages/Ragister/Ragister";
+import Register from "../pages/Ragister";
 import ContactUs from "../pages/Contact";
 import RequestManagement from "../pages/RequestManagement";
 import SubReseller from "../pages/Subreseller";
@@ -21,7 +21,7 @@ import WisePlayerUploadList from "../pages/UploadList";
 import WisePlayerUploadPlayList from "../pages/UploadPlayList";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import VerifyOtp from '../pages/VerifyOtp';
-
+import ResetPassword from '../pages/Resetpassword';
 
 const AppRoutes = () => {
   return (
@@ -37,6 +37,7 @@ const AppRoutes = () => {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/register-success" element={<RegisterSuccess />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/activation" element={<WisePlayerActivation />} />
         <Route path="/upload-list" element={<WisePlayerUploadList />} />
         <Route path="/upload-playlist" element={<WisePlayerUploadPlayList />} />
