@@ -202,7 +202,11 @@
   "full_support": "Vollständiger Support",
     "two_devices_covered": "2 Geräte Abgedeckt",
   "best_value_deal": "Bestes Preis-Leistungs-Angebot",
-  "priority_support": "Priorisierter Support"
+  "priority_support": "Priorisierter Support",
+    "noSubResellersMatchFilters": "Keine Unterhändler entsprechen Ihren Filtern",
+  "clearFilters": "Filter löschen",
+    "FilterSubResellers": "Unterhändler filtern",
+     "Clearallfilters": "Alle Filter löschen"
   },
   "admin_dashboard": {
     "panel": "Übersicht",
@@ -290,7 +294,10 @@
     "cancel": "Abbrechen",
     "yes_confirm": "Ja, bestätigen",
     "mac_address": "MAC-Adresse",
-    "filters": "Filter"
+    "filters": "Filter",
+      "noResultsMatchFilters": "Keine Ergebnisse entsprechen Ihren Filtern",
+  "clearFilters": "Filter löschen",
+  "Clearallfilters": "Alle Filter löschen"
   },
   "requests": {
     "request_management": "Anfragenverwaltung",
@@ -322,7 +329,11 @@
     "mac_address": "MAC-Adresse",
     "filters": "Filter",
     "manage_activation_requests": "Aktivierungsanfragen verwalten",
-    "search_placeholder": "Anfragen suchen..."
+    "search_placeholder": "Anfragen suchen...",
+      "noRequestsMatchFilters": "Keine Anfragen entsprechen Ihren Filtern",
+  "clearFilters": "Filter löschen",
+  "FilterRequests": "Anfragen filtern",
+    "Clearallfilters": "Alle Filter löschen"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "Exklusives Großangebot!",
@@ -366,7 +377,9 @@
     "next": "Weiter",
     "subtitle": "Ihre Transaktionen anzeigen und verwalten",
     "search_placeholder": "Transaktionen suchen...",
-    "filters": "Filter"
+    "filters": "Filter",
+     "FilterTransactions": "Transaktionen filtern",
+     "Clearallfilters": "Alle Filter löschen"
   },
   "Footer": {
         "rights": "Alle Rechte vorbehalten.",

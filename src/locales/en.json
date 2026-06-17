@@ -463,7 +463,11 @@
   "full_support": "Full Support",
     "two_devices_covered": "2 Devices Covered",
   "best_value_deal": "Best Value Deal",
-  "priority_support": "Priority Support"
+  "priority_support": "Priority Support",
+    "noSubResellersMatchFilters": "No sub-resellers match your filters",
+  "clearFilters": "Clear filters",
+   "FilterSubResellers": "Filter Sub-Resellers",
+   "Clearallfilters": "Clear all filters"
   },
   "userManagement": {
     "device_management": "Device Management",
@@ -501,7 +505,10 @@
     "activate": "activate",
     "this_user": "this user?",
     "cancel": "Cancel",
-    "yes_confirm": "Yes, Confirm"
+    "yes_confirm": "Yes, Confirm",
+      "noResultsMatchFilters": "No results match your filters",
+  "clearFilters": "Clear filters",
+   "Clearallfilters": "Clear all filters"
   },
   "requests": {
     "request_management": "Request Management",
@@ -533,7 +540,11 @@
     "mac_address": "MAC Address",
     "filters": "Filters",
     "manage_activation_requests": "Manage activation requests",
-    "search_placeholder": "Search requests..."
+    "search_placeholder": "Search requests...",
+      "noRequestsMatchFilters": "No requests match your filters",
+  "clearFilters": "Clear filters",
+     "FilterRequests": "Filter Requests",
+     "Clearallfilters": "Clear all filters"
   },
   "transaction": {
     "transaction_history": "Transaction History",
@@ -549,7 +560,9 @@
     "next": "Next",
     "subtitle": "View and manage your transactions",
     "search_placeholder": "Search transactions...",
-    "filters": "Filters"
+    "filters": "Filters",
+      "FilterTransactions": "Filter Transactions",
+       "Clearallfilters": "Clear all filters"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "Exclusive Bulk Offer!",

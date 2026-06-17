@@ -193,7 +193,11 @@
   "full_support": "Supporto Completo",
     "two_devices_covered": "Copertura per 2 Dispositivi",
   "best_value_deal": "Miglior Rapporto Qualità-Prezzo",
-  "priority_support": "Supporto Prioritario"
+  "priority_support": "Supporto Prioritario",
+    "noSubResellersMatchFilters": "Nessun sotto-rivenditore corrisponde ai tuoi filtri",
+  "clearFilters": "Cancella filtri",
+  "FilterSubResellers": "Filtra i sub-rivenditori",
+   "Clearallfilters": "Cancella tutti i filtri"
   },
   "admin_dashboard": {
     "panel": "Pannello",
@@ -252,7 +256,10 @@
     "activate": "attivare",
     "this_user": "questo utente?",
     "cancel": "Annulla",
-    "yes_confirm": "Sì, conferma"
+    "yes_confirm": "Sì, conferma",
+      "noResultsMatchFilters": "Nessun risultato corrisponde ai tuoi filtri",
+  "clearFilters": "Cancella filtri",
+    "Clearallfilters": "Cancella tutti i filtri"
   },
   "Footer": {
   "rights": "Tutti i diritti riservati.",
@@ -313,7 +320,11 @@
     "mac_address": "Adresse MAC",
     "filters": "Filtri",
     "manage_activation_requests": "Gestire le richieste di attivazione",
-    "search_placeholder": "Cerca richieste..."
+    "search_placeholder": "Cerca richieste...",
+      "noRequestsMatchFilters": "Nessuna richiesta corrisponde ai tuoi filtri",
+  "clearFilters": "Cancella filtri",
+  "FilterRequests": "Filtra richieste",
+   "Clearallfilters": "Cancella tutti i filtri"
   },
   "transaction": {
     "transaction_history": "Cronologia Transazioni",
@@ -329,7 +340,9 @@
     "next": "Successivo",
     "subtitle": "Visualizza e gestisci le tue transazioni",
     "search_placeholder": "Cerca transazioni...",
-    "filters": "Filtri"
+    "filters": "Filtri",
+     "FilterTransactions": "Filtra transazioni",
+     "Clearallfilters": "Cancella tutti i filtri"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "Offerta Esclusiva all'Ingrosso!",

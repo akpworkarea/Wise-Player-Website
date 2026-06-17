@@ -193,7 +193,11 @@
   "full_support": "Soporte Completo",
     "two_devices_covered": "Cobertura para 2 Dispositivos",
   "best_value_deal": "Mejor Relación Calidad-Precio",
-  "priority_support": "Soporte Prioritario"
+  "priority_support": "Soporte Prioritario",
+    "noSubResellersMatchFilters": "Ningún subdistribuidor coincide con tus filtros",
+  "clearFilters": "Borrar filtros",
+  "FilterSubResellers": "Filtrar subdistribuidores",
+   "Clearallfilters": "Borrar todos los filtros"
   },
   "admin_dashboard": {
     "panel": "Panel",
@@ -252,7 +256,10 @@
     "cancel": "Cancelar",
     "yes_confirm": "Sí, confirmar",
     "mac_address": "Dirección MAC",
-    "filters": "Filtros"
+    "filters": "Filtros",
+      "noResultsMatchFilters": "Ningún resultado coincide con tus filtros",
+  "clearFilters": "Borrar filtros",
+    "Clearallfilters": "Borrar todos los filtros"
   },
   "device": "Dispositivo",
   "device_id": "ID del dispositivo",
@@ -332,7 +339,11 @@
     "mac_address": "Dirección MAC",
     "filters": "Filtros",
     "manage_activation_requests": "Gestionar solicitudes de activación",
-    "search_placeholder": "Buscar solicitudes..."
+    "search_placeholder": "Buscar solicitudes...",
+      "noRequestsMatchFilters": "Ninguna solicitud coincide con tus filtros",
+  "clearFilters": "Borrar filtros",
+  "FilterRequests": "Filtrar solicitudes",
+   "Clearallfilters": "Borrar todos los filtros"
   },
   "Footer": {
         "rights": "Todos los derechos reservados.",
@@ -353,7 +364,9 @@
     "next": "Siguiente",
     "subtitle": "Ver y administrar tus transacciones",
     "search_placeholder": "Buscar transacciones...",
-    "filters": "Filtros"
+    "filters": "Filtros",
+    "FilterTransactions": "Filtrar transacciones",
+    "Clearallfilters": "Borrar todos los filtros"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "¡Oferta Exclusiva por Volumen!",

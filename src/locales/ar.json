@@ -185,7 +185,11 @@
   "full_support": "دعم كامل",
     "two_devices_covered": "تغطية جهازين",
   "best_value_deal": "أفضل عرض قيمة",
-  "priority_support": "دعم ذو أولوية"
+  "priority_support": "دعم ذو أولوية",
+    "noSubResellersMatchFilters": "لا يوجد موزعون فرعيون يطابقون عوامل التصفية الخاصة بك",
+  "clearFilters": "مسح عوامل التصفية",
+   "FilterSubResellers": "تصفية الموزعين الفرعيين",
+     "Clearallfilters": "مسح جميع الفلاتر"
   },
   "admin_dashboard": {
     "panel": "لوحة التحكم",
@@ -247,7 +251,8 @@
     "cancel": "إلغاء",
     "yes_confirm": "نعم، تأكيد",
       "noResultsMatchFilters": "لا توجد نتائج تطابق عوامل التصفية الخاصة بك",
-  "clearFilters": "مسح عوامل التصفية"
+  "clearFilters": "مسح عوامل التصفية",
+      "Clearallfilters": "مسح جميع الفلاتر"
   },
   "dashboard": "لوحة التحكم",
   "device_management": "إدارة الأجهزة",
@@ -312,7 +317,11 @@
     "mac_address": "عنوان MAC",
     "filters": "الفلاتر",
     "manage_activation_requests": "إدارة طلبات التفعيل",
-    "search_placeholder": "البحث في الطلبات..."
+    "search_placeholder": "البحث في الطلبات...",
+      "noRequestsMatchFilters": "لا توجد طلبات تطابق عوامل التصفية الخاصة بك",
+  "clearFilters": "مسح عوامل التصفية",
+  "FilterRequests": "تصفية الطلبات",
+    "Clearallfilters": "مسح جميع الفلاتر"
   },
   "transaction": {
     "transaction_history": "سجل المعاملات",
@@ -328,7 +337,9 @@
     "next": "التالي",
     "search_placeholder": "ابحث في المعاملات...",
     "filters": "الفلاتر",
-    "subtitle": "عرض وإدارة معاملاتك"
+    "subtitle": "عرض وإدارة معاملاتك",
+    "FilterTransactions": "تصفية المعاملات",
+     "Clearallfilters": "مسح جميع الفلاتر"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "عرض حصري للكميات الكبيرة!",

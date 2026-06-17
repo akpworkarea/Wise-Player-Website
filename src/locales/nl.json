@@ -193,7 +193,11 @@
   "full_support": "Volledige Ondersteuning",
     "two_devices_covered": "2 Apparaten Gedekt",
   "best_value_deal": "Beste Prijs-Kwaliteitverhouding",
-  "priority_support": "Prioriteitsondersteuning"
+  "priority_support": "Prioriteitsondersteuning",
+    "noSubResellersMatchFilters": "Geen subresellers komen overeen met je filters",
+  "clearFilters": "Filters wissen",
+    "FilterSubResellers": "Sub-resellers filteren",
+     "Clearallfilters": "Alle filters wissen"
   },
   "admin_dashboard": {
     "panel": "Dashboard",
@@ -250,7 +254,10 @@
     "activate": "activeren",
     "this_user": "deze gebruiker?",
     "cancel": "Annuleren",
-    "yes_confirm": "Ja, bevestigen"
+    "yes_confirm": "Ja, bevestigen",
+      "noResultsMatchFilters": "Geen resultaten komen overeen met je filters",
+  "clearFilters": "Filters wissen",
+   "Clearallfilters": "Alle filters wissen"
   },
   "Footer": {
    "rights": "Alle rechten voorbehouden.",
@@ -326,7 +333,11 @@
     "mac_address": "MAC-adres",
     "filters": "Filters",
     "manage_activation_requests": "Activatieverzoeken beheren",
-    "search_placeholder": "Verzoeken zoeken..."
+    "search_placeholder": "Verzoeken zoeken...",
+     "noRequestsMatchFilters": "Geen verzoeken komen overeen met uw filters",
+  "clearFilters": "Filters wissen",
+   "FilterRequests": "Verzoeken filteren",
+    "Clearallfilters": "Alle filters wissen"
   },
   "transaction": {
     "transaction_history": "Transactiegeschiedenis",
@@ -342,7 +353,9 @@
     "next": "Volgende",
     "subtitle": "Bekijk en beheer uw transacties",
     "search_placeholder": "Transacties zoeken...",
-    "filters": "Filters"
+    "filters": "Filters",
+     "FilterTransactions": "Transacties filteren",
+      "Clearallfilters": "Alle filters wissen"
   },
   "contact_Page": {
     "contact_support_center": "SUPPORTCENTRUM",

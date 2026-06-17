@@ -321,7 +321,11 @@
     "mac_address": "Adresse MAC",
     "filters": "Filtres",
     "manage_activation_requests": "Gérer les demandes d'activation",
-    "search_placeholder": "Rechercher des demandes..."
+    "search_placeholder": "Rechercher des demandes...",
+      "noRequestsMatchFilters": "Aucune demande ne correspond à vos filtres",
+  "clearFilters": "Effacer les filtres",
+  "FilterRequests": "Filtrer les demandes",
+   "Clearallfilters": "Effacer tous les filtres"
   },
   "transaction": {
     "transaction_history": "Historique des Transactions",
@@ -337,7 +341,9 @@
     "next": "Suivant",
     "subtitle": "Afficher et gérer vos transactions",
     "search_placeholder": "Rechercher des transactions...",
-    "filters": "Filtres"
+    "filters": "Filtres",
+     "FilterTransactions": "Filtrer les transactions",
+      "Clearallfilters": "Effacer tous les filtres"
   },
   "activation": {
     "appName": "WISE ",
@@ -525,7 +531,11 @@
   "full_support": "Support Complet",
    "two_devices_covered": "2 Appareils Couverts",
   "best_value_deal": "Meilleure Offre Qualité-Prix",
-  "priority_support": "Support Prioritaire"
+  "priority_support": "Support Prioritaire",
+    "noSubResellersMatchFilters": "Aucun sous-revendeur ne correspond à vos filtres",
+  "clearFilters": "Effacer les filtres",
+   "FilterSubResellers": "Filtrer les sous-revendeurs",
+     "Clearallfilters": "Effacer tous les filtres"
   },
   "contact_Page": {
     "contact_support_center": "CENTRE D'ASSISTANCE",
@@ -613,7 +623,10 @@
     "activate": "activer",
     "this_user": "cet utilisateur ?",
     "cancel": "Annuler",
-    "yes_confirm": "Oui, confirmer"
+    "yes_confirm": "Oui, confirmer",
+      "noResultsMatchFilters": "Aucun résultat ne correspond à vos filtres",
+  "clearFilters": "Effacer les filtres",
+    "Clearallfilters": "Effacer tous les filtres"
   },
   "playlist": {
     "upload_playlist": "Téléchargez votre playlist",

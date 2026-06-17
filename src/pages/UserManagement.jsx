@@ -424,7 +424,7 @@ const FilterPanelContent = ({
             onClick={clearAll}
             className="w-full py-2 text-xs font-bold text-[#800000] hover:bg-red-50 rounded-xl transition"
           >
-            Clear all filters
+          {t("userManagement.Clearallfilters")}
           </button>
         </div>
       )}
