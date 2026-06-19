@@ -1,10 +1,17 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { UserPlus, Pencil, Trash2, Search, X, Filter, ChevronDown,
-  SlidersHorizontal, Calendar, Coins, ShieldCheck, AlertTriangle } from "lucide-react";
+import {
+  UserPlus, Pencil, Trash2, Search, X, Filter, ChevronDown,
+  SlidersHorizontal, Calendar, Coins, ShieldCheck, AlertTriangle,
+  ShieldAlert, Eye, EyeOff, User, Lock, AtSign, CheckSquare,
+  Square, ToggleLeft, ToggleRight, Layers,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdClose } from "react-icons/md";
 import toast from "react-hot-toast";
-import { createReseller, getAllResellerInfo, updateSubReseller, deleteSubReseller } from "../auth/reSeller";
+import {
+  createReseller, getAllResellerInfo, updateSubReseller,
+  deleteSubReseller, updateBulkPermissions,
+} from "../auth/reSeller";
 import { formatDate } from "../auth/utilfunction";
 import TransferModal from "../component/TransferModal";
 import { useTranslation } from "react-i18next";
@@ -20,7 +27,7 @@ function useDebounce(value, delay) {
   return d;
 }
 
-// ─── FilterSection — MODULE LEVEL ─────────────────────────────────────────────
+// ─── FilterSection ────────────────────────────────────────────────────────────
 const FilterSection = ({ icon: Icon, label, children }) => (
   <div className="space-y-2.5">
     <div className="flex items-center gap-1.5">
@@ -31,15 +38,12 @@ const FilterSection = ({ icon: Icon, label, children }) => (
   </div>
 );
 
-// ─── FilterPanelContent — MODULE LEVEL (inputs keep focus, no remount) ─────────
+// ─── FilterPanelContent ───────────────────────────────────────────────────────
 const FilterPanelContent = ({
-  statusFilter,   setStatusFilter,
-  fromDate,       setFromDate,
-  toDate,         setToDate,
-  minCredits,     setMinCredits,
-  maxCredits,     setMaxCredits,
-  activeFilterCount,
-  clearAll,
+  statusFilter, setStatusFilter,
+  fromDate, setFromDate, toDate, setToDate,
+  minCredits, setMinCredits, maxCredits, setMaxCredits,
+  activeFilterCount, clearAll,
 }) => {
   const STATUS_OPTS = [
     { value: "",      label: "All",      dot: "bg-gray-300"  },
@@ -48,8 +52,6 @@ const FilterPanelContent = ({
   ];
   return (
     <div className="space-y-5">
-
-      {/* STATUS */}
       <FilterSection icon={ShieldCheck} label="Status">
         <div className="flex flex-wrap gap-2">
           {STATUS_OPTS.map((s) => {
@@ -66,7 +68,6 @@ const FilterPanelContent = ({
         </div>
       </FilterSection>
 
-      {/* DATE RANGE — fromDate / toDate */}
       <FilterSection icon={Calendar} label="Registered Date">
         <div className="grid grid-cols-2 gap-3">
           {[
@@ -91,7 +92,6 @@ const FilterPanelContent = ({
         )}
       </FilterSection>
 
-      {/* CREDITS RANGE — minCredits / maxCredits */}
       <FilterSection icon={Coins} label="Credits Range">
         <div className="grid grid-cols-2 gap-3">
           {[
@@ -129,7 +129,7 @@ const FilterPanelContent = ({
   );
 };
 
-// ─── CopyButton — MODULE LEVEL ─────────────────────────────────────────────────
+// ─── CopyButton ───────────────────────────────────────────────────────────────
 const CopyButton = ({ value, copiedId, onCopy, copyLabel, copiedLabel }) => {
   const isThis = copiedId === value;
   return (
@@ -147,7 +147,7 @@ const CopyButton = ({ value, copiedId, onCopy, copyLabel, copiedLabel }) => {
   );
 };
 
-// ─── StatusBadge — MODULE LEVEL ───────────────────────────────────────────────
+// ─── StatusBadge ──────────────────────────────────────────────────────────────
 const StatusBadge = ({ active }) => (
   <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold
     ${active ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>
@@ -156,7 +156,7 @@ const StatusBadge = ({ active }) => (
   </span>
 );
 
-// ─── SkeletonCard — MODULE LEVEL ──────────────────────────────────────────────
+// ─── SkeletonCard ─────────────────────────────────────────────────────────────
 const SkeletonCard = () => (
   <div className="bg-white rounded-xl shadow border border-gray-200 p-4 animate-pulse space-y-3">
     <div className="flex justify-between">
@@ -179,7 +179,7 @@ const SkeletonCard = () => (
   </div>
 );
 
-// ─── SkeletonRow — MODULE LEVEL ───────────────────────────────────────────────
+// ─── SkeletonRow ──────────────────────────────────────────────────────────────
 const SkeletonRow = () => (
   <tr className="border-t animate-pulse">
     {[36, 12, 17, 10, 25].map((w, i) => (
@@ -190,7 +190,7 @@ const SkeletonRow = () => (
   </tr>
 );
 
-// ─── SubCard — MODULE LEVEL (no flicker on copy state change) ─────────────────
+// ─── SubCard ──────────────────────────────────────────────────────────────────
 const SubCard = ({
   user, copiedId, onCopy, onTransfer, onEdit, onDelete,
   copyLabel, copiedLabel, truncateId,
@@ -202,13 +202,10 @@ const SubCard = ({
     exit={{ opacity: 0, scale: 0.96 }}
     className="bg-white p-4 rounded-xl shadow border border-gray-200 space-y-3"
   >
-    {/* Name + Status */}
     <div className="flex items-start justify-between gap-3">
       <span className="font-bold text-sm text-gray-800 truncate min-w-0 pr-1">{user.fullName}</span>
       <span className="shrink-0"><StatusBadge active={user.active} /></span>
     </div>
-
-    {/* ID rows — 3-col grid for perfect copy button alignment */}
     <div className="grid grid-cols-[4.5rem_1fr_auto] items-center gap-x-2 gap-y-2">
       <span className="text-[11px] font-semibold text-gray-500 leading-none">ID</span>
       <span className="text-[11px] font-semibold text-[#800000] truncate leading-none" title={user.id}>
@@ -218,18 +215,13 @@ const SubCard = ({
         <CopyButton value={user.id} copiedId={copiedId} onCopy={onCopy}
           copyLabel={copyLabel} copiedLabel={copiedLabel} />
       </span>
-
       <span className="text-[11px] font-semibold text-gray-500 leading-none">Username</span>
-      <span className="text-[11px] font-semibold text-blue-600 truncate leading-none">
-        {user.username}
-      </span>
+      <span className="text-[11px] font-semibold text-blue-600 truncate leading-none">{user.username}</span>
       <span className="justify-self-end">
         <CopyButton value={user.username} copiedId={copiedId} onCopy={onCopy}
           copyLabel={copyLabel} copiedLabel={copiedLabel} />
       </span>
     </div>
-
-    {/* Details */}
     <div className="text-xs text-gray-500 space-y-1 pt-2 border-t border-gray-100">
       <div className="flex justify-between gap-2">
         <span className="font-medium text-gray-600 shrink-0">{createdLabel}:</span>
@@ -240,8 +232,6 @@ const SubCard = ({
         <span className="font-black text-[#800000]">{user.credits ?? 0}</span>
       </div>
     </div>
-
-    {/* Actions — Transfer | Edit | Delete */}
     <div className="flex gap-2 pt-1">
       <button onClick={() => onTransfer(user)}
         className="flex-1 py-2.5 rounded-xl bg-[#800000] text-white text-sm font-bold hover:bg-[#6a0000] transition active:scale-95">
@@ -259,7 +249,7 @@ const SubCard = ({
   </motion.div>
 );
 
-// ─── EmptyState — MODULE LEVEL ────────────────────────────────────────────────
+// ─── EmptyState ───────────────────────────────────────────────────────────────
 const EmptyState = ({ hasFilters, noDataLabel, onClear }) => (
   <div className="flex flex-col items-center gap-2 py-12 text-gray-400">
     <Search size={28} className="opacity-40" />
@@ -274,9 +264,55 @@ const EmptyState = ({ hasFilters, noDataLabel, onClear }) => (
   </div>
 );
 
+// ─── PermissionToggle ─────────────────────────────────────────────────────────
+const PermissionToggle = ({ label, description, icon: Icon, checked, onChange, color }) => (
+  <div
+    onClick={() => onChange(!checked)}
+    className={`flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all duration-200 select-none
+      ${checked
+        ? "border-[#800000] bg-[#800000]/[0.04]"
+        : "border-gray-200 bg-gray-50 hover:border-gray-300"}`}
+  >
+    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-200
+      ${checked ? "bg-[#800000] text-white" : "bg-white border border-gray-200 text-gray-400"}`}>
+      <Icon size={16} />
+    </div>
+    <div className="flex-1 min-w-0">
+      <p className={`text-sm font-bold leading-none mb-0.5 transition-colors duration-200
+        ${checked ? "text-[#800000]" : "text-gray-600"}`}>
+        {label}
+      </p>
+      <p className="text-[11px] text-gray-400 leading-none">{description}</p>
+    </div>
+    {/* Toggle pill */}
+    <div className={`w-10 h-5 rounded-full relative shrink-0 transition-colors duration-200
+      ${checked ? "bg-[#800000]" : "bg-gray-200"}`}>
+      <motion.div
+        animate={{ x: checked ? 20 : 2 }}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm"
+      />
+    </div>
+  </div>
+);
+
+// ─── FormField ────────────────────────────────────────────────────────────────
+const FormField = ({ label, icon: Icon, required, children }) => (
+  <div className="space-y-1.5">
+    <label className="flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider">
+      <Icon size={11} className="text-[#800000]" />
+      {label}
+      {required && <span className="text-[#800000] text-sm leading-none">*</span>}
+    </label>
+    {children}
+  </div>
+);
+
+const inputCls = "w-full px-4 py-3 bg-[#f4f4f7] border-2 border-transparent rounded-xl focus:border-[#800000] focus:bg-white focus:outline-none transition-all duration-200 text-sm font-semibold text-gray-800 placeholder:font-normal placeholder:text-gray-400";
+
 // ═════════════════════════════════════════════════════════════════════════════
 const SubresellerDashboard = () => {
-  const { t }                        = useTranslation();
+  const { t }                           = useTranslation();
   const { dashboard, refetchDashboard } = useDashboard();
 
   // ── Data ──────────────────────────────────────────────────────────────────
@@ -285,17 +321,17 @@ const SubresellerDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingData, setLoadingData] = useState(true);
 
-  // ── Search (debounced) ────────────────────────────────────────────────────
-  const [search,      setSearch]      = useState("");
-  const debouncedSearch               = useDebounce(search, 450);
+  // ── Search ────────────────────────────────────────────────────────────────
+  const [search,        setSearch]        = useState("");
+  const debouncedSearch                   = useDebounce(search, 450);
 
   // ── Filter panel ──────────────────────────────────────────────────────────
-  const [showFilter,     setShowFilter]     = useState(false);
-  const [statusFilter,   setStatusFilter]   = useState("");   // "true" | "false" | ""
-  const [fromDate,       setFromDate]       = useState("");   // ?fromDate=
-  const [toDate,         setToDate]         = useState("");   // ?toDate=
-  const [minCredits,     setMinCredits]     = useState("");   // ?minCredits=
-  const [maxCredits,     setMaxCredits]     = useState("");   // ?maxCredits=
+  const [showFilter,   setShowFilter]   = useState(false);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [fromDate,     setFromDate]     = useState("");
+  const [toDate,       setToDate]       = useState("");
+  const [minCredits,   setMinCredits]   = useState("");
+  const [maxCredits,   setMaxCredits]   = useState("");
   const debouncedMin = useDebounce(minCredits, 500);
   const debouncedMax = useDebounce(maxCredits, 500);
 
@@ -309,15 +345,29 @@ const SubresellerDashboard = () => {
   const [userToDelete,  setUserToDelete]  = useState(null);
   const [editUserId,    setEditUserId]    = useState(null);
   const [editData,      setEditData]      = useState({ fullName: "", email: "", password: "" });
-  const [formData,      setFormData]      = useState({ username: "", password: "", fullName: "" });
-  const [error,         setError]         = useState("");
+  const [showEditPwd,   setShowEditPwd]   = useState(false);
+
+  // ── Create form ───────────────────────────────────────────────────────────
+  const [formData,    setFormData]    = useState({ username: "", password: "", fullName: "" });
+  const [showPwd,     setShowPwd]     = useState(false);
+  const [creating,    setCreating]    = useState(false);
+  const [error,       setError]       = useState("");
+
+  // ── Bulk permissions modal ────────────────────────────────────────────────
+  const [permModal,     setPermModal]     = useState(false);
+  const [permSaving,    setPermSaving]    = useState(false);
+  const [permissions,   setPermissions]   = useState({
+    canCreate: false,
+    canRead:   false,
+    canUpdate: false,
+    canDelete: false,
+  });
 
   // ── Copy ──────────────────────────────────────────────────────────────────
   const [copiedId, setCopiedId] = useState(null);
 
   const desktopFilterRef = useRef(null);
 
-  // Close desktop dropdown on outside click
   useEffect(() => {
     const h = (e) => {
       if (desktopFilterRef.current && !desktopFilterRef.current.contains(e.target))
@@ -333,8 +383,7 @@ const SubresellerDashboard = () => {
     try {
       const res = await getAllResellerInfo(
         page - 1, 20,
-        debouncedSearch,
-        statusFilter,
+        debouncedSearch, statusFilter,
         fromDate, toDate,
         debouncedMin, debouncedMax,
       );
@@ -372,11 +421,15 @@ const SubresellerDashboard = () => {
     setMinCredits(""); setMaxCredits(""); setShowFilter(false);
   };
 
+  // ── Create ────────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setCreating(true); setError("");
     const res = await createReseller(formData);
+    setCreating(false);
     if (res.success) {
-      setOpenModel(false); setFormData({ username: "", password: "", fullName: "" }); setError("");
+      setOpenModel(false);
+      setFormData({ username: "", password: "", fullName: "" });
       setCurrentPage(1); fetchData(1); await refetchDashboard();
       toast.success("Sub-reseller created successfully");
     } else {
@@ -385,6 +438,7 @@ const SubresellerDashboard = () => {
     }
   };
 
+  // ── Edit ──────────────────────────────────────────────────────────────────
   const handleUpdate = async (e) => {
     e.preventDefault();
     const payload = { fullName: editData.fullName, email: editData.email };
@@ -402,9 +456,11 @@ const SubresellerDashboard = () => {
   const handleEditOpen = (user) => {
     setEditUserId(user.id);
     setEditData({ fullName: user.fullName || "", email: user.email || "", password: "" });
+    setShowEditPwd(false);
     setEditModal(true);
   };
 
+  // ── Transfer ──────────────────────────────────────────────────────────────
   const handleOpenTransfer = (user) => {
     setSelectedUser({
       fullName: user.fullName,
@@ -415,30 +471,46 @@ const SubresellerDashboard = () => {
     setTransferModal(true);
   };
 
-  // ── Delete flow ───────────────────────────────────────────────────────────
-  const handleDeleteOpen = (user) => {
-    setUserToDelete(user);
-    setDeleteModal(true);
-  };
+  // ── Delete ────────────────────────────────────────────────────────────────
+  const handleDeleteOpen = (user) => { setUserToDelete(user); setDeleteModal(true); };
 
   const handleDeleteConfirm = async () => {
     if (!userToDelete) return;
     setDeleting(true);
     const res = await deleteSubReseller(userToDelete.id);
     setDeleting(false);
-
     if (res.success) {
-      toast.success(`"${userToDelete.fullName}" was deleted successfully`);
-      setDeleteModal(false);
-      setUserToDelete(null);
-      // Remove from local state immediately for snappy UX, then refetch to stay in sync
+      toast.success(`"${userToDelete.fullName}" deleted successfully`);
+      setDeleteModal(false); setUserToDelete(null);
       setUsers((prev) => prev.filter((u) => u.id !== userToDelete.id));
-      fetchData(currentPage);
-      await refetchDashboard();
+      fetchData(currentPage); await refetchDashboard();
     } else {
       toast.error(res.message || "Failed to delete sub-reseller");
     }
   };
+
+  // ── Bulk permissions ──────────────────────────────────────────────────────
+  const handlePermSave = async () => {
+    setPermSaving(true);
+    const res = await updateBulkPermissions(permissions);
+    setPermSaving(false);
+    if (res.success) {
+      toast.success("Permissions applied to all sub-resellers");
+      setPermModal(false);
+    } else {
+      toast.error(res.message || "Failed to update permissions");
+    }
+  };
+
+  const togglePerm = (key) =>
+    setPermissions((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  const PERM_CONFIG = [
+    { key: "canRead",   label: "View",   description: "Can view dashboard & data",     icon: Eye         },
+    { key: "canCreate", label: "Create", description: "Can create new records",         icon: UserPlus    },
+    { key: "canUpdate", label: "Edit",   description: "Can edit existing records",      icon: Pencil      },
+    { key: "canDelete", label: "Delete", description: "Can permanently delete records", icon: Trash2      },
+  ];
 
   const activeFilterCount = [statusFilter, fromDate, toDate, minCredits, maxCredits].filter(Boolean).length;
   const hasFilters        = !!(debouncedSearch || activeFilterCount);
@@ -451,23 +523,20 @@ const SubresellerDashboard = () => {
     activeFilterCount, clearAll: clearFilters,
   };
 
-  // Stable props for SubCard
   const cardProps = {
     copiedId, onCopy,
     onTransfer: handleOpenTransfer,
     onEdit: handleEditOpen,
     onDelete: handleDeleteOpen,
-    copyLabel:     t("admin_dashboard.copy")    || "Copy",
-    copiedLabel:   t("admin_dashboard.copied")  || "Copied!",
-    transferLabel: t("transfer")                || "Transfer",
-    editLabel:     t("edit")                    || "Edit",
-    deleteLabel:   t("delete")                  || "Delete",
-    createdLabel:  t("created")                 || "Created",
-    coinLabel:     t("coin")                    || "Coins",
+    copyLabel:     t("admin_dashboard.copy")   || "Copy",
+    copiedLabel:   t("admin_dashboard.copied") || "Copied!",
+    transferLabel: t("transfer")               || "Transfer",
+    editLabel:     t("edit")                   || "Edit",
+    deleteLabel:   t("delete")                 || "Delete",
+    createdLabel:  t("created")                || "Created",
+    coinLabel:     t("coin")                   || "Coins",
     truncateId,
   };
-
-  const inputCls = "w-full px-4 py-3 bg-[#f4f4f7] border border-gray-200 rounded-xl focus:border-[#800000] focus:outline-none transition text-sm font-semibold text-gray-800";
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
@@ -476,15 +545,11 @@ const SubresellerDashboard = () => {
       {/* ══ HEADER ══════════════════════════════════════════════════════════ */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="shrink-0">
-          <h3 className="font-bold text-[#800000] text-lg">
-            {t("subreseller_management")}
-          </h3>
-          <p className="text-gray-500 text-sm mt-0.5">
-            {t("manage_subreseller") || "Search by name, username or ID"}
-          </p>
+          <h3 className="font-bold text-[#800000] text-lg">{t("subreseller_management")}</h3>
+          <p className="text-gray-500 text-sm mt-0.5">{t("manage_subreseller") || "Search by name, username or ID"}</p>
         </div>
 
-        {/* Search + Filter + Create — one row */}
+        {/* Controls row: Search · Filter · Permissions · Create */}
         <div className="flex items-center gap-2 lg:gap-3">
 
           {/* Search */}
@@ -531,7 +596,7 @@ const SubresellerDashboard = () => {
               <ChevronDown size={12} className={`hidden md:block transition-transform duration-200 ${showFilter ? "rotate-180" : ""}`} />
             </motion.button>
 
-            {/* Desktop dropdown (md+) — anchored, never covers sidebar */}
+            {/* Desktop filter dropdown */}
             <AnimatePresence>
               {showFilter && (
                 <motion.div
@@ -557,16 +622,29 @@ const SubresellerDashboard = () => {
             </AnimatePresence>
           </div>
 
-          {/* Create button */}
-          <button onClick={() => setOpenModel(true)}
-            className="flex items-center justify-center gap-2 bg-[#800000] text-white px-3 py-2.5 md:px-5 rounded-xl text-sm font-semibold hover:bg-[#6a0000] transition active:scale-95 shrink-0 whitespace-nowrap">
+          {/* ── Bulk Permissions button ── */}
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setPermModal(true)}
+            className="flex items-center gap-2 px-3 py-2.5 md:px-4 rounded-xl border border-gray-200 bg-white text-gray-700 text-sm font-semibold hover:border-[#800000] hover:text-[#800000] transition shadow-sm shrink-0"
+          >
+            <ShieldAlert size={14} />
+            <span className="hidden md:inline">Permissions</span>
+          </motion.button>
+
+          {/* ── Create Sub-Reseller button ── */}
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => { setOpenModel(true); setError(""); }}
+            className="flex items-center justify-center gap-2 bg-[#800000] text-white px-3 py-2.5 md:px-5 rounded-xl text-sm font-semibold hover:bg-[#6a0000] transition shadow-sm shrink-0 whitespace-nowrap"
+          >
             <UserPlus size={15} />
-            <span className="hidden md:inline">{t("create_subreseller")}</span>
-          </button>
+            <span className="hidden md:inline">{t("create_subreseller") || "New Sub-Reseller"}</span>
+          </motion.button>
         </div>
       </div>
 
-      {/* ══ MOBILE BOTTOM DRAWER (< md only) ════════════════════════════════ */}
+      {/* ══ MOBILE FILTER DRAWER ════════════════════════════════════════════ */}
       <AnimatePresence>
         {showFilter && (
           <>
@@ -602,7 +680,7 @@ const SubresellerDashboard = () => {
         )}
       </AnimatePresence>
 
-      {/* ── Active filter + search pills ── */}
+      {/* ── Active filter pills ── */}
       <AnimatePresence>
         {hasFilters && (
           <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
@@ -646,7 +724,7 @@ const SubresellerDashboard = () => {
         )}
       </AnimatePresence>
 
-      {/* ══ DESKTOP TABLE (lg+) ══════════════════════════════════════════════ */}
+      {/* ══ DESKTOP TABLE ═══════════════════════════════════════════════════ */}
       <div className="hidden lg:block bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
         <table className="w-full text-sm table-fixed">
           <colgroup>
@@ -659,11 +737,11 @@ const SubresellerDashboard = () => {
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200">
               {[
-                t("user_details")  || "User Details",
-                t("status")        || "Status",
-                t("created")       || "Created",
-                t("coin")          || "Coins",
-                t("action")        || "Actions",
+                t("user_details") || "User Details",
+                t("status")       || "Status",
+                t("created")      || "Created",
+                t("coin")         || "Coins",
+                t("action")       || "Actions",
               ].map((col) => (
                 <th key={col} className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-gray-600 first:text-left">
                   {col}
@@ -678,8 +756,6 @@ const SubresellerDashboard = () => {
               users.map((user, idx) => (
                 <tr key={user.id}
                   className={`group transition-colors duration-150 hover:bg-red-50/30 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50/60"}`}>
-
-                  {/* User details */}
                   <td className="px-4 py-3.5 text-left">
                     <div className="font-bold text-gray-800 text-sm truncate mb-1">{user.fullName}</div>
                     <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
@@ -697,7 +773,6 @@ const SubresellerDashboard = () => {
                         copyLabel={t("admin_dashboard.copy")||"Copy"} copiedLabel={t("admin_dashboard.copied")||"Copied!"} />
                     </div>
                   </td>
-
                   <td className="px-4 py-3.5 text-center"><StatusBadge active={user.active} /></td>
                   <td className="px-4 py-3.5 text-center text-xs text-gray-500">{formatDate(user.createdAt)}</td>
                   <td className="px-4 py-3.5 text-center">
@@ -734,7 +809,7 @@ const SubresellerDashboard = () => {
         </table>
       </div>
 
-      {/* ══ TABLET CARDS (md–lg, 768–1023px) — 2-column grid ════════════════ */}
+      {/* ══ TABLET CARDS (2-col) ════════════════════════════════════════════ */}
       <div className="hidden md:grid lg:hidden grid-cols-2 gap-3">
         {loadingData ? (
           [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
@@ -749,7 +824,7 @@ const SubresellerDashboard = () => {
         )}
       </div>
 
-      {/* ══ MOBILE CARDS (< md) — single column ═════════════════════════════ */}
+      {/* ══ MOBILE CARDS ════════════════════════════════════════════════════ */}
       <div className="md:hidden space-y-3">
         {loadingData ? (
           [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
@@ -786,25 +861,92 @@ const SubresellerDashboard = () => {
             className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4 md:pl-[240px] lg:pl-[260px]">
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-              <div className="bg-[#800000] px-6 py-4 flex items-center justify-between">
-                <h5 className="text-white font-bold text-base">{t("create_subreseller")}</h5>
-                <button onClick={() => { setOpenModel(false); setError(""); }}
-                  className="text-white hover:bg-white/20 p-1.5 rounded-full transition">
+
+              {/* Header */}
+              <div className="bg-[#800000] px-6 pt-6 pb-5 relative">
+                <button onClick={() => { setOpenModel(false); setError(""); setFormData({ username: "", password: "", fullName: "" }); }}
+                  className="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/20 p-1.5 rounded-full transition">
                   <MdClose size={20} />
                 </button>
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <UserPlus size={20} className="text-white" />
+                  </div>
+                  <div>
+                    <h5 className="text-white font-extrabold text-base leading-tight">
+                      {t("create_subreseller") || "New Sub-Reseller"}
+                    </h5>
+                    <p className="text-white/60 text-xs mt-0.5">Fill in the details below</p>
+                  </div>
+                </div>
               </div>
-              <form onSubmit={handleSubmit} className="p-6 space-y-3">
-                {error && <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-2 rounded-lg">{error}</div>}
-                <input className={inputCls} placeholder={t("username")}
-                  value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
-                <input className={inputCls} type="password" placeholder={t("password")}
-                  value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
-                <input className={inputCls} placeholder={t("full_name")}
-                  value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} />
-                <button type="submit"
-                  className="w-full py-3 bg-[#800000] text-white font-bold rounded-xl hover:bg-[#6a0000] transition active:scale-95 mt-1">
-                  {t("submit")}
-                </button>
+
+              {/* Body */}
+              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+
+                {error && (
+                  <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2.5 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl">
+                    <AlertTriangle size={15} className="shrink-0" />
+                    <span className="font-semibold">{error}</span>
+                  </motion.div>
+                )}
+
+                <FormField label="Full Name" icon={User} required>
+                  <input
+                    className={inputCls}
+                    placeholder="e.g. John Doe"
+                    value={formData.fullName}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                    required
+                  />
+                </FormField>
+
+                <FormField label="Username" icon={AtSign} required>
+                  <input
+                    className={inputCls}
+                    placeholder="e.g. johndoe123"
+                    value={formData.username}
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                    required
+                  />
+                </FormField>
+
+                <FormField label="Password" icon={Lock} required>
+                  <div className="relative">
+                    <input
+                      type={showPwd ? "text" : "password"}
+                      className={`${inputCls} pr-11`}
+                      placeholder="Min. 8 characters"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      required
+                    />
+                    <button type="button" tabIndex={-1}
+                      onClick={() => setShowPwd((v) => !v)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#800000] transition">
+                      {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </FormField>
+
+                <motion.button
+                  type="submit"
+                  disabled={creating}
+                  whileHover={!creating ? { scale: 1.01 } : {}}
+                  whileTap={!creating  ? { scale: 0.98 } : {}}
+                  className={`w-full h-12 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200
+                    ${creating ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm"}`}
+                >
+                  {creating ? (
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                    </svg>
+                  ) : (
+                    <><UserPlus size={15} />{t("create_subreseller") || "Create Sub-Reseller"}</>
+                  )}
+                </motion.button>
               </form>
             </motion.div>
           </motion.div>
@@ -818,22 +960,47 @@ const SubresellerDashboard = () => {
             className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4 md:pl-[240px] lg:pl-[260px]">
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-              <div className="bg-[#800000] px-6 py-4 flex items-center justify-between">
-                <h5 className="text-white font-bold text-base">{t("update")}</h5>
+              <div className="bg-[#800000] px-6 pt-6 pb-5 relative">
                 <button onClick={() => { setEditModal(false); setError(""); }}
-                  className="text-white hover:bg-white/20 p-1.5 rounded-full transition">
+                  className="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/20 p-1.5 rounded-full transition">
                   <MdClose size={20} />
                 </button>
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <Pencil size={18} className="text-white" />
+                  </div>
+                  <div>
+                    <h5 className="text-white font-extrabold text-base leading-tight">{t("update") || "Edit Sub-Reseller"}</h5>
+                    <p className="text-white/60 text-xs mt-0.5">Update account details</p>
+                  </div>
+                </div>
               </div>
-              <form onSubmit={handleUpdate} className="p-6 space-y-3">
-                {error && <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-2 rounded-lg">{error}</div>}
-                <input className={inputCls} placeholder={t("full_name")}
-                  value={editData.fullName} onChange={(e) => setEditData({ ...editData, fullName: e.target.value })} />
-                <input className={inputCls} type="password" placeholder={t("password")}
-                  value={editData.password} onChange={(e) => setEditData({ ...editData, password: e.target.value })} />
+              <form onSubmit={handleUpdate} className="p-6 space-y-4">
+                {error && (
+                  <div className="flex items-center gap-2.5 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl">
+                    <AlertTriangle size={15} className="shrink-0" />
+                    <span className="font-semibold">{error}</span>
+                  </div>
+                )}
+                <FormField label="Full Name" icon={User}>
+                  <input className={inputCls} placeholder={t("full_name")}
+                    value={editData.fullName} onChange={(e) => setEditData({ ...editData, fullName: e.target.value })} />
+                </FormField>
+                <FormField label="New Password" icon={Lock}>
+                  <div className="relative">
+                    <input type={showEditPwd ? "text" : "password"} className={`${inputCls} pr-11`}
+                      placeholder="Leave blank to keep current"
+                      value={editData.password} onChange={(e) => setEditData({ ...editData, password: e.target.value })} />
+                    <button type="button" tabIndex={-1}
+                      onClick={() => setShowEditPwd((v) => !v)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#800000] transition">
+                      {showEditPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </FormField>
                 <button type="submit"
-                  className="w-full py-3 bg-[#800000] text-white font-bold rounded-xl hover:bg-[#6a0000] transition active:scale-95 mt-1">
-                  {t("update")}
+                  className="w-full h-12 bg-[#800000] text-white font-bold rounded-xl hover:bg-[#6a0000] transition active:scale-95 flex items-center justify-center gap-2">
+                  <Pencil size={14} />{t("update") || "Save Changes"}
                 </button>
               </form>
             </motion.div>
@@ -841,62 +1008,130 @@ const SubresellerDashboard = () => {
         )}
       </AnimatePresence>
 
-      {/* ══ DELETE CONFIRMATION MODAL ════════════════════════════════════════ */}
+      {/* ══ DELETE MODAL ═════════════════════════════════════════════════════ */}
       <AnimatePresence>
         {deleteModal && userToDelete && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4 md:pl-[240px] lg:pl-[260px]">
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
-
-              {/* Maroon header with warning icon */}
               <div className="bg-[#800000] px-6 pt-6 pb-5 flex flex-col items-center gap-3">
-                <motion.div
-                  initial={{ scale: 0 }} animate={{ scale: 1 }}
+                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                  className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center"
-                >
+                  className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
                   <AlertTriangle size={22} className="text-white" />
                 </motion.div>
-                <h5 className="text-base font-extrabold text-white text-center">
-                  Delete Sub-Reseller
-                </h5>
+                <h5 className="text-base font-extrabold text-white text-center">Delete Sub-Reseller</h5>
               </div>
-
-              {/* Body */}
               <div className="px-6 pt-5 pb-6 flex flex-col items-center gap-5">
                 <p className="text-sm text-gray-600 text-center leading-relaxed">
                   Are you sure you want to delete{" "}
-                  <span className="font-bold text-[#800000]">{userToDelete.fullName}</span>
-                  ? This action cannot be undone and will permanently remove their account.
+                  <span className="font-bold text-[#800000]">{userToDelete.fullName}</span>?
+                  This action cannot be undone.
                 </p>
-
                 <div className="flex gap-3 w-full">
-                  <button
-                    onClick={() => { setDeleteModal(false); setUserToDelete(null); }}
-                    disabled={deleting}
-                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-gray-600 border border-gray-200 hover:bg-gray-50 transition active:scale-95 disabled:opacity-50"
-                  >
+                  <button onClick={() => { setDeleteModal(false); setUserToDelete(null); }} disabled={deleting}
+                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-gray-600 border border-gray-200 hover:bg-gray-50 transition active:scale-95 disabled:opacity-50">
                     Cancel
                   </button>
-                  <button
-                    onClick={handleDeleteConfirm}
-                    disabled={deleting}
-                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
+                  <button onClick={handleDeleteConfirm} disabled={deleting}
+                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition active:scale-95 disabled:opacity-60 flex items-center justify-center gap-2">
                     {deleting ? (
                       <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                       </svg>
-                    ) : (
-                      <>
-                        <Trash2 size={14} />
-                        Delete
-                      </>
-                    )}
+                    ) : <><Trash2 size={14} />Delete</>}
                   </button>
                 </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ══ BULK PERMISSIONS MODAL ═══════════════════════════════════════════ */}
+      <AnimatePresence>
+        {permModal && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4 md:pl-[240px] lg:pl-[260px]">
+            <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+
+              {/* Header */}
+              <div className="bg-[#800000] px-6 pt-6 pb-5 relative">
+                <button onClick={() => setPermModal(false)}
+                  className="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/20 p-1.5 rounded-full transition">
+                  <MdClose size={20} />
+                </button>
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <Layers size={20} className="text-white" />
+                  </div>
+                  <div>
+                    <h5 className="text-white font-extrabold text-base leading-tight">Bulk Permissions</h5>
+                    <p className="text-white/60 text-xs mt-0.5">Apply CRUD access to all sub-resellers</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="p-6 space-y-3">
+
+                {/* Info banner */}
+                <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 px-4 py-3 rounded-xl">
+                  <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" />
+                  <p className="text-xs text-amber-700 font-medium leading-relaxed">
+                    These settings apply to <span className="font-bold">all sub-resellers</span> under your account at once. Toggle only what you intend to change.
+                  </p>
+                </div>
+
+                {/* Permission toggles */}
+                <div className="space-y-2.5 pt-1">
+                  {PERM_CONFIG.map(({ key, label, description, icon }) => (
+                    <PermissionToggle
+                      key={key}
+                      label={label}
+                      description={description}
+                      icon={icon}
+                      checked={permissions[key]}
+                      onChange={(val) => setPermissions((prev) => ({ ...prev, [key]: val }))}
+                    />
+                  ))}
+                </div>
+
+                {/* Quick-select row */}
+                <div className="flex gap-2 pt-1">
+                  <button type="button"
+                    onClick={() => setPermissions({ canCreate: true, canRead: true, canUpdate: true, canDelete: true })}
+                    className="flex-1 py-2 text-xs font-bold text-[#800000] border border-[#800000]/30 rounded-xl hover:bg-[#800000]/5 transition">
+                    Enable All
+                  </button>
+                  <button type="button"
+                    onClick={() => setPermissions({ canCreate: false, canRead: false, canUpdate: false, canDelete: false })}
+                    className="flex-1 py-2 text-xs font-bold text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition">
+                    Disable All
+                  </button>
+                </div>
+
+                {/* Save */}
+                <motion.button
+                  onClick={handlePermSave}
+                  disabled={permSaving}
+                  whileHover={!permSaving ? { scale: 1.01 } : {}}
+                  whileTap={!permSaving  ? { scale: 0.98 } : {}}
+                  className={`w-full h-12 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 mt-1
+                    ${permSaving ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm"}`}
+                >
+                  {permSaving ? (
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                    </svg>
+                  ) : (
+                    <><ShieldAlert size={15} />Apply Permissions</>
+                  )}
+                </motion.button>
               </div>
             </motion.div>
           </motion.div>

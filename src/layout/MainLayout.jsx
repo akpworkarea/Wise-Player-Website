@@ -7,7 +7,6 @@ import { useDashboard } from '../context/dashboardContext';
 import { Menu, Flame, Coins } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// ── Outside component — stable ────────────────────────────────
 const availableLanguages = [
   { code: 'en', name: 'English',    flag: '🇺🇸', image: 'https://flagcdn.com/w40/us.png' },
   { code: 'fr', name: 'Français',   flag: '🇫🇷', image: 'https://flagcdn.com/w40/fr.png' },
@@ -24,34 +23,31 @@ const adminRoutes = [
   '/purchase-credit', '/transition-history', '/payment-status',
 ];
 
-const hideNavbarRoutes = ['/login', '/register', '/register-success', '/verify-otp','/reset-password'];
+const hideNavbarRoutes = ['/login', '/register', '/register-success', '/verify-otp', '/reset-password'];
 
-// ─────────────────────────────────────────────────────────────
 const MainLayout = ({ children }) => {
   const location = useLocation();
   const { t, i18n } = useTranslation();
   const { dashboard } = useDashboard();
 
-  const [collapsed,   setCollapsed]   = useState(false);
-  const [mobileOpen,  setMobileOpen]  = useState(false);
-  const [isLangOpen,  setIsLangOpen]  = useState(false);
+  const [collapsed,  setCollapsed]  = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isLangOpen, setIsLangOpen] = useState(false);
 
-  const currentPath  = location.pathname.replace(/\/$/, '');
-  const isAdmin      = adminRoutes.includes(currentPath);
-  const hideNavbar   = hideNavbarRoutes.includes(currentPath);
+  const currentPath = location.pathname.replace(/\/$/, '');
+  const isAdmin    = adminRoutes.includes(currentPath);
+  const hideNavbar = hideNavbarRoutes.includes(currentPath);
 
   const currentLang = availableLanguages.find((l) => l.code === i18n.language);
 
   return (
-    <div className="min-h-screen bg-[#f4f4f7]">
+    <div className="min-h-screen bg-[#f4f4f7] overflow-x-hidden">
 
-      {/* ── PUBLIC NAVBAR ──────────────────────────────── */}
       {!hideNavbar && !isAdmin && <Navbar />}
 
       {isAdmin ? (
-        <div className="flex min-h-screen overflow-hidden">
+        <div className="flex min-h-screen w-full overflow-x-hidden">
 
-          {/* ── SIDEBAR ──────────────────────────────────── */}
           <Sidebar
             collapsed={collapsed}
             setCollapsed={setCollapsed}
@@ -59,45 +55,54 @@ const MainLayout = ({ children }) => {
             setMobileOpen={setMobileOpen}
           />
 
-          {/* ── MAIN CONTENT ─────────────────────────────── */}
+          {/* ── MAIN CONTENT ──
+              FIX: margin now matches Sidebar's exact widths at every
+              breakpoint — 72px collapsed, 240px at md, 260px at lg+.
+              Previously this jumped straight to 260px at md while
+              Sidebar was only 240px there, and used 80px instead of
+              72px when collapsed — both mismatches.
+          ── */}
           <div
-            className={`
-              flex-1 min-h-screen bg-[#f4f4f7] transition-all duration-300
-              ml-0 w-full overflow-x-hidden
-              ${collapsed ? 'md:ml-[80px]' : 'md:ml-[260px]'}
-            `}
-          >
-            {/* ── TOPBAR ─────────────────────────────────── */}
-            <div className="sticky top-0 z-[2000] bg-white border-b border-black/[0.06] shadow-sm px-4 py-3 flex items-center justify-between">
+  className={`
+    flex-1 bg-[#f4f4f7] transition-all duration-300
+    ml-0 w-full min-w-0 overflow-x-hidden
+    ${collapsed ? 'md:ml-[72px]' : 'md:ml-[240px] lg:ml-[260px]'}
+  `}
+>
+            {/* ── TOPBAR — left offset now matches the same breakpoints ── */}
+            <div
+              className={`
+                fixed top-0 right-0 left-0 z-[1500] bg-white border-b border-black/[0.06] shadow-sm
+                px-4 py-3 flex items-center justify-between transition-all duration-300
+                ${collapsed
+                  ? 'md:left-[72px]'
+                  : 'md:left-[240px] lg:left-[260px]'
+                }
+              `}
+            >
 
-              {/* Left */}
-              <div className="flex items-center gap-3">
-                {/* Hamburger — mobile only */}
+              <div className="flex items-center gap-3 min-w-0">
                 <button
                   onClick={() => setMobileOpen(true)}
-                  className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 text-[#1a1a1a] transition-colors duration-150 border-0"
+                  className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 text-[#1a1a1a] transition-colors duration-150 border-0 shrink-0"
                 >
                   <Menu size={18} />
                 </button>
 
-                {/* Brand label */}
-                <div className="flex items-center gap-2">
-                  <Flame size={18} fill="#800000" color="#800000" />
-                  <h6 className="font-bold text-[#800000] m-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Flame size={18} fill="#800000" color="#800000" className="shrink-0" />
+                  <h6 className="font-bold text-[#800000] m-0 truncate">
                     {t('navbar.layout.reseller_panel')}
                   </h6>
                 </div>
               </div>
 
-              {/* Right */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
 
-                {/* Credit badge — same height as lang button */}
-                <div className="h-9 flex items-center gap-1.5 px-4 rounded-full bg-[#800000] text-white text-xs font-bold border border-[#800000] shadow-sm">
+                <div className="h-9 flex items-center gap-1.5 px-4 rounded-full bg-[#800000] text-white text-xs font-bold border border-[#800000] shadow-sm whitespace-nowrap">
                   💰 {dashboard?.stats?.creditCoin ?? 0}
                 </div>
 
-                {/* Language picker — h-9 to match */}
                 <div className="relative z-[3000]">
                   <button
                     onClick={() => setIsLangOpen(!isLangOpen)}
@@ -153,8 +158,8 @@ const MainLayout = ({ children }) => {
               </div>
             </div>
 
-            {/* ── PAGE CONTENT ─────────────────────────────── */}
-            <div className="p-4">
+            {/* ── PAGE CONTENT ── */}
+            <div className="p-4 pt-[76px] w-full min-w-0 overflow-x-hidden">
               {children}
             </div>
           </div>

@@ -5,10 +5,10 @@ import {
   CheckCircle2, Mail, AlertCircle, Home,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { verifyOtp } from '../auth/apiservice';
+import { verifyOtp, resendOtp } from '../auth/apiservice';
 import { useTranslation } from 'react-i18next';
 
-// ─── Same 8 languages as Register ────────────────────────────────────────────
+// ─── Languages ────────────────────────────────────────────────────────────────
 const availableLanguages = [
   { code: 'en', name: 'English',    flag: '🇺🇸', image: 'https://flagcdn.com/w40/us.png' },
   { code: 'fr', name: 'Français',   flag: '🇫🇷', image: 'https://flagcdn.com/w40/fr.png' },
@@ -20,7 +20,7 @@ const availableLanguages = [
   { code: 'ar', name: 'العربية',    flag: '🇸🇦', image: 'https://flagcdn.com/w40/sa.png' },
 ];
 
-// ─── TopBar — identical to Register (Home + language picker) ─────────────────
+// ─── TopBar ───────────────────────────────────────────────────────────────────
 const TopBar = ({ i18n, isLangOpen, setIsLangOpen, navigate }) => {
   const currentLang = availableLanguages.find((l) => l.code === i18n.language);
   return (
@@ -71,7 +71,7 @@ const TopBar = ({ i18n, isLangOpen, setIsLangOpen, navigate }) => {
 
 const OTP_LENGTH = 6;
 
-// ─── OtpBox — MODULE LEVEL ────────────────────────────────────────────────────
+// ─── OtpBox ───────────────────────────────────────────────────────────────────
 const OtpBox = ({ value, index, isFocused, inputRef, onChange, onKeyDown, onPaste }) => (
   <motion.div
     animate={{
@@ -103,14 +103,13 @@ const OtpBox = ({ value, index, isFocused, inputRef, onChange, onKeyDown, onPast
   </motion.div>
 );
 
-// ─── StepItem — MODULE LEVEL ──────────────────────────────────────────────────
+// ─── StepItem ─────────────────────────────────────────────────────────────────
 const StepItem = ({ num, label, state, delay }) => (
   <motion.div
     initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
     transition={{ delay, duration: 0.35 }}
     className="flex items-center gap-3"
   >
-    {/* Circle — done=maroon filled, active=maroon outline+dot, pending=dim */}
     <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-2 transition-all
       ${state === 'done'
         ? 'bg-[#800000] border-[#800000] text-white'
@@ -127,7 +126,6 @@ const StepItem = ({ num, label, state, delay }) => (
       :                      'text-white/25'}`}>
       {label}
     </p>
-    {/* Active indicator dot */}
     {state === 'active' && (
       <motion.div
         animate={{ opacity: [1, 0.3, 1] }}
@@ -138,26 +136,50 @@ const StepItem = ({ num, label, state, delay }) => (
   </motion.div>
 );
 
+// ─── Toast ────────────────────────────────────────────────────────────────────
+const Toast = ({ toast }) => (
+  <AnimatePresence>
+    {toast && (
+      <div className="fixed top-5 left-0 right-0 z-[99999] flex justify-center px-4 pointer-events-none">
+        <motion.div
+          initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+          transition={{ duration: 0.25 }}
+          className={`pointer-events-auto px-6 py-3 rounded-xl font-bold text-sm text-white shadow-lg
+            ${toast.type === 'success' ? 'bg-green-600' : toast.type === 'error' ? 'bg-red-600' : 'bg-amber-500'}`}
+        >
+          {toast.msg}
+        </motion.div>
+      </div>
+    )}
+  </AnimatePresence>
+);
+
 // ═════════════════════════════════════════════════════════════════════════════
 const VerifyOtp = () => {
   const { t, i18n } = useTranslation();
   const navigate     = useNavigate();
 
   const [isLangOpen, setIsLangOpen] = useState(false);
+  const [otp,        setOtp]        = useState(Array(OTP_LENGTH).fill(''));
+  const [focusIndex, setFocusIndex] = useState(0);
+  const [loading,    setLoading]    = useState(false);
+  const [error,      setError]      = useState('');
+  const [success,    setSuccess]    = useState(false);
+  const [toast,      setToast]      = useState(null);
 
-  const [otp,        setOtp]       = useState(Array(OTP_LENGTH).fill(''));
-  const [focusIndex, setFocusIndex]= useState(0);
-  const [loading,    setLoading]   = useState(false);
-  const [error,      setError]     = useState('');
-  const [success,    setSuccess]   = useState(false);
-  // Countdown — smooth, no blink
-  const [countdown,  setCountdown] = useState(60);
-  const [canResend,  setCanResend] = useState(false);
-  const [resending,  setResending] = useState(false);
+  // Countdown for resend cooldown
+  const [countdown,  setCountdown]  = useState(60);
+  const [canResend,  setCanResend]  = useState(false);
+  const [resending,  setResending]  = useState(false);
 
   const inputRefs = useRef(Array(OTP_LENGTH).fill(null).map(() => React.createRef()));
 
-  // Smooth countdown — updates every 1s with transition on number
+  const showToast = (msg, type = 'info') => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  // Countdown timer
   useEffect(() => {
     if (countdown <= 0) { setCanResend(true); return; }
     const id = setTimeout(() => setCountdown((c) => c - 1), 1000);
@@ -180,7 +202,6 @@ const VerifyOtp = () => {
     newOtp[index] = val[val.length - 1];
     setOtp(newOtp);
     setError('');
-    // Move to next box but do NOT auto-submit
     if (index < OTP_LENGTH - 1) focusBox(index + 1);
   }, [otp, focusBox]);
 
@@ -193,7 +214,6 @@ const VerifyOtp = () => {
       }
     } else if (e.key === 'ArrowLeft')  focusBox(index - 1);
     else if  (e.key === 'ArrowRight') focusBox(index + 1);
-    // Enter key triggers submit if all filled
     else if (e.key === 'Enter' && otp.every((d) => d !== '')) handleSubmit();
   }, [otp, focusBox]);
 
@@ -206,10 +226,9 @@ const VerifyOtp = () => {
     setOtp(newOtp);
     setError('');
     focusBox(Math.min(pasted.length, OTP_LENGTH - 1));
-    // No auto-submit on paste either — user clicks Verify button
   }, [focusBox]);
 
-  // Submit — only called from button or Enter key
+  // ── Verify submit ──────────────────────────────────────────────────────────
   const handleSubmit = useCallback(async (e) => {
     e?.preventDefault();
     const code = otp.join('');
@@ -230,15 +249,27 @@ const VerifyOtp = () => {
     }
   }, [otp, focusBox, navigate]);
 
-  const handleResend = () => {
-    if (!canResend) return;
+  // ── Resend OTP — calls the real API using the stored token ─────────────────
+  const handleResend = async () => {
+    if (!canResend || resending) return;
+
     setResending(true);
-    setOtp(Array(OTP_LENGTH).fill(''));
     setError('');
-    setCountdown(60);
-    setCanResend(false);
+    setOtp(Array(OTP_LENGTH).fill(''));
+
+    const result = await resendOtp();  // token is sent automatically via axiosInstance Authorization header
+
     setResending(false);
-    setTimeout(() => focusBox(0), 100);
+
+    if (result.success) {
+      showToast('A new OTP has been sent to your email.', 'success');
+      // Reset cooldown for another 60s
+      setCountdown(60);
+      setCanResend(false);
+      setTimeout(() => focusBox(0), 100);
+    } else {
+      showToast(result.message || 'Failed to resend OTP. Please try again.', 'error');
+    }
   };
 
   const storedEmail = (() => {
@@ -248,7 +279,7 @@ const VerifyOtp = () => {
 
   const otpFilled = otp.filter(Boolean).length;
 
-  // ── Success ────────────────────────────────────────────────────────────────
+  // ── Success screen ─────────────────────────────────────────────────────────
   if (success) {
     return (
       <div className="h-screen bg-[#f4f4f7] flex items-center justify-center p-4">
@@ -266,7 +297,7 @@ const VerifyOtp = () => {
           </motion.div>
           <h2 className="text-2xl font-black text-gray-900 mb-2">Verified!</h2>
           <p className="text-gray-500 text-sm mb-6">
-            Your email has been verified. Redirecting to dashboard…
+            Your email has been verified. Redirecting to login…
           </p>
           <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
             <motion.div
@@ -284,23 +315,16 @@ const VerifyOtp = () => {
   return (
     <div className="h-screen bg-[#f4f4f7] flex flex-col lg:flex-row overflow-hidden">
 
-      {/* ══ LEFT BRAND PANEL (lg+) ══════════════════════════════════════════ */}
+      {/* ══ LEFT BRAND PANEL ════════════════════════════════════════════════ */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.55, ease: 'easeOut' }}
         className="hidden lg:flex lg:w-[38%] bg-[#1a1a1a] flex-col justify-between px-12 py-14 relative overflow-hidden shrink-0"
       >
-        {/* Glow blob */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-[#800000]/15 blur-3xl pointer-events-none" />
-
-        {/* ── TOP: spacer (no logo row) ── */}
         <div />
-
-        {/* ── CENTER: flame + brand name + steps ── */}
         <div className="relative z-10 flex flex-col items-center text-center">
-
-          {/* Big pulsing flame */}
           <motion.div
             animate={{ scale: [1, 1.06, 1] }}
             transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
@@ -308,41 +332,31 @@ const VerifyOtp = () => {
           >
             <Flame size={42} fill="#800000" color="#800000" />
           </motion.div>
-
-          {/* Brand name directly below flame */}
           <h1 className="text-3xl font-black text-white tracking-tight mb-1">
             WISE<span className="text-[#800000]">PLAYER</span>
           </h1>
           <p className="text-[10px] text-white/30 tracking-[3px] uppercase mb-10">
             Reseller Hub
           </p>
-
-          {/* Steps — left-aligned inside centered block */}
           <div className="w-full max-w-[200px] text-left space-y-0">
             <StepItem num={1} label="Create account"   state="done"    delay={0.3} />
-            {/* Connector */}
             <div className="ml-4 w-px h-5 bg-white/10 my-1" />
             <StepItem num={2} label="Verify email OTP" state="active"  delay={0.4} />
             <div className="ml-4 w-px h-5 bg-white/10 my-1" />
             <StepItem num={3} label="Login & start"    state="pending" delay={0.5} />
           </div>
         </div>
-
-        {/* ── BOTTOM: footer ── */}
         <div className="relative z-10 border-t border-white/[0.06] pt-5 text-center">
           <p className="text-[10px] text-gray-600 tracking-[2px] uppercase">
             © {new Date().getFullYear()} WisePlayer — Premium Access
           </p>
         </div>
-
-        {/* Corner fold */}
         <div className="absolute bottom-0 right-0 w-0 h-0 border-solid border-b-[70px] border-r-[70px] border-b-[#f4f4f7] border-r-transparent border-t-transparent border-l-transparent" />
       </motion.div>
 
-      {/* ══ RIGHT OTP PANEL ════════════════════════════════════════════════ */}
+      {/* ══ RIGHT OTP PANEL ═════════════════════════════════════════════════ */}
       <div className="flex-1 flex flex-col h-full lg:h-screen overflow-hidden relative">
 
-        {/* TopBar — Home + language picker, identical to Register */}
         <TopBar i18n={i18n} isLangOpen={isLangOpen} setIsLangOpen={setIsLangOpen} navigate={navigate} />
 
         <div className="flex-1 flex flex-col items-center justify-center px-4 overflow-y-auto">
@@ -440,7 +454,7 @@ const VerifyOtp = () => {
                   )}
                 </AnimatePresence>
 
-                {/* Verify button — only way to submit */}
+                {/* Verify button */}
                 <motion.button
                   type="submit"
                   disabled={loading || otpFilled < OTP_LENGTH}
@@ -461,19 +475,23 @@ const VerifyOtp = () => {
                   )}
                 </motion.button>
 
-                {/* Resend — smooth countdown, no blink */}
+                {/* Resend section */}
                 <div className="flex flex-col items-center gap-1">
                   <p className="text-xs text-gray-400">Didn't receive the code?</p>
+
                   {canResend ? (
-                    <button type="button" onClick={handleResend} disabled={resending}
-                      className="flex items-center gap-1.5 text-xs font-bold text-[#800000] hover:text-[#6a0000] transition-colors border-0 bg-transparent cursor-pointer disabled:opacity-50">
+                    <button
+                      type="button"
+                      onClick={handleResend}
+                      disabled={resending}
+                      className="flex items-center gap-1.5 text-xs font-bold text-[#800000] hover:text-[#6a0000] transition-colors border-0 bg-transparent cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                       <RefreshCw size={12} className={resending ? 'animate-spin' : ''} />
-                      Resend code
+                      {resending ? 'Sending…' : 'Resend code'}
                     </button>
                   ) : (
                     <p className="text-xs text-gray-400">
                       Resend in{' '}
-                      {/* AnimatePresence key swap = smooth fade between numbers, not blink */}
                       <AnimatePresence mode="wait">
                         <motion.span
                           key={countdown}
@@ -498,6 +516,7 @@ const VerifyOtp = () => {
                     Back to Register
                   </button>
                 </p>
+
               </form>
             </motion.div>
           </div>
@@ -509,6 +528,9 @@ const VerifyOtp = () => {
           <span className="text-xs font-semibold text-gray-500">Secure Verification</span>
         </div>
       </div>
+
+      {/* Global toast */}
+      <Toast toast={toast} />
     </div>
   );
 };

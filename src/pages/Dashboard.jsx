@@ -57,12 +57,11 @@ const Dashboard = () => {
     refetchDashboard();
   }, []);
 
-  // ── Reusable copy button — identical pattern used in TransitionHistory ──
   const CopyButton = ({ id }) => (
-    <div className="relative inline-flex">
+    <div className="relative inline-flex shrink-0">
       <button
         onClick={() => copyToClipboard(id)}
-        className="text-[10px] border border-gray-300 px-2 py-0.5 rounded hover:bg-red-50 hover:border-[#800000] hover:text-[#800000] transition text-gray-500"
+        className="text-[10px] border border-gray-300 px-2 py-0.5 rounded hover:bg-red-50 hover:border-[#800000] hover:text-[#800000] transition text-gray-500 whitespace-nowrap"
       >
         {copiedId === id ? t("admin_dashboard.copied") : t("admin_dashboard.copy")}
       </button>
@@ -75,18 +74,20 @@ const Dashboard = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#f4f4f7] w-full">
+    // FIX: overflow-x-hidden on the root prevents ANY child from ever
+    // creating a page-level horizontal scrollbar, no matter what causes it
+    <div className="bg-[#f4f4f7] w-full overflow-x-hidden">
 
       {/* ── HEADER ── */}
       <div className="bg-white border-b px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sticky top-0 z-10">
-        <h5 className="text-xs sm:text-sm font-semibold uppercase tracking-wider">
+        <h5 className="text-xs sm:text-sm font-semibold uppercase tracking-wider truncate">
           {t("admin_dashboard.panel")} /{" "}
           <span className="text-[#800000]">
             {t(`admin_dashboard.${activeTab}`)}
           </span>
         </h5>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <div className="hidden sm:block text-right">
             <p className="text-sm font-semibold">
               {t("admin_dashboard.admin_user")}
@@ -95,48 +96,45 @@ const Dashboard = () => {
               ● {t("admin_dashboard.online")}
             </p>
           </div>
-          <div className="w-9 h-9 rounded-full bg-[#800000]" />
+          <div className="w-9 h-9 rounded-full bg-[#800000] shrink-0" />
         </div>
       </div>
 
       {/* ── MAIN ── */}
-      <div className="p-4 space-y-6">
+      <div className="p-4 space-y-6 w-full min-w-0">
 
         {/* ── STATS GRID ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           {stats.map((item, i) => (
-            <div key={i} className="bg-white p-4 rounded-xl shadow border">
+            <div key={i} className="bg-white p-4 rounded-xl shadow border min-w-0">
               <div className="flex justify-between">
-                <div className="p-2 bg-red-50 text-[#800000] rounded-md">
+                <div className="p-2 bg-red-50 text-[#800000] rounded-md shrink-0">
                   {item.icon}
                 </div>
-                <span className="text-xs font-bold text-green-600">
+                <span className="text-xs font-bold text-green-600 shrink-0">
                   {item.trend}
                 </span>
               </div>
-              <h2 className="text-xl font-bold mt-3">{item.count}</h2>
-              <p className="text-sm text-gray-500">{item.title}</p>
+              <h2 className="text-xl font-bold mt-3 truncate">{item.count}</h2>
+              <p className="text-sm text-gray-500 truncate">{item.title}</p>
             </div>
           ))}
         </div>
 
         {/* ════════════════════════════════════════════
             TABLET + DESKTOP TABLE  (md = 768px+)
-
-            KEY FIX: removed overflow-x-auto + min-w-full.
-            Uses table-fixed + colgroup percentages so the
-            table always fills its container — no horizontal
-            scroll from 768px all the way to 1920px.
+            table-fixed + colgroup + min-w-0 on every cell's
+            content prevents content from forcing column growth
+            beyond its set percentage width.
         ════════════════════════════════════════════ */}
-        <div className="hidden md:block bg-white rounded-xl shadow border">
+        <div className="hidden md:block bg-white rounded-xl shadow border w-full min-w-0">
           <table className="w-full text-sm table-fixed">
 
-            {/* 4 columns — widths tuned to fit comfortably at 768px */}
             <colgroup>
-              <col style={{ width: "34%" }} /> {/* Device ID + copy */}
-              <col style={{ width: "22%" }} /> {/* Status */}
-              <col style={{ width: "22%" }} /> {/* Subscription */}
-              <col style={{ width: "22%" }} /> {/* Registered */}
+              <col style={{ width: "34%" }} />
+              <col style={{ width: "22%" }} />
+              <col style={{ width: "22%" }} />
+              <col style={{ width: "22%" }} />
             </colgroup>
 
             <thead className="bg-gray-100 text-xs uppercase text-gray-600">
@@ -165,11 +163,12 @@ const Dashboard = () => {
                       idx % 2 === 1 ? "bg-gray-50" : "bg-white"
                     }`}
                   >
-                    {/* Device ID: truncated + copy button */}
+                    {/* Device ID: flex-nowrap + min-w-0 so ID truncates
+                        instead of pushing the copy button past the column */}
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-2 flex-wrap">
+                      <div className="flex items-center justify-center gap-2 flex-nowrap min-w-0">
                         <span
-                          className="text-[#800000] font-semibold cursor-default truncate max-w-[120px]"
+                          className="text-[#800000] font-semibold cursor-default truncate min-w-0"
                           title={item.deviceId}
                         >
                           {truncateId(item.deviceId)}
@@ -178,13 +177,13 @@ const Dashboard = () => {
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 text-gray-700">
+                    <td className="px-4 py-3 text-gray-700 truncate">
                       {item.deviceStatus}
                     </td>
-                    <td className="px-4 py-3 text-gray-700">
+                    <td className="px-4 py-3 text-gray-700 truncate">
                       {item.subscriptionType}
                     </td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">
+                    <td className="px-4 py-3 text-gray-500 text-xs truncate">
                       {formatDate(item.registeredAt)}
                     </td>
                   </tr>
@@ -202,40 +201,40 @@ const Dashboard = () => {
 
         {/* ════════════════════════════════════════════
             MOBILE CARDS  (< 768px)
-            Copy button in top row beside truncated ID
         ════════════════════════════════════════════ */}
         <div className="md:hidden space-y-4">
           {dashboard?.devices?.length > 0 ? (
             dashboard.devices.slice(0, 8).map((item) => (
-              <div key={item.deviceId} className="bg-white p-4 rounded-xl shadow border">
-
+              <div
+                key={item.deviceId}
+                className="bg-white p-4 rounded-xl shadow border overflow-hidden"
+              >
                 {/* Row 1: ID + copy + status badge */}
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex justify-between items-center gap-2">
+                  <div className="flex items-center gap-2 flex-nowrap min-w-0">
                     <span
-                      className="text-[#800000] font-semibold text-sm"
+                      className="text-[#800000] font-semibold text-sm truncate min-w-0"
                       title={item.deviceId}
                     >
                       {truncateId(item.deviceId, 6, 4)}
                     </span>
                     <CopyButton id={item.deviceId} />
                   </div>
-                  <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold">
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold shrink-0">
                     {item.deviceStatus}
                   </span>
                 </div>
 
                 {/* Row 2: Plan + registered */}
-                <div className="text-sm text-gray-500 mt-2">
-                  <p>
+                <div className="text-sm text-gray-500 mt-2 space-y-0.5">
+                  <p className="truncate">
                     {t("admin_dashboard.plan")}: {item.subscriptionType}
                   </p>
-                  <p>
+                  <p className="truncate">
                     {t("admin_dashboard.registered")}:{" "}
                     {formatDate(item.registeredAt)}
                   </p>
                 </div>
-
               </div>
             ))
           ) : (

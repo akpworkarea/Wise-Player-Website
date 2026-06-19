@@ -2,14 +2,6 @@ import api from "./axiosInstance";
 
 /**
  * GET all sub-resellers with optional server-side filters.
- * @param {number} page        - 0-based page index
- * @param {number} size        - page size (default 20)
- * @param {string} search      - name / username / ID partial (?search=)
- * @param {string} status      - "true" | "false" | ""  (boolean string)
- * @param {string} fromDate    - YYYY-MM-DD | ""
- * @param {string} toDate      - YYYY-MM-DD | ""
- * @param {string} minCredits  - numeric string | ""
- * @param {string} maxCredits  - numeric string | ""
  */
 export const getAllResellerInfo = async (
   page       = 0,
@@ -26,15 +18,13 @@ export const getAllResellerInfo = async (
     params.append("page", page);
     params.append("size", size);
     if (search.trim()) params.append("search",     search.trim());
-    if (status)        params.append("status",     status);       // "true" | "false"
+    if (status)        params.append("status",     status);
     if (fromDate)      params.append("fromDate",   fromDate);
     if (toDate)        params.append("toDate",     toDate);
     if (minCredits)    params.append("minCredits", minCredits);
     if (maxCredits)    params.append("maxCredits", maxCredits);
 
-    const response = await api.get(
-      `/api/reseller/sub-resellers?${params.toString()}`
-    );
+    const response = await api.get(`/api/reseller/sub-resellers?${params.toString()}`);
     return { success: true, data: response.data };
   } catch (error) {
     return {
@@ -86,12 +76,33 @@ export const updateSubReseller = async (id, payload) => {
  */
 export const deleteSubReseller = async (id) => {
   try {
-    const response = await api.put(`/api/reseller/sub-resellers/${id}`);
+    // ✅ Fixed: was incorrectly using api.put — must be api.delete
+    const response = await api.delete(`/api/reseller/sub-resellers/${id}`);
     return { success: true, data: response.data };
   } catch (error) {
     return {
       success: false,
       message: error.response?.data?.message || "Failed to delete sub-reseller",
+    };
+  }
+};
+
+/**
+ * Bulk-update CRUD permissions for ALL sub-resellers under this reseller.
+ * PATCH /api/reseller/sub-resellers/bulk-permissions
+ * Body: { canCreate, canRead, canUpdate, canDelete }  — all booleans
+ */
+export const updateBulkPermissions = async (permissions) => {
+  try {
+    const response = await api.put(
+      "/api/reseller/sub-resellers/bulk-permissions",
+      permissions,
+    );
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Failed to update permissions",
     };
   }
 };

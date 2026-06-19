@@ -49,6 +49,26 @@ export const verifyOtp = async (otp) => {
  * Now we pass response.data.success through directly so LoginPage can
  * distinguish: success=true → dashboard, success=false → /verify-otp.
  */
+/**
+ * Resend OTP to the user's registered email.
+ * Uses the token stored from login (unverified) or register response.
+ * POST /api/reseller/resend-otp  — no body needed, token in Authorization header
+ */
+export const resendOtp = async () => {
+  try {
+    const response = await api.post('/api/reseller/resend-otp');
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.response?.data?.error   ||
+        'Failed to resend OTP',
+    };
+  }
+};
+
 export const loginReseller = async (credentials) => {
   try {
     const response = await api.post('/api/reseller/login', credentials);
