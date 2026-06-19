@@ -101,12 +101,12 @@ const TopBar = ({ i18n, isLangOpen, setIsLangOpen, navigate }) => {
   );
 };
 
-// ═════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════════
 const LoginPage = () => {
-  const { t, i18n }          = useTranslation();
-  const navigate              = useNavigate();
-  const { refetchDashboard }  = useDashboard();
-  const { setUserRole }       = useAuth();
+  const { t, i18n }         = useTranslation();
+  const navigate             = useNavigate();
+  const { refetchDashboard } = useDashboard();
+  const { setUserRole }      = useAuth();
 
   const [isLangOpen,   setIsLangOpen]   = useState(false);
   // views: 'login' | 'forgot' | 'sent'
@@ -117,7 +117,7 @@ const LoginPage = () => {
   const [password,     setPassword]     = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // ── Forgot-password specific state ──────────────────────────────────────
+  // Forgot-password specific state
   const [resetEmail, setResetEmail] = useState('');
   const [resetError, setResetError] = useState('');
 
@@ -126,6 +126,7 @@ const LoginPage = () => {
     setTimeout(() => setToast(null), 3000);
   };
 
+  // ── LOGIN ─────────────────────────────────────────────────────────────────
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -133,17 +134,25 @@ const LoginPage = () => {
     setLoading(false);
 
     if (result.success) {
-      showToast('Success! Redirecting...', 'success');
-      localStorage.setItem('user', JSON.stringify(result.data));
-      setUserRole(result?.data?.role);
+      // Email verified → dashboard
       localStorage.setItem('userName', username);
-      navigate('/dashboard');
+      setUserRole(result.data?.role);
+      showToast('Success! Redirecting...', 'success');
+      setTimeout(() => navigate('/dashboard'), 800);
+    } else if (result.data?.token) {
+      // success=false but token present → unverified email → OTP page
+      // token + user already stored in apiservice, just set role + redirect
+      localStorage.setItem('userName', username);
+      setUserRole(result.data?.role);
+      showToast('Please verify your email to continue.', 'info');
+      setTimeout(() => navigate('/verify-otp'), 900);
     } else {
+      // No token → truly bad credentials
       showToast(result.message || 'Invalid credentials', 'error');
     }
   };
 
-  // ── Real forgot-password API call ─────────────────────────────────────────
+  // ── FORGOT PASSWORD ───────────────────────────────────────────────────────
   const handleForgot = async (e) => {
     e.preventDefault();
     setResetError('');
@@ -261,11 +270,20 @@ const LoginPage = () => {
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-4">
-                      <InputField label={t('username') || 'Username'} value={username}
-                        onChange={(e) => setUsername(e.target.value)} placeholder="Enter username" icon={User} />
-                      <InputField label={t('password') || 'Password'} value={password}
+                      <InputField
+                        label={t('username') || 'Username or Email'}
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Username or email"
+                        icon={User}
+                      />
+                      <InputField
+                        label={t('password') || 'Password'}
+                        value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        type={showPassword ? 'text' : 'password'} placeholder="Enter password" icon={Lock}
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Enter password"
+                        icon={Lock}
                         rightEl={
                           <button type="button" onClick={() => setShowPassword((p) => !p)}
                             className="text-gray-400 hover:text-[#800000] transition-colors duration-150 border-0 bg-transparent p-0">
@@ -307,7 +325,7 @@ const LoginPage = () => {
                   </motion.div>
                 )}
 
-                {/* ── FORGOT PASSWORD VIEW — collects email ── */}
+                {/* ── FORGOT PASSWORD VIEW ── */}
                 {view === 'forgot' && (
                   <motion.div key="forgot" variants={viewVariants} initial="hidden" animate="visible" exit="exit">
                     <button onClick={resetForgotState}

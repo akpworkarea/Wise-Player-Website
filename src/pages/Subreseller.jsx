@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { UserPlus, Pencil, Search, X, Filter, ChevronDown,
-  SlidersHorizontal, Calendar, Coins, ShieldCheck } from "lucide-react";
+import { UserPlus, Pencil, Trash2, Search, X, Filter, ChevronDown,
+  SlidersHorizontal, Calendar, Coins, ShieldCheck, AlertTriangle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdClose } from "react-icons/md";
-import { createReseller, getAllResellerInfo, updateSubReseller } from "../auth/reSeller";
+import toast from "react-hot-toast";
+import { createReseller, getAllResellerInfo, updateSubReseller, deleteSubReseller } from "../auth/reSeller";
 import { formatDate } from "../auth/utilfunction";
 import TransferModal from "../component/TransferModal";
 import { useTranslation } from "react-i18next";
@@ -40,7 +41,6 @@ const FilterPanelContent = ({
   activeFilterCount,
   clearAll,
 }) => {
-  // Status sends boolean string "true"/"false" as backend expects
   const STATUS_OPTS = [
     { value: "",      label: "All",      dot: "bg-gray-300"  },
     { value: "true",  label: "Active",   dot: "bg-green-500" },
@@ -173,7 +173,8 @@ const SkeletonCard = () => (
     </div>
     <div className="flex gap-2 pt-1">
       <div className="flex-1 h-9 bg-gray-200 rounded-xl" />
-      <div className="flex-1 h-9 bg-gray-200 rounded-xl" />
+      <div className="w-9 h-9 bg-gray-200 rounded-xl" />
+      <div className="w-9 h-9 bg-gray-200 rounded-xl" />
     </div>
   </div>
 );
@@ -191,13 +192,14 @@ const SkeletonRow = () => (
 
 // ─── SubCard — MODULE LEVEL (no flicker on copy state change) ─────────────────
 const SubCard = ({
-  user, copiedId, onCopy, onTransfer, onEdit,
+  user, copiedId, onCopy, onTransfer, onEdit, onDelete,
   copyLabel, copiedLabel, truncateId,
-  transferLabel, editLabel, createdLabel, coinLabel,
+  transferLabel, editLabel, deleteLabel, createdLabel, coinLabel,
 }) => (
   <motion.div
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, scale: 0.96 }}
     className="bg-white p-4 rounded-xl shadow border border-gray-200 space-y-3"
   >
     {/* Name + Status */}
@@ -239,15 +241,19 @@ const SubCard = ({
       </div>
     </div>
 
-    {/* Actions */}
+    {/* Actions — Transfer | Edit | Delete */}
     <div className="flex gap-2 pt-1">
       <button onClick={() => onTransfer(user)}
         className="flex-1 py-2.5 rounded-xl bg-[#800000] text-white text-sm font-bold hover:bg-[#6a0000] transition active:scale-95">
         {transferLabel}
       </button>
-      <button onClick={() => onEdit(user)}
-        className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:border-[#800000] hover:text-[#800000] hover:bg-red-50 transition active:scale-95">
-        {editLabel}
+      <button onClick={() => onEdit(user)} title={editLabel}
+        className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:border-[#800000] hover:text-[#800000] hover:bg-red-50 transition active:scale-95">
+        <Pencil size={15} />
+      </button>
+      <button onClick={() => onDelete(user)} title={deleteLabel}
+        className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl border border-red-200 text-red-500 hover:bg-red-600 hover:border-red-600 hover:text-white transition active:scale-95">
+        <Trash2 size={15} />
       </button>
     </div>
   </motion.div>
@@ -297,7 +303,10 @@ const SubresellerDashboard = () => {
   const [openModel,     setOpenModel]     = useState(false);
   const [editModal,     setEditModal]     = useState(false);
   const [transferModal, setTransferModal] = useState(false);
+  const [deleteModal,   setDeleteModal]   = useState(false);
+  const [deleting,      setDeleting]      = useState(false);
   const [selectedUser,  setSelectedUser]  = useState(null);
+  const [userToDelete,  setUserToDelete]  = useState(null);
   const [editUserId,    setEditUserId]    = useState(null);
   const [editData,      setEditData]      = useState({ fullName: "", email: "", password: "" });
   const [formData,      setFormData]      = useState({ username: "", password: "", fullName: "" });
@@ -369,7 +378,11 @@ const SubresellerDashboard = () => {
     if (res.success) {
       setOpenModel(false); setFormData({ username: "", password: "", fullName: "" }); setError("");
       setCurrentPage(1); fetchData(1); await refetchDashboard();
-    } else { setError(res.message); }
+      toast.success("Sub-reseller created successfully");
+    } else {
+      setError(res.message);
+      toast.error(res.message || "Failed to create sub-reseller");
+    }
   };
 
   const handleUpdate = async (e) => {
@@ -377,8 +390,13 @@ const SubresellerDashboard = () => {
     const payload = { fullName: editData.fullName, email: editData.email };
     if (editData.password) payload.password = editData.password;
     const res = await updateSubReseller(editUserId, payload);
-    if (res.success) { setEditModal(false); setError(""); fetchData(currentPage); }
-    else { setError(res.message); }
+    if (res.success) {
+      setEditModal(false); setError(""); fetchData(currentPage);
+      toast.success("Sub-reseller updated successfully");
+    } else {
+      setError(res.message);
+      toast.error(res.message || "Failed to update sub-reseller");
+    }
   };
 
   const handleEditOpen = (user) => {
@@ -397,6 +415,31 @@ const SubresellerDashboard = () => {
     setTransferModal(true);
   };
 
+  // ── Delete flow ───────────────────────────────────────────────────────────
+  const handleDeleteOpen = (user) => {
+    setUserToDelete(user);
+    setDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!userToDelete) return;
+    setDeleting(true);
+    const res = await deleteSubReseller(userToDelete.id);
+    setDeleting(false);
+
+    if (res.success) {
+      toast.success(`"${userToDelete.fullName}" was deleted successfully`);
+      setDeleteModal(false);
+      setUserToDelete(null);
+      // Remove from local state immediately for snappy UX, then refetch to stay in sync
+      setUsers((prev) => prev.filter((u) => u.id !== userToDelete.id));
+      fetchData(currentPage);
+      await refetchDashboard();
+    } else {
+      toast.error(res.message || "Failed to delete sub-reseller");
+    }
+  };
+
   const activeFilterCount = [statusFilter, fromDate, toDate, minCredits, maxCredits].filter(Boolean).length;
   const hasFilters        = !!(debouncedSearch || activeFilterCount);
   const showPagination    = totalPages > 1;
@@ -410,11 +453,15 @@ const SubresellerDashboard = () => {
 
   // Stable props for SubCard
   const cardProps = {
-    copiedId, onCopy, onTransfer: handleOpenTransfer, onEdit: handleEditOpen,
+    copiedId, onCopy,
+    onTransfer: handleOpenTransfer,
+    onEdit: handleEditOpen,
+    onDelete: handleDeleteOpen,
     copyLabel:     t("admin_dashboard.copy")    || "Copy",
     copiedLabel:   t("admin_dashboard.copied")  || "Copied!",
     transferLabel: t("transfer")                || "Transfer",
     editLabel:     t("edit")                    || "Edit",
+    deleteLabel:   t("delete")                  || "Delete",
     createdLabel:  t("created")                 || "Created",
     coinLabel:     t("coin")                    || "Coins",
     truncateId,
@@ -594,7 +641,8 @@ const SubresellerDashboard = () => {
                 className="text-xs text-gray-400 hover:text-[#800000] font-semibold transition">
                 Clear all
               </button>
-            )}          </motion.div>
+            )}
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -602,11 +650,11 @@ const SubresellerDashboard = () => {
       <div className="hidden lg:block bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
         <table className="w-full text-sm table-fixed">
           <colgroup>
-            <col style={{ width: "36%" }} />
-            <col style={{ width: "12%" }} />
-            <col style={{ width: "17%" }} />
-            <col style={{ width: "10%" }} />
-            <col style={{ width: "25%" }} />
+            <col style={{ width: "33%" }} />
+            <col style={{ width: "11%" }} />
+            <col style={{ width: "15%" }} />
+            <col style={{ width: "9%"  }} />
+            <col style={{ width: "32%" }} />
           </colgroup>
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200">
@@ -666,6 +714,11 @@ const SubresellerDashboard = () => {
                         title={t("edit") || "Edit"}>
                         <Pencil size={13} />
                       </button>
+                      <button onClick={() => handleDeleteOpen(user)}
+                        className="p-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-600 hover:border-red-600 hover:text-white transition active:scale-95"
+                        title={t("delete") || "Delete"}>
+                        <Trash2 size={13} />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -686,7 +739,9 @@ const SubresellerDashboard = () => {
         {loadingData ? (
           [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
         ) : users.length > 0 ? (
-          users.map((user) => <SubCard key={user.id} user={user} {...cardProps} />)
+          <AnimatePresence>
+            {users.map((user) => <SubCard key={user.id} user={user} {...cardProps} />)}
+          </AnimatePresence>
         ) : (
           <div className="col-span-2">
             <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
@@ -699,7 +754,9 @@ const SubresellerDashboard = () => {
         {loadingData ? (
           [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
         ) : users.length > 0 ? (
-          users.map((user) => <SubCard key={user.id} user={user} {...cardProps} />)
+          <AnimatePresence>
+            {users.map((user) => <SubCard key={user.id} user={user} {...cardProps} />)}
+          </AnimatePresence>
         ) : (
           <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
         )}
@@ -779,6 +836,68 @@ const SubresellerDashboard = () => {
                   {t("update")}
                 </button>
               </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ══ DELETE CONFIRMATION MODAL ════════════════════════════════════════ */}
+      <AnimatePresence>
+        {deleteModal && userToDelete && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4 md:pl-[240px] lg:pl-[260px]">
+            <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+
+              {/* Maroon header with warning icon */}
+              <div className="bg-[#800000] px-6 pt-6 pb-5 flex flex-col items-center gap-3">
+                <motion.div
+                  initial={{ scale: 0 }} animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                  className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center"
+                >
+                  <AlertTriangle size={22} className="text-white" />
+                </motion.div>
+                <h5 className="text-base font-extrabold text-white text-center">
+                  Delete Sub-Reseller
+                </h5>
+              </div>
+
+              {/* Body */}
+              <div className="px-6 pt-5 pb-6 flex flex-col items-center gap-5">
+                <p className="text-sm text-gray-600 text-center leading-relaxed">
+                  Are you sure you want to delete{" "}
+                  <span className="font-bold text-[#800000]">{userToDelete.fullName}</span>
+                  ? This action cannot be undone and will permanently remove their account.
+                </p>
+
+                <div className="flex gap-3 w-full">
+                  <button
+                    onClick={() => { setDeleteModal(false); setUserToDelete(null); }}
+                    disabled={deleting}
+                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-gray-600 border border-gray-200 hover:bg-gray-50 transition active:scale-95 disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteConfirm}
+                    disabled={deleting}
+                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {deleting ? (
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                      </svg>
+                    ) : (
+                      <>
+                        <Trash2 size={14} />
+                        Delete
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}

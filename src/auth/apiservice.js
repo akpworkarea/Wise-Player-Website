@@ -7,8 +7,6 @@ export const registerReseller = async (formData) => {
     const response = await api.post('/api/reseller/register', formData);
     const data = response.data;
 
-    // Store token + user immediately after registration
-    // (same shape as login response)
     if (data.token) {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data));
@@ -25,7 +23,6 @@ export const registerReseller = async (formData) => {
 
 /**
  * Verify email OTP after registration.
- * Uses the token stored from the register response.
  * POST /api/reseller/verify-email  body: { "otp": "499596" }
  */
 export const verifyOtp = async (otp) => {
@@ -43,14 +40,28 @@ export const verifyOtp = async (otp) => {
   }
 };
 
+/**
+ * KEY FIX:
+ * The API returns { success: false, token: "..." } when email is unverified.
+ * Previously this function always returned { success: true } — ignoring the
+ * API's own success flag — so unverified users went straight to the dashboard.
+ *
+ * Now we pass response.data.success through directly so LoginPage can
+ * distinguish: success=true → dashboard, success=false → /verify-otp.
+ */
 export const loginReseller = async (credentials) => {
   try {
     const response = await api.post('/api/reseller/login', credentials);
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data));
+    const data = response.data;
+
+    // Always store the token if present — the OTP page needs it to call verify-email
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data));
     }
-    return { success: true, data: response.data };
+
+    // ✅ Pass data.success through — do NOT hardcode true
+    return { success: data.success, data };
   } catch (error) {
     return {
       success: false,

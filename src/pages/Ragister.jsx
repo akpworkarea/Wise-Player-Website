@@ -157,7 +157,7 @@ const Register = () => {
     setLoading(false);
     if (result.success) {
       // Token already saved in apiservice — navigate to OTP verification
-      navigate('/verify-otp');
+      navigate('/login');
     } else {
       setError(result.message);
     }

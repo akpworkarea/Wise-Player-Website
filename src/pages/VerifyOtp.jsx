@@ -222,7 +222,7 @@ const VerifyOtp = () => {
     setLoading(false);
     if (result.success) {
       setSuccess(true);
-      setTimeout(() => navigate('/login'), 1800);
+      setTimeout(() => navigate('/dashboard'), 1800);
     } else {
       setError(result.message || 'Invalid OTP. Please try again.');
       setOtp(Array(OTP_LENGTH).fill(''));
@@ -266,7 +266,7 @@ const VerifyOtp = () => {
           </motion.div>
           <h2 className="text-2xl font-black text-gray-900 mb-2">Verified!</h2>
           <p className="text-gray-500 text-sm mb-6">
-            Your email has been verified. Redirecting to login…
+            Your email has been verified. Redirecting to dashboard…
           </p>
           <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
             <motion.div

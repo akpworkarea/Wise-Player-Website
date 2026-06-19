@@ -56,7 +56,6 @@ export const createReseller = async (data) => {
   }
 };
 
-
 export const transferCredits = async (payload) => {
   try {
     const response = await api.post("/api/reseller/credits/transfer", payload);
@@ -68,8 +67,6 @@ export const transferCredits = async (payload) => {
     };
   }
 };
-
-
 
 export const updateSubReseller = async (id, payload) => {
   try {
@@ -83,6 +80,18 @@ export const updateSubReseller = async (id, payload) => {
   }
 };
 
-
-
-
+/**
+ * DELETE a sub-reseller by ID.
+ * DELETE /api/reseller/sub-resellers/{subresellerId}
+ */
+export const deleteSubReseller = async (id) => {
+  try {
+    const response = await api.put(`/api/reseller/sub-resellers/${id}`);
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Failed to delete sub-reseller",
+    };
+  }
+};
