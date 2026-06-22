@@ -2,12 +2,11 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   UserPlus, Pencil, Trash2, Search, X, Filter, ChevronDown,
   SlidersHorizontal, Calendar, Coins, ShieldCheck, AlertTriangle,
-  ShieldAlert, Eye, EyeOff, User, Lock, AtSign, CheckSquare,
-  Square, ToggleLeft, ToggleRight, Layers,
+  ShieldAlert, Eye, EyeOff, User, Lock, AtSign, Layers,
+  CheckCircle2, XCircle, Info,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdClose } from "react-icons/md";
-import toast from "react-hot-toast";
 import {
   createReseller, getAllResellerInfo, updateSubReseller,
   deleteSubReseller, updateBulkPermissions,
@@ -16,6 +15,35 @@ import { formatDate } from "../auth/utilfunction";
 import TransferModal from "../component/TransferModal";
 import { useTranslation } from "react-i18next";
 import { useDashboard } from "../context/dashboardContext";
+
+// ─── Brand Toast — centered in viewport, brand-consistent ─────────────────────
+// type: 'success' | 'error' | 'info'
+const BrandToast = ({ toasts }) => (
+  <div className="fixed top-5 inset-x-0 z-[99999] flex flex-col items-center gap-2 pointer-events-none px-4">
+    <AnimatePresence>
+      {toasts.map((t) => {
+        const isSuccess = t.type === "success";
+        const isError   = t.type === "error";
+        const Icon = isSuccess ? CheckCircle2 : isError ? XCircle : Info;
+        return (
+          <motion.div
+            key={t.id}
+            initial={{ opacity: 0, y: -16, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0,   scale: 1     }}
+            exit={{   opacity: 0, y: -12,  scale: 0.96  }}
+            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+            className={`pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-2xl shadow-xl
+              text-sm font-bold text-white max-w-sm w-full
+              ${isSuccess ? "bg-[#800000]" : isError ? "bg-red-600" : "bg-gray-800"}`}
+          >
+            <Icon size={17} className="shrink-0" />
+            <span className="flex-1 leading-snug">{t.msg}</span>
+          </motion.div>
+        );
+      })}
+    </AnimatePresence>
+  </div>
+);
 
 // ─── Debounce ─────────────────────────────────────────────────────────────────
 function useDebounce(value, delay) {
@@ -366,6 +394,14 @@ const SubresellerDashboard = () => {
   // ── Copy ──────────────────────────────────────────────────────────────────
   const [copiedId, setCopiedId] = useState(null);
 
+  // ── Brand toasts ──────────────────────────────────────────────────────────
+  const [toasts, setToasts] = useState([]);
+  const showToast = useCallback((msg, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, msg, type }]);
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 3500);
+  }, []);
+
   const desktopFilterRef = useRef(null);
 
   useEffect(() => {
@@ -431,10 +467,10 @@ const SubresellerDashboard = () => {
       setOpenModel(false);
       setFormData({ username: "", password: "", fullName: "" });
       setCurrentPage(1); fetchData(1); await refetchDashboard();
-      toast.success("Sub-reseller created successfully");
+      showToast("Sub-reseller created successfully", "success");
     } else {
       setError(res.message);
-      toast.error(res.message || "Failed to create sub-reseller");
+      showToast(res.message || "Failed to create sub-reseller", "error");
     }
   };
 
@@ -446,10 +482,10 @@ const SubresellerDashboard = () => {
     const res = await updateSubReseller(editUserId, payload);
     if (res.success) {
       setEditModal(false); setError(""); fetchData(currentPage);
-      toast.success("Sub-reseller updated successfully");
+      showToast("Sub-reseller updated successfully", "success");
     } else {
       setError(res.message);
-      toast.error(res.message || "Failed to update sub-reseller");
+      showToast(res.message || "Failed to update sub-reseller", "error");
     }
   };
 
@@ -480,12 +516,12 @@ const SubresellerDashboard = () => {
     const res = await deleteSubReseller(userToDelete.id);
     setDeleting(false);
     if (res.success) {
-      toast.success(`"${userToDelete.fullName}" deleted successfully`);
+      showToast(`"${userToDelete.fullName}" deleted successfully`, "success");
       setDeleteModal(false); setUserToDelete(null);
       setUsers((prev) => prev.filter((u) => u.id !== userToDelete.id));
       fetchData(currentPage); await refetchDashboard();
     } else {
-      toast.error(res.message || "Failed to delete sub-reseller");
+      showToast(res.message || "Failed to delete sub-reseller", "error");
     }
   };
 
@@ -495,10 +531,10 @@ const SubresellerDashboard = () => {
     const res = await updateBulkPermissions(permissions);
     setPermSaving(false);
     if (res.success) {
-      toast.success("Permissions applied to all sub-resellers");
+      showToast("Permissions applied to all sub-resellers", "success");
       setPermModal(false);
     } else {
-      toast.error(res.message || "Failed to update permissions");
+      showToast(res.message || "Failed to update permissions", "error");
     }
   };
 
@@ -540,124 +576,214 @@ const SubresellerDashboard = () => {
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen w-full bg-[#f4f4f7] p-4 space-y-5">
+    /*
+     * ROOT: h-screen + flex-col so the page never scrolls itself.
+     * The parent layout (sidebar + main) already fills the viewport;
+     * this component just needs to occupy whatever space it's given.
+     * overflow-hidden on root prevents any stray scrollbar.
+     */
+    <div className="h-full min-h-screen flex flex-col bg-[#f4f4f7] overflow-hidden">
 
-      {/* ══ HEADER ══════════════════════════════════════════════════════════ */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div className="shrink-0">
-          <h3 className="font-bold text-[#800000] text-lg">{t("subreseller_management")}</h3>
-          <p className="text-gray-500 text-sm mt-0.5">{t("manage_subreseller") || "Search by name, username or ID"}</p>
-        </div>
+      {/* ══ STICKY HEADER — sticks regardless of parent scroll model ════════ */}
+      <div className="shrink-0 sticky top-0 bg-[#f4f4f7] px-4 pt-4 pb-3 space-y-3 z-30">
 
-        {/* Controls row: Search · Filter · Permissions · Create */}
-        <div className="flex items-center gap-2 lg:gap-3">
+        {/*
+         * HEADER LAYOUT
+         * ─────────────────────────────────────────────────────
+         * mobile  (<768px)   : title+subtitle top row, controls full-width row below, buttons icon-only squares
+         * tablet  (768-1023px): same two-row layout, search fills space, buttons icon-only squares
+         * lg      (1024-1279px): ONE ROW — title+subtitle LEFT, controls RIGHT — buttons still icon-only squares
+         * lg       (1024-1279px): ONE ROW — title+subtitle LEFT, controls RIGHT — buttons icon-only squares
+         * xl       (1280-1399px): ONE ROW — title+subtitle LEFT, controls RIGHT — buttons STILL icon-only squares
+         * 1400px+              : ONE ROW — same, buttons expand with text labels
+         */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
 
-          {/* Search */}
-          <div className="flex items-center rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm flex-1 min-w-0 lg:max-w-sm">
-            <div className="relative flex-1 min-w-0">
-              {loadingData && debouncedSearch ? (
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 border-2 border-[#800000] border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-              )}
-              <input
-                type="text"
-                placeholder={t("search_placeholder") || "Search by name, username or ID…"}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-8 pr-7 py-2.5 text-sm text-gray-700 bg-white focus:outline-none placeholder-gray-400"
-              />
-              {search && (
-                <button onClick={() => setSearch("")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#800000] transition">
-                  <X size={13} />
-                </button>
-              )}
-            </div>
+          {/* Title + subtitle — always visible, left-aligned at lg+ */}
+          <div className="shrink-0">
+            <h3 className="font-bold text-[#800000] text-lg leading-tight">
+              {t("subreseller_management")}
+            </h3>
+            <p className="text-gray-500 text-xs mt-0.5">
+              {t("manage_subreseller") || "Manage and search your sub-resellers"}
+            </p>
           </div>
 
-          {/* Filter button */}
-          <div className="relative shrink-0" ref={desktopFilterRef}>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => setShowFilter((v) => !v)}
-              className={`flex items-center gap-2 px-3 py-2.5 md:px-4 rounded-xl border text-sm font-semibold transition
-                ${activeFilterCount > 0
-                  ? "bg-[#800000] text-white border-[#800000] shadow-md"
-                  : "bg-white text-gray-700 border-gray-200 hover:border-[#800000] hover:text-[#800000] shadow-sm"}`}>
-              <SlidersHorizontal size={14} />
-              <span className="hidden md:inline">{t("filters") || "Filters"}</span>
+          {/* Controls — full width below title on mobile/tablet, auto-width right of title at lg+ */}
+          <div className="flex items-center gap-2 w-full lg:w-auto min-w-0">
+
+            {/* Search
+                <lg           : flex-1 fills full row
+                lg–1399px     : fixed 220px — safe beside title
+                1400px+       : wider 280px                        */}
+            <div className="flex items-center rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm
+                            flex-1 min-w-0 lg:flex-none lg:w-[220px] min-[1400px]:w-[280px]">
+              <div className="relative w-full">
+                {loadingData && debouncedSearch ? (
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 border-2 border-[#800000] border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                )}
+                <input
+                  type="text"
+                  placeholder={t("search_placeholder") || "Search by name, username or ID…"}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-8 pr-7 py-2.5 text-sm text-gray-700 bg-white focus:outline-none placeholder-gray-400"
+                />
+                {search && (
+                  <button onClick={() => setSearch("")}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#800000] transition">
+                    <X size={13} />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Filter — icon-only square up to 1400px, text label at 1400px+ */}
+            <div className="relative shrink-0" ref={desktopFilterRef}>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowFilter((v) => !v)}
+                title="Filters"
+                className={`flex items-center justify-center gap-1.5 w-10 min-[1400px]:w-auto min-[1400px]:px-4 h-10 rounded-xl border text-sm font-semibold transition
+                  ${activeFilterCount > 0
+                    ? "bg-[#800000] text-white border-[#800000] shadow-md"
+                    : "bg-white text-gray-700 border-gray-200 hover:border-[#800000] hover:text-[#800000] shadow-sm"}`}
+              >
+                <SlidersHorizontal size={15} />
+                <span className="hidden min-[1400px]:inline">{t("filters") || "Filters"}</span>
+                <AnimatePresence>
+                  {activeFilterCount > 0 && (
+                    <motion.span key="fb" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+                      className="hidden min-[1400px]:flex bg-white text-[#800000] text-[10px] font-black w-4 h-4 rounded-full items-center justify-center leading-none shrink-0">
+                      {activeFilterCount}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+                <ChevronDown size={12} className={`hidden min-[1400px]:block transition-transform duration-200 ${showFilter ? "rotate-180" : ""}`} />
+              </motion.button>
+              {/* Active count badge — visible below 1400px */}
+              {activeFilterCount > 0 && (
+                <span className="min-[1400px]:hidden absolute -top-1 -right-1 w-4 h-4 bg-[#800000] text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-[#f4f4f7]">
+                  {activeFilterCount}
+                </span>
+              )}
+
+              {/* Filter dropdown (md+) */}
               <AnimatePresence>
-                {activeFilterCount > 0 && (
-                  <motion.span key="fb" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
-                    className="bg-white text-[#800000] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center leading-none shrink-0">
-                    {activeFilterCount}
-                  </motion.span>
+                {showFilter && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    className="hidden md:block absolute right-0 top-full mt-2 z-[60] bg-white border border-gray-200 rounded-2xl shadow-2xl w-72 lg:w-80 p-5"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <Filter size={14} className="text-[#800000]" />
+                        <span className="text-sm font-bold text-gray-800">Filter Sub-Resellers</span>
+                      </div>
+                      <button onClick={() => setShowFilter(false)}
+                        className="text-gray-400 hover:text-gray-600 transition p-1 rounded-lg hover:bg-gray-100">
+                        <X size={14} />
+                      </button>
+                    </div>
+                    <FilterPanelContent {...filterProps} />
+                  </motion.div>
                 )}
               </AnimatePresence>
-              <ChevronDown size={12} className={`hidden md:block transition-transform duration-200 ${showFilter ? "rotate-180" : ""}`} />
+            </div>
+
+            {/* Permissions — icon-only square up to 1400px, text at 1400px+ */}
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setPermModal(true)}
+              title="Permissions"
+              className="flex items-center justify-center gap-1.5 w-10 min-[1400px]:w-auto min-[1400px]:px-4 h-10 rounded-xl
+                         border border-gray-200 bg-white text-gray-700 text-sm font-semibold
+                         hover:border-[#800000] hover:text-[#800000] transition shadow-sm shrink-0"
+            >
+              <ShieldAlert size={15} />
+              <span className="hidden min-[1400px]:inline">Permissions</span>
             </motion.button>
 
-            {/* Desktop filter dropdown */}
-            <AnimatePresence>
-              {showFilter && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8, scale: 0.97 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 8, scale: 0.97 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  className="hidden md:block absolute right-0 top-full mt-2 z-[60] bg-white border border-gray-200 rounded-2xl shadow-2xl w-80 p-5"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <Filter size={14} className="text-[#800000]" />
-                      <span className="text-sm font-bold text-gray-800">Filter Sub-Resellers</span>
-                    </div>
-                    <button onClick={() => setShowFilter(false)}
-                      className="text-gray-400 hover:text-gray-600 transition p-1 rounded-lg hover:bg-gray-100">
-                      <X size={14} />
-                    </button>
-                  </div>
-                  <FilterPanelContent {...filterProps} />
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Create — icon-only square up to 1400px, text at 1400px+ */}
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => { setOpenModel(true); setError(""); }}
+              title={t("create_subreseller") || "New Sub-Reseller"}
+              className="flex items-center justify-center gap-1.5 w-10 min-[1400px]:w-auto min-[1400px]:px-4 h-10
+                         bg-[#800000] text-white rounded-xl text-sm font-semibold
+                         hover:bg-[#6a0000] transition shadow-sm shrink-0"
+            >
+              <UserPlus size={15} />
+              <span className="hidden min-[1400px]:inline">{t("create_subreseller") || "New Sub-Reseller"}</span>
+            </motion.button>
           </div>
-
-          {/* ── Bulk Permissions button ── */}
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setPermModal(true)}
-            className="flex items-center gap-2 px-3 py-2.5 md:px-4 rounded-xl border border-gray-200 bg-white text-gray-700 text-sm font-semibold hover:border-[#800000] hover:text-[#800000] transition shadow-sm shrink-0"
-          >
-            <ShieldAlert size={14} />
-            <span className="hidden md:inline">Permissions</span>
-          </motion.button>
-
-          {/* ── Create Sub-Reseller button ── */}
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => { setOpenModel(true); setError(""); }}
-            className="flex items-center justify-center gap-2 bg-[#800000] text-white px-3 py-2.5 md:px-5 rounded-xl text-sm font-semibold hover:bg-[#6a0000] transition shadow-sm shrink-0 whitespace-nowrap"
-          >
-            <UserPlus size={15} />
-            <span className="hidden md:inline">{t("create_subreseller") || "New Sub-Reseller"}</span>
-          </motion.button>
         </div>
+
+        {/* Active filter pills — part of sticky header */}
+        <AnimatePresence>
+          {hasFilters && (
+            <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
+              className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-gray-500 font-medium">
+                {loadingData ? "Searching…" : `${users.length} result${users.length !== 1 ? "s" : ""}`}
+              </span>
+              {debouncedSearch && (
+                <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
+                  <Search size={10} className="shrink-0" />"{debouncedSearch}"
+                  <button onClick={() => setSearch("")}><X size={10} /></button>
+                </span>
+              )}
+              {statusFilter && (
+                <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
+                  <ShieldCheck size={10} />{statusFilter === "true" ? "Active" : "Inactive"}
+                  <button onClick={() => setStatusFilter("")}><X size={10} /></button>
+                </span>
+              )}
+              {(fromDate || toDate) && (
+                <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
+                  <Calendar size={10} />
+                  {fromDate && toDate ? `${fromDate} → ${toDate}` : fromDate ? `From ${fromDate}` : `To ${toDate}`}
+                  <button onClick={() => { setFromDate(""); setToDate(""); }}><X size={10} /></button>
+                </span>
+              )}
+              {(minCredits || maxCredits) && (
+                <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
+                  <Coins size={10} />
+                  {minCredits && maxCredits ? `${minCredits}–${maxCredits} cr` : minCredits ? `Min ${minCredits}` : `Max ${maxCredits}`}
+                  <button onClick={() => { setMinCredits(""); setMaxCredits(""); }}><X size={10} /></button>
+                </span>
+              )}
+              {(activeFilterCount + (debouncedSearch ? 1 : 0)) > 1 && (
+                <button onClick={() => { setSearch(""); clearFilters(); }}
+                  className="text-xs text-gray-400 hover:text-[#800000] font-semibold transition">
+                  Clear all
+                </button>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* ══ MOBILE FILTER DRAWER ════════════════════════════════════════════ */}
       <AnimatePresence>
         {showFilter && (
           <>
+            {/* Full-page backdrop — covers sidebar, navbar, everything */}
             <motion.div key="sr-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowFilter(false)}
-              className="md:hidden fixed inset-0 bg-black/40 z-[55]" />
+              className="md:hidden fixed inset-0 bg-black/40 z-[9990]" />
             <motion.div key="sr-drawer"
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 32 }}
               onClick={(e) => e.stopPropagation()}
               onMouseDown={(e) => e.stopPropagation()}
               onTouchStart={(e) => e.stopPropagation()}
-              className="md:hidden fixed bottom-0 left-0 right-0 z-[60] bg-white rounded-t-3xl shadow-2xl max-h-[88vh] flex flex-col"
+              className="md:hidden fixed bottom-0 left-0 right-0 z-[9991] bg-white rounded-t-3xl shadow-2xl max-h-[88vh] flex flex-col"
             >
               <div className="pt-3 pb-1 flex justify-center shrink-0">
                 <div className="w-10 h-1 bg-gray-200 rounded-full" />
@@ -680,49 +806,13 @@ const SubresellerDashboard = () => {
         )}
       </AnimatePresence>
 
-      {/* ── Active filter pills ── */}
-      <AnimatePresence>
-        {hasFilters && (
-          <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
-            className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-gray-500 font-medium">
-              {loadingData ? "Searching…" : `${users.length} result${users.length !== 1 ? "s" : ""}`}
-            </span>
-            {debouncedSearch && (
-              <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
-                <Search size={10} className="shrink-0" />"{debouncedSearch}"
-                <button onClick={() => setSearch("")}><X size={10} /></button>
-              </span>
-            )}
-            {statusFilter && (
-              <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
-                <ShieldCheck size={10} />{statusFilter === "true" ? "Active" : "Inactive"}
-                <button onClick={() => setStatusFilter("")}><X size={10} /></button>
-              </span>
-            )}
-            {(fromDate || toDate) && (
-              <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
-                <Calendar size={10} />
-                {fromDate && toDate ? `${fromDate} → ${toDate}` : fromDate ? `From ${fromDate}` : `To ${toDate}`}
-                <button onClick={() => { setFromDate(""); setToDate(""); }}><X size={10} /></button>
-              </span>
-            )}
-            {(minCredits || maxCredits) && (
-              <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
-                <Coins size={10} />
-                {minCredits && maxCredits ? `${minCredits}–${maxCredits} cr` : minCredits ? `Min ${minCredits}` : `Max ${maxCredits}`}
-                <button onClick={() => { setMinCredits(""); setMaxCredits(""); }}><X size={10} /></button>
-              </span>
-            )}
-            {(activeFilterCount + (debouncedSearch ? 1 : 0)) > 1 && (
-              <button onClick={() => { setSearch(""); clearFilters(); }}
-                className="text-xs text-gray-400 hover:text-[#800000] font-semibold transition">
-                Clear all
-              </button>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ══ SCROLLABLE CONTENT AREA — header stays fixed above ═════════════ */}
+      {/*
+       * flex-1 + overflow-y-auto: only this region scrolls.
+       * [scrollbar-width:none] + webkit variant: scroll works but bar is invisible.
+       */}
+      <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-3
+                      [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
       {/* ══ DESKTOP TABLE ═══════════════════════════════════════════════════ */}
       <div className="hidden lg:block bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
@@ -854,11 +944,16 @@ const SubresellerDashboard = () => {
         </div>
       )}
 
-      {/* ══ CREATE MODAL ═════════════════════════════════════════════════════ */}
+      </div>{/* end scrollable content */}
+
+      {/* ══ CREATE MODAL
+           Backdrop: fixed, but left edge starts after sidebar on md+.
+           This means the dark overlay only covers the content area.
+           The modal card centers within that remaining space.              */}
       <AnimatePresence>
         {openModel && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4 md:pl-[240px] lg:pl-[260px]">
+            className="fixed top-0 right-0 bottom-0 left-0 md:left-[240px] lg:left-[260px] bg-black/60 z-[9999] flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
 
@@ -883,7 +978,6 @@ const SubresellerDashboard = () => {
 
               {/* Body */}
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
-
                 {error && (
                   <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
                     className="flex items-center gap-2.5 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl">
@@ -891,61 +985,38 @@ const SubresellerDashboard = () => {
                     <span className="font-semibold">{error}</span>
                   </motion.div>
                 )}
-
                 <FormField label="Full Name" icon={User} required>
-                  <input
-                    className={inputCls}
-                    placeholder="e.g. John Doe"
+                  <input className={inputCls} placeholder="e.g. John Doe"
                     value={formData.fullName}
-                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    required
-                  />
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} required />
                 </FormField>
-
                 <FormField label="Username" icon={AtSign} required>
-                  <input
-                    className={inputCls}
-                    placeholder="e.g. johndoe123"
+                  <input className={inputCls} placeholder="e.g. johndoe123"
                     value={formData.username}
-                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                    required
-                  />
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value })} required />
                 </FormField>
-
                 <FormField label="Password" icon={Lock} required>
                   <div className="relative">
-                    <input
-                      type={showPwd ? "text" : "password"}
-                      className={`${inputCls} pr-11`}
+                    <input type={showPwd ? "text" : "password"} className={`${inputCls} pr-11`}
                       placeholder="Min. 8 characters"
                       value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      required
-                    />
-                    <button type="button" tabIndex={-1}
-                      onClick={() => setShowPwd((v) => !v)}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })} required />
+                    <button type="button" tabIndex={-1} onClick={() => setShowPwd((v) => !v)}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#800000] transition">
                       {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                 </FormField>
-
-                <motion.button
-                  type="submit"
-                  disabled={creating}
-                  whileHover={!creating ? { scale: 1.01 } : {}}
-                  whileTap={!creating  ? { scale: 0.98 } : {}}
+                <motion.button type="submit" disabled={creating}
+                  whileHover={!creating ? { scale: 1.01 } : {}} whileTap={!creating ? { scale: 0.98 } : {}}
                   className={`w-full h-12 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200
-                    ${creating ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm"}`}
-                >
+                    ${creating ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm"}`}>
                   {creating ? (
                     <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                     </svg>
-                  ) : (
-                    <><UserPlus size={15} />{t("create_subreseller") || "Create Sub-Reseller"}</>
-                  )}
+                  ) : <><UserPlus size={15} />{t("create_subreseller") || "Create Sub-Reseller"}</>}
                 </motion.button>
               </form>
             </motion.div>
@@ -957,7 +1028,7 @@ const SubresellerDashboard = () => {
       <AnimatePresence>
         {editModal && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4 md:pl-[240px] lg:pl-[260px]">
+            className="fixed top-0 right-0 bottom-0 left-0 md:left-[240px] lg:left-[260px] bg-black/60 z-[9999] flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
               <div className="bg-[#800000] px-6 pt-6 pb-5 relative">
@@ -991,8 +1062,7 @@ const SubresellerDashboard = () => {
                     <input type={showEditPwd ? "text" : "password"} className={`${inputCls} pr-11`}
                       placeholder="Leave blank to keep current"
                       value={editData.password} onChange={(e) => setEditData({ ...editData, password: e.target.value })} />
-                    <button type="button" tabIndex={-1}
-                      onClick={() => setShowEditPwd((v) => !v)}
+                    <button type="button" tabIndex={-1} onClick={() => setShowEditPwd((v) => !v)}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#800000] transition">
                       {showEditPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -1012,7 +1082,7 @@ const SubresellerDashboard = () => {
       <AnimatePresence>
         {deleteModal && userToDelete && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4 md:pl-[240px] lg:pl-[260px]">
+            className="fixed top-0 right-0 bottom-0 left-0 md:left-[240px] lg:left-[260px] bg-black/60 z-[9999] flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
               <div className="bg-[#800000] px-6 pt-6 pb-5 flex flex-col items-center gap-3">
@@ -1054,11 +1124,9 @@ const SubresellerDashboard = () => {
       <AnimatePresence>
         {permModal && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4 md:pl-[240px] lg:pl-[260px]">
+            className="fixed top-0 right-0 bottom-0 left-0 md:left-[240px] lg:left-[260px] bg-black/60 z-[9999] flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-
-              {/* Header */}
               <div className="bg-[#800000] px-6 pt-6 pb-5 relative">
                 <button onClick={() => setPermModal(false)}
                   className="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/20 p-1.5 rounded-full transition">
@@ -1074,33 +1142,20 @@ const SubresellerDashboard = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Body */}
               <div className="p-6 space-y-3">
-
-                {/* Info banner */}
                 <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 px-4 py-3 rounded-xl">
                   <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" />
                   <p className="text-xs text-amber-700 font-medium leading-relaxed">
-                    These settings apply to <span className="font-bold">all sub-resellers</span> under your account at once. Toggle only what you intend to change.
+                    These settings apply to <span className="font-bold">all sub-resellers</span> under your account at once.
                   </p>
                 </div>
-
-                {/* Permission toggles */}
                 <div className="space-y-2.5 pt-1">
                   {PERM_CONFIG.map(({ key, label, description, icon }) => (
-                    <PermissionToggle
-                      key={key}
-                      label={label}
-                      description={description}
-                      icon={icon}
+                    <PermissionToggle key={key} label={label} description={description} icon={icon}
                       checked={permissions[key]}
-                      onChange={(val) => setPermissions((prev) => ({ ...prev, [key]: val }))}
-                    />
+                      onChange={(val) => setPermissions((prev) => ({ ...prev, [key]: val }))} />
                   ))}
                 </div>
-
-                {/* Quick-select row */}
                 <div className="flex gap-2 pt-1">
                   <button type="button"
                     onClick={() => setPermissions({ canCreate: true, canRead: true, canUpdate: true, canDelete: true })}
@@ -1113,24 +1168,16 @@ const SubresellerDashboard = () => {
                     Disable All
                   </button>
                 </div>
-
-                {/* Save */}
-                <motion.button
-                  onClick={handlePermSave}
-                  disabled={permSaving}
-                  whileHover={!permSaving ? { scale: 1.01 } : {}}
-                  whileTap={!permSaving  ? { scale: 0.98 } : {}}
+                <motion.button onClick={handlePermSave} disabled={permSaving}
+                  whileHover={!permSaving ? { scale: 1.01 } : {}} whileTap={!permSaving ? { scale: 0.98 } : {}}
                   className={`w-full h-12 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 mt-1
-                    ${permSaving ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm"}`}
-                >
+                    ${permSaving ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm"}`}>
                   {permSaving ? (
                     <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                     </svg>
-                  ) : (
-                    <><ShieldAlert size={15} />Apply Permissions</>
-                  )}
+                  ) : <><ShieldAlert size={15} />Apply Permissions</>}
                 </motion.button>
               </div>
             </motion.div>
@@ -1146,6 +1193,9 @@ const SubresellerDashboard = () => {
         availableCredits={selectedUser?.credits}
         refreshData={async () => { await fetchData(currentPage); await refetchDashboard(); }}
       />
+
+      {/* ══ BRAND TOAST — centered at top, brand-consistent ══════════════════ */}
+      <BrandToast toasts={toasts} />
     </div>
   );
 };
