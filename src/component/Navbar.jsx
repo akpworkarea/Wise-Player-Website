@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Flame, Home, CloudDownload, Tag, Menu, X, ChevronRight, UserPlus } from 'lucide-react';
+import { Mail, Home, CloudDownload, Tag, Menu, X, ChevronRight, UserPlus } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import WisePlayerLogo from './WisePlayerLogo';
 
 const Navbar = () => {
   const { t, i18n } = useTranslation();
@@ -14,68 +15,20 @@ const Navbar = () => {
   );
 
   const availableLanguages = [
-    {
-      code: "en",
-      short: "🇺🇸",
-      name: "English",
-      flag: "🇺🇸",
-      image: "https://flagcdn.com/w40/us.png",
-    },
-    {
-      code: "fr",
-      short: "🇫🇷",
-      name: "Français",
-      flag: "🇫🇷",
-      image: "https://flagcdn.com/w40/fr.png",
-    },
-    {
-      code: "es",
-      short: "🇪🇸",
-      name: "Español",
-      flag: "🇪🇸",
-      image: "https://flagcdn.com/w40/es.png",
-    },
-    {
-      code: "de",
-      short: "🇩🇪",
-      name: "Deutsch",
-      flag: "🇩🇪",
-      image: "https://flagcdn.com/w40/de.png",
-    },
-    {
-      code: "it",
-      short: "🇮🇹",
-      name: "Italiano",
-      flag: "🇮🇹",
-      image: "https://flagcdn.com/w40/it.png",
-    },
-    {
-      code: "pt",
-      short: "🇵🇹",
-      name: "Português",
-      flag: "🇵🇹",
-      image: "https://flagcdn.com/w40/pt.png",
-    },
-    {
-      code: "nl",
-      short: "🇳🇱",
-      name: "Nederlands",
-      flag: "🇳🇱",
-      image: "https://flagcdn.com/w40/nl.png",
-    },
-    {
-      code: "ar",
-      short: "🇸🇦",
-      name: "العربية",
-      flag: "🇸🇦",
-      image: "https://flagcdn.com/w40/sa.png",
-    },
+    { code: 'en', short: '🇺🇸', name: 'English',    flag: '🇺🇸', image: 'https://flagcdn.com/w40/us.png' },
+    { code: 'fr', short: '🇫🇷', name: 'Français',   flag: '🇫🇷', image: 'https://flagcdn.com/w40/fr.png' },
+    { code: 'es', short: '🇪🇸', name: 'Español',    flag: '🇪🇸', image: 'https://flagcdn.com/w40/es.png' },
+    { code: 'de', short: '🇩🇪', name: 'Deutsch',    flag: '🇩🇪', image: 'https://flagcdn.com/w40/de.png' },
+    { code: 'it', short: '🇮🇹', name: 'Italiano',   flag: '🇮🇹', image: 'https://flagcdn.com/w40/it.png' },
+    { code: 'pt', short: '🇵🇹', name: 'Português',  flag: '🇵🇹', image: 'https://flagcdn.com/w40/pt.png' },
+    { code: 'nl', short: '🇳🇱', name: 'Nederlands', flag: '🇳🇱', image: 'https://flagcdn.com/w40/nl.png' },
+    { code: 'ar', short: '🇸🇦', name: 'العربية',    flag: '🇸🇦', image: 'https://flagcdn.com/w40/sa.png' },
   ];
 
   const navLinks = [
-    { name: t('navbar.nav_home'), path: '/home', icon: <Home size={17} /> },
+    { name: t('navbar.nav_home'),        path: '/home',        icon: <Home         size={17} /> },
     { name: t('navbar.nav_upload_list'), path: '/upload-list', icon: <CloudDownload size={17} /> },
-    { name: t('navbar.nav_activation'), path: '/activation', icon: <Tag size={17} /> },
+    { name: t('navbar.nav_activation'),  path: '/activation',  icon: <Tag          size={17} /> },
   ];
 
   useEffect(() => {
@@ -88,12 +41,9 @@ const Navbar = () => {
     setCurrentLang((i18n.language || 'en').slice(0, 2).toUpperCase());
   }, [i18n.language]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (!e.target.closest('#lang-dropdown')) {
-        setIsLanguageDropdownOpen(false);
-      }
+      if (!e.target.closest('#lang-dropdown')) setIsLanguageDropdownOpen(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -101,7 +51,7 @@ const Navbar = () => {
 
   return (
     <>
-      {/* ── NAVBAR ─────────────────────────────────────────────────── */}
+      {/* ── NAVBAR ──────────────────────────────────────────────── */}
       <header
         className={`
           fixed top-0 left-0 w-full z-[1000] transition-all duration-300
@@ -114,13 +64,13 @@ const Navbar = () => {
       >
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
 
-          {/* ── LOGO ───────────────────────────────────────────── */}
+          {/* ── LOGO ──────────────────────────────────────────── */}
           <Link to="/" className="flex items-center gap-3 no-underline group">
-            <Flame
-              size={32}
-              fill="#800000"
-              color="#800000"
-              className="animate-[flame-pulse_2s_ease-in-out_infinite] group-hover:scale-110 transition-transform duration-200"
+            <WisePlayerLogo
+              size={48}
+              animate
+              bg="#ffffff"
+              className="group-hover:scale-105 transition-transform duration-200 shrink-0"
             />
             <div className="leading-none">
               <span className="block text-xl font-black text-[#1a1a1a] tracking-tight">
@@ -132,7 +82,7 @@ const Navbar = () => {
             </div>
           </Link>
 
-          {/* ── CENTER NAV (desktop only) ────────────────────── */}
+          {/* ── CENTER NAV (desktop) ───────────────────────── */}
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
@@ -141,7 +91,8 @@ const Navbar = () => {
                   key={link.name}
                   to={link.path}
                   className={`
-                    flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 no-underline
+                    flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold
+                    transition-all duration-200 no-underline
                     ${isActive
                       ? 'text-[#800000] bg-[#800000]/[0.08]'
                       : 'text-gray-500 hover:text-[#800000] hover:bg-[#800000]/[0.05]'
@@ -157,10 +108,10 @@ const Navbar = () => {
             })}
           </nav>
 
-          {/* ── RIGHT ACTIONS ────────────────────────────────── */}
+          {/* ── RIGHT ACTIONS ──────────────────────────────── */}
           <div className="flex items-center gap-2 sm:gap-3">
 
-            {/* Reseller button — desktop only */}
+            {/* Reseller — desktop */}
             <Link
               to="/reseller"
               className="
@@ -193,139 +144,58 @@ const Navbar = () => {
             </Link>
 
             {/* Language picker */}
-            <div
-              id="lang-dropdown"
-              className="relative z-[3000] isolate"
-            >
-              {/* SELECT BUTTON */}
+            <div id="lang-dropdown" className="relative z-[3000] isolate">
               <button
                 onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
                 className="
-      flex items-center gap-2
-      h-[38px] px-3.5
-      rounded-full
-      border border-gray-200
-      bg-white
-      text-[13px] font-semibold text-gray-800
-      shadow-sm
-      transition-all duration-200
-      hover:shadow-md
-      focus:outline-none
-      focus:ring-2 focus:ring-[#800000]/20
-      appearance-none
-      leading-none
-    "
+                  flex items-center gap-2 h-[38px] px-3.5 rounded-full
+                  border border-gray-200 bg-white
+                  text-[13px] font-semibold text-gray-800 shadow-sm
+                  transition-all duration-200 hover:shadow-md
+                  focus:outline-none focus:ring-2 focus:ring-[#800000]/20
+                "
                 type="button"
               >
                 <span className="text-[16px] leading-none">🌐</span>
-
                 <span className="leading-none">
-                  {
-                    availableLanguages.find(
-                      (lang) => lang.code === i18n.language
-                    )?.short
-                  }
+                  {availableLanguages.find((lang) => lang.code === i18n.language)?.short}
                 </span>
               </button>
 
-              {/* DROPDOWN */}
               {isLanguageDropdownOpen && (
-                <div
-                  className="
-        absolute right-0 top-[115%]
-        w-[180px]
-        overflow-hidden
-        rounded-2xl
-        border border-gray-200
-        bg-white
-        shadow-2xl
-        z-[99999]
-        isolate
-      "
-                >
+                <div className="
+                  absolute right-0 top-[115%] w-[180px] overflow-hidden
+                  rounded-2xl border border-gray-200 bg-white shadow-2xl z-[99999] isolate
+                ">
                   {availableLanguages.map((lang, index) => {
                     const active = i18n.language === lang.code;
-
                     return (
                       <button
                         key={lang.code}
                         type="button"
                         onClick={() => {
                           i18n.changeLanguage(lang.code);
-                          localStorage.setItem("lang", lang.code);
+                          localStorage.setItem('lang', lang.code);
                           setIsLanguageDropdownOpen(false);
                         }}
                         className={`
-              w-full
-              flex items-center justify-between
-              px-3.5 py-2.5
-              transition-all duration-200
-              cursor-pointer
-              text-left
-              ${active
-                            ? "bg-[#f9f5f5]"
-                            : "bg-white hover:bg-gray-50"
-                          }
-              ${index !== availableLanguages.length - 1
-                            ? "border-b border-gray-100"
-                            : ""
-                          }
-
-              appearance-none
-              outline-none
-              focus:bg-gray-50
-            `}
+                          w-full flex items-center justify-between px-3.5 py-2.5
+                          transition-all duration-200 cursor-pointer text-left
+                          ${active ? 'bg-[#f9f5f5]' : 'bg-white hover:bg-gray-50'}
+                          ${index !== availableLanguages.length - 1 ? 'border-b border-gray-100' : ''}
+                          appearance-none outline-none focus:bg-gray-50
+                        `}
                       >
-                        {/* LEFT */}
                         <div className="flex items-center gap-3 min-w-0">
-                          <img
-                            src={lang.image}
-                            alt={lang.name}
-                            className="
-                  w-5 h-5
-                  rounded-full
-                  object-cover
-                  shrink-0
-                "
-                            draggable={false}
-                          />
-
+                          <img src={lang.image} alt={lang.name}
+                            className="w-5 h-5 rounded-full object-cover shrink-0" draggable={false} />
                           <div className="flex flex-col leading-none min-w-0">
-                            <span
-                              className="
-                    text-[13px]
-                    font-bold
-                    text-gray-900
-                    truncate
-                  "
-                            >
-                              {lang.short}
-                            </span>
-
-                            <span
-                              className="
-                    mt-1
-                    text-[11px]
-                    text-gray-500
-                    truncate
-                  "
-                            >
-                              {lang.name}
-                            </span>
+                            <span className="text-[13px] font-bold text-gray-900 truncate">{lang.short}</span>
+                            <span className="mt-1 text-[11px] text-gray-500 truncate">{lang.name}</span>
                           </div>
                         </div>
-
-                        {/* ACTIVE INDICATOR */}
                         {active && (
-                          <div
-                            className="
-                  w-2 h-2
-                  rounded-full
-                  bg-[#800000]
-                  shadow-[0_0_0_3px_rgba(128,0,0,0.12)]
-                  shrink-0
-                "
-                          />
+                          <div className="w-2 h-2 rounded-full bg-[#800000] shadow-[0_0_0_3px_rgba(128,0,0,0.12)] shrink-0" />
                         )}
                       </button>
                     );
@@ -334,34 +204,28 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Hamburger — mobile only */}
+            {/* Hamburger — mobile */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="
                 md:hidden flex items-center justify-center
-                w-10 h-10 rounded-xl
-                text-[#1a1a1a] hover:bg-gray-100
-                transition-colors duration-200
+                w-10 h-10 rounded-xl text-[#1a1a1a]
+                hover:bg-gray-100 transition-colors duration-200
               "
               aria-label="Toggle menu"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
-
           </div>
         </div>
 
-        {/* ── MOBILE DROPDOWN ──────────────────────────────────── */}
+        {/* ── MOBILE DROPDOWN ────────────────────────────────── */}
         {isMenuOpen && (
           <div className="
-            md:hidden
-            absolute top-[calc(100%+8px)] left-[4%] w-[92%]
+            md:hidden absolute top-[calc(100%+8px)] left-[4%] w-[92%]
             bg-white rounded-2xl border border-black/[0.06]
-            shadow-xl shadow-black/10
-            p-5 flex flex-col gap-4
-            z-[1001]
+            shadow-xl shadow-black/10 p-5 flex flex-col gap-4 z-[1001]
           ">
-            {/* Nav links */}
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               return (
@@ -371,8 +235,7 @@ const Navbar = () => {
                   onClick={() => setIsMenuOpen(false)}
                   className={`
                     flex items-center gap-3 px-3 py-2.5 rounded-xl
-                    text-base font-semibold no-underline
-                    transition-colors duration-150
+                    text-base font-semibold no-underline transition-colors duration-150
                     ${isActive
                       ? 'text-[#800000] bg-[#800000]/[0.06]'
                       : 'text-gray-600 hover:text-[#800000] hover:bg-gray-50'
@@ -384,20 +247,15 @@ const Navbar = () => {
                 </Link>
               );
             })}
-
-            {/* Divider */}
             <div className="h-px bg-gray-100" />
-
-            {/* Reseller */}
             <Link
               to="/reseller"
               onClick={() => setIsMenuOpen(false)}
               className="
                 flex items-center justify-center gap-2.5
-                px-4 py-3.5 rounded-xl
-                text-base font-bold text-white bg-[#1a1a1a]
-                hover:bg-black active:scale-[0.98]
-                transition-all duration-200 no-underline
+                px-4 py-3.5 rounded-xl text-base font-bold
+                text-white bg-[#1a1a1a] hover:bg-black
+                active:scale-[0.98] transition-all duration-200 no-underline
               "
             >
               <UserPlus size={18} />
@@ -407,19 +265,8 @@ const Navbar = () => {
         )}
       </header>
 
-      {/* ── SPACER ──────────────────────────────────────────────────── */}
+      {/* ── SPACER ──────────────────────────────────────────── */}
       <div className={`transition-all duration-300 ${isScrolled ? 'h-[70px]' : 'h-[85px]'}`} />
-
-      {/* ── FLAME PULSE KEYFRAME ─────────────────────────────────────
-          Minimal inline keyframe only for the logo animation.
-          Does not affect global layout or typography.
-      ─────────────────────────────────────────────────────────────── */}
-      <style>{`
-        @keyframes flame-pulse {
-          0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px #800000); }
-          50%       { transform: scale(1.12); filter: drop-shadow(0 0 8px #800000); }
-        }
-      `}</style>
     </>
   );
 };

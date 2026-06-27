@@ -223,11 +223,62 @@ const Dashboard = () => {
     refetchDashboard().finally(() => setLoading(false));
   }, []);
 
+  // ── Dynamic trend calculations from real dashboard stats ─────────────────
+  // All derived from the same dashboard.stats data already on screen.
+  const totalUsers = dashboard?.stats?.totalUsers ?? 0;
+  const activeSub  = dashboard?.stats?.activeSub  ?? 0;
+  const pending    = dashboard?.stats?.pending    ?? 0;
+  const creditCoin = dashboard?.stats?.creditCoin ?? 0;
+
+  // % of users who are active (shown on Total Users card)
+  const activeRate = totalUsers > 0
+    ? ((activeSub / totalUsers) * 100).toFixed(1)
+    : "0.0";
+
+  // % of total users who are on active subscription (shown on Active Subs card)
+  const subRate = totalUsers > 0
+    ? ((activeSub / totalUsers) * 100).toFixed(1)
+    : "0.0";
+
+  // % of total users who are pending (shown on Pending card)
+  const pendingRate = totalUsers > 0
+    ? ((pending / totalUsers) * 100).toFixed(1)
+    : "0.0";
+
+  // Coins per active user — meaningful ratio (shown on Coins card)
+  const coinsPerUser = activeSub > 0
+    ? (creditCoin / activeSub).toFixed(1)
+    : creditCoin > 0 ? creditCoin : "0";
+
   const stats = [
-    { title: t("total_users"),  count: dashboard?.stats?.totalUsers ?? 0, icon: Users,       trend: "+12%", trendUp: true  },
-    { title: t("active_subs"),  count: dashboard?.stats?.activeSub  ?? 0, icon: CheckCircle, trend: "+5%",  trendUp: true  },
-    { title: t("pending_req"),  count: dashboard?.stats?.pending    ?? 0, icon: Clock,       trend: "-2%",  trendUp: false },
-    { title: t("total_coins"),  count: dashboard?.stats?.creditCoin ?? 0, icon: BsCoin,      trend: "+18%", trendUp: true  },
+    {
+      title: t("total_users"),
+      count: totalUsers,
+      icon: Users,
+      trend: `${activeRate}% active`,
+      trendUp: parseFloat(activeRate) >= 50,
+    },
+    {
+      title: t("active_subs"),
+      count: activeSub,
+      icon: CheckCircle,
+      trend: `${subRate}% of users`,
+      trendUp: parseFloat(subRate) >= 50,
+    },
+    {
+      title: t("pending_req"),
+      count: pending,
+      icon: Clock,
+      trend: `${pendingRate}% pending`,
+      trendUp: false, // pending is always a concern — never show green
+    },
+    {
+      title: t("total_coins"),
+      count: creditCoin,
+      icon: BsCoin,
+      trend: `${coinsPerUser} per user`,
+      trendUp: true,
+    },
   ];
 
   // ── Device status split — Active vs Inactive, real data ──────────────────
@@ -311,17 +362,17 @@ const Dashboard = () => {
     <div className=" bg-[#f4f4f7] w-full overflow-x-hidden">
 
       {/* ── PAGE HEADER ─────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-5">
-        <h5 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-500">
+      <div className="flex flex-row items-center justify-between gap-2 mb-5">
+        <h5 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-500 truncate min-w-0">
           {t("admin_dashboard.panel")} /{" "}
           <span className="text-[#800000]">{t(`admin_dashboard.${activeTab}`)}</span>
         </h5>
 
         <div className="flex items-center gap-3">
-          {/* Name + role — hidden on mobile to save space */}
-          <div className="hidden sm:block text-right">
-            <p className="text-sm font-semibold text-gray-800">{displayName}</p>
-            <p className="text-xs text-green-600 flex items-center gap-1 justify-end">
+          {/* Name + role — visible on all screen sizes, right-aligned */}
+          <div className="text-right">
+            <p className="text-sm font-semibold text-gray-800 leading-tight">{displayName}</p>
+            <p className="text-xs text-green-600 flex items-center gap-1 justify-end mt-0.5">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />
               {roleLabel}
             </p>

@@ -19,6 +19,9 @@ import translationAR from './locales/ar.json';
 
 import { AuthProvider } from '../src/context/AuthContext.jsx'
 import {RefreshProvider} from '../src/context/RefreshContext.jsx'
+// import { initAnimatedFavicon } from '../src/component/Animatedfavicon.jsx';
+
+
 
 i18n
   .use(initReactI18next)
@@ -43,6 +46,8 @@ i18n.on("languageChanged", (lng) => {
   localStorage.setItem("lang", lng);
   document.documentElement.lang = lng;
 });
+
+// initAnimatedFavicon(); // call before ReactDOM.render
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
