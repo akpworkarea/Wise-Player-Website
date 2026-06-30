@@ -11,16 +11,6 @@ import Footer from '../component/Footer';
 import WisePlayerLogo from '../component/WisePlayerLogo';
 
 // ── Animation variants ────────────────────────────────────────
-const containerVariants = {
-  hidden:  { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
-};
-
-const itemVariants = {
-  hidden:  { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 16 } },
-};
-
 const slideDown = {
   hidden:  { opacity: 0, y: -12, height: 0 },
   visible: { opacity: 1, y: 0,  height: 'auto', transition: { type: 'spring', stiffness: 200, damping: 22 } },
@@ -35,10 +25,7 @@ const rowAnim = {
 
 /*
  * ── BRAND TOAST ──────────────────────────────────────────────
- * Same component pattern used in SubresellerDashboard — centered,
- * maroon/red/grey, no external toast library. Keeps the whole app
- * consistent instead of mixing react-toastify here and a custom
- * toast elsewhere.
+ * Same pattern used across the app — centered, brand maroon/red/grey.
  */
 const BrandToast = ({ toasts }) => (
   <div className="fixed top-5 inset-x-0 z-[99999] flex flex-col items-center gap-2 pointer-events-none px-4">
@@ -82,16 +69,14 @@ const PlaylistManager = () => {
   const [newName, setNewName]             = useState('');
   const [isSaving, setIsSaving]           = useState(false);
 
-  // Edit state — which playlistId is being edited
+  // Edit state
   const [editingId, setEditingId]         = useState(null);
   const [editUrl, setEditUrl]             = useState('');
   const [editName, setEditName]           = useState('');
   const [isUpdating, setIsUpdating]       = useState(false);
 
-  // Delete loading
+  // Delete
   const [deletingId, setDeletingId]       = useState(null);
-
-  // Delete confirmation modal
   const [deleteTarget, setDeleteTarget]   = useState(null);
 
   // Brand toasts
@@ -121,7 +106,7 @@ const PlaylistManager = () => {
     }
   };
 
-  // ── ADD new playlist ───────────────────────────────────────
+  // ── ADD ──────────────────────────────────────────────────────
   const handleAdd = async () => {
     if (!macAddress) { showToast(t('playlist.mac_not_found') || 'MAC address not found', 'error'); return; }
     if (!newUrl.trim() || !newName.trim()) {
@@ -142,7 +127,7 @@ const PlaylistManager = () => {
     }
   };
 
-  // ── START editing a row — same Name + Link fields for every type ──
+  // ── EDIT ─────────────────────────────────────────────────────
   const startEdit = (p) => {
     setEditingId(p.id);
     setEditName(p.name || '');
@@ -155,11 +140,6 @@ const PlaylistManager = () => {
     setEditName('');
   };
 
-  /*
-   * ── UPDATE (PUT) — same simple payload for every type ───────
-   * PUT /api/playlist/public/{macAddress}/{playlistId}
-   * body: { name, m3uUrl }
-   */
   const handleUpdate = async (p) => {
     if (!editUrl.trim() || !editName.trim()) {
       showToast(t('playlist.enter_name_link') || 'Enter a name and link', 'error');
@@ -177,7 +157,7 @@ const PlaylistManager = () => {
     }
   };
 
-  // ── DELETE — confirmation modal first ───────────────────────
+  // ── DELETE ───────────────────────────────────────────────────
   const requestDelete = (p) => setDeleteTarget(p);
 
   const confirmDelete = async () => {
@@ -195,23 +175,40 @@ const PlaylistManager = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-[#f4f4f7] px-4 py-8 sm:py-10 pb-[72px]">
-      <motion.div
-        className="max-w-3xl mx-auto space-y-4"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
+  // Shared input class
+  const inputCls = "w-full h-10 sm:h-11 px-3 sm:px-4 rounded-xl border-2 border-gray-200 bg-white text-sm text-[#1a1a1a] outline-none focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15 transition-colors duration-200 placeholder:text-gray-300";
+  const editInputCls = "w-full h-10 px-3 rounded-xl border-2 border-[#800000]/40 bg-white text-sm text-[#1a1a1a] outline-none focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15 transition-colors duration-200";
 
-        {/* ── PAGE HEADER ──────────────────────────────────── */}
-        <motion.div
-          variants={itemVariants}
-          className="bg-white rounded-2xl border border-black/[0.06] shadow-sm px-5 py-4
-                     flex items-center justify-between gap-3"
-        >
+  return (
+    <>
+      {/*
+       * ROOT — FIXED positioning, not just h-screen.
+       *
+       * WHY: h-screen alone does NOT stop the page/body from scrolling if
+       * this component sits in normal document flow — the <html>/<body>
+       * will still grow to fit content and scroll the whole window.
+       *
+       * Fix: anchor this container with `fixed inset-x-0` from just below
+       * the navbar (top-[78px], matching Navbar's spacer height) down to
+       * the bottom of the viewport. This makes the component completely
+       * independent of document flow — it can NEVER cause page-level
+       * scroll because it's pinned directly to the viewport, not to
+       * wherever it happens to sit in the page.
+       *
+       * top-[78px] matches Navbar's non-scrolled height (h-[78px]).
+       * If your navbar height differs, adjust this value to match.
+       */}
+      <div className="fixed inset-x-0 top-[78px] bottom-0 flex flex-col bg-[#f4f4f7] overflow-hidden">
+
+      {/* ══ STICKY TOP SECTION — header + add form, never scrolls ══════════ */}
+      <div className="shrink-0 px-3 sm:px-4 pt-4 sm:pt-6 pb-3 space-y-3 max-w-5xl w-full mx-auto">
+
+        {/* ── PAGE HEADER ──────────────────────────────────────────────── */}
+        <div className="bg-white rounded-2xl border border-black/[0.06] shadow-sm
+                        px-4 sm:px-5 py-3.5 sm:py-4
+                        flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+
           <div className="flex items-center gap-3 min-w-0">
-            {/* Brand logo replaces Flame — small, static (no animate, calm in a list header) */}
             <div className="w-9 h-9 rounded-xl bg-[#800000]/[0.08] flex items-center justify-center shrink-0">
               <WisePlayerLogo size={22} bg="#ffffff" />
             </div>
@@ -225,21 +222,20 @@ const PlaylistManager = () => {
             </div>
           </div>
 
-          {/* MAC address pill */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="hidden sm:flex items-center px-3 py-1.5 rounded-xl bg-[#800000]/[0.06] border border-[#800000]/20">
-              <span className="font-mono font-bold text-[#800000] text-xs tracking-widest">
+          {/* MAC pill + Add button — wraps under header on small mobile, inline on sm+ */}
+          <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
+            <div className="flex items-center px-3 py-1.5 rounded-xl bg-[#800000]/[0.06] border border-[#800000]/20 min-w-0">
+              <span className="font-mono font-bold text-[#800000] text-xs tracking-widest truncate">
                 {macAddress || '—'}
               </span>
             </div>
 
-            {/* Add button — brand maroon, not black, to tie to primary action colour */}
             <motion.button
               whileHover={{ scale: 1.06 }}
               whileTap={{ scale: 0.94 }}
               onClick={() => setShowAddForm((v) => !v)}
               className="w-10 h-10 rounded-xl bg-[#800000] hover:bg-[#6a0000] text-white
-                         flex items-center justify-center border-0 shadow-sm
+                         flex items-center justify-center border-0 shadow-sm shrink-0
                          transition-colors duration-200"
             >
               <motion.div animate={{ rotate: showAddForm ? 45 : 0 }} transition={{ duration: 0.2 }}>
@@ -247,9 +243,9 @@ const PlaylistManager = () => {
               </motion.div>
             </motion.button>
           </div>
-        </motion.div>
+        </div>
 
-        {/* ── ADD FORM — slides down ──────────────────────────── */}
+        {/* ── ADD FORM — slides down, stays in sticky zone ────────────── */}
         <AnimatePresence>
           {showAddForm && (
             <motion.div
@@ -260,7 +256,7 @@ const PlaylistManager = () => {
               exit="exit"
               className="overflow-hidden"
             >
-              <div className="bg-white rounded-2xl border-2 border-[#800000]/30 shadow-sm p-5 sm:p-6 space-y-4">
+              <div className="bg-white rounded-2xl border-2 border-[#800000]/30 shadow-sm p-4 sm:p-6 space-y-4">
                 <p className="text-xs font-bold text-[#800000] uppercase tracking-widest">
                   New Playlist
                 </p>
@@ -275,9 +271,7 @@ const PlaylistManager = () => {
                       placeholder={t('playlist.name') || 'Playlist name'}
                       value={newName}
                       onChange={(e) => setNewName(e.target.value)}
-                      className="w-full h-11 px-4 rounded-xl border-2 border-gray-200 bg-white text-sm text-[#1a1a1a]
-                                 outline-none focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15
-                                 transition-colors duration-200 placeholder:text-gray-300"
+                      className={inputCls}
                     />
                   </div>
                   <div>
@@ -289,17 +283,15 @@ const PlaylistManager = () => {
                       placeholder={t('playlist.put_link') || 'https://...'}
                       value={newUrl}
                       onChange={(e) => setNewUrl(e.target.value)}
-                      className="w-full h-11 px-4 rounded-xl border-2 border-gray-200 bg-white text-sm text-[#1a1a1a]
-                                 outline-none focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15
-                                 transition-colors duration-200 placeholder:text-gray-300"
+                      className={inputCls}
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 justify-end">
+                <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 sm:justify-end">
                   <button
                     onClick={() => { setShowAddForm(false); setNewName(''); setNewUrl(''); }}
-                    className="px-4 py-2 rounded-xl text-xs font-bold text-gray-500 hover:text-[#1a1a1a]
+                    className="px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold text-gray-500 hover:text-[#1a1a1a]
                                bg-gray-100 hover:bg-gray-200 transition-colors duration-150 border-0"
                   >
                     Cancel
@@ -310,7 +302,7 @@ const PlaylistManager = () => {
                     onClick={handleAdd}
                     disabled={isSaving || !newName.trim() || !newUrl.trim()}
                     className={`
-                      flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold border-0 transition-all duration-200
+                      flex items-center justify-center gap-2 px-5 py-2.5 sm:py-2 rounded-xl text-xs font-bold border-0 transition-all duration-200
                       ${isSaving || !newName.trim() || !newUrl.trim()
                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                         : 'bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm cursor-pointer'
@@ -330,11 +322,22 @@ const PlaylistManager = () => {
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
 
-        {/* ── PLAYLIST LIST ─────────────────────────────────── */}
-        <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-black/[0.06] shadow-sm overflow-hidden">
+      {/* ══ SCROLLABLE LIST AREA ════════════════════════════════════════════
+           flex-1 + min-h-0 + overflow-y-auto: only this region scrolls.
+           min-h-0 is CRITICAL — without it, a flex child refuses to shrink
+           below its content size, which is exactly what was causing the
+           whole page to scroll when the add-form expanded above it.
+           Scrollbar hidden via scrollbar-width/webkit but scroll still works.
+      ══════════════════════════════════════════════════════════════════ */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-4 pb-4 max-w-5xl w-full mx-auto
+                      [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
-          <div className="px-5 py-3.5 border-b border-black/[0.06] flex items-center justify-between">
+        <div className="bg-white rounded-2xl border border-black/[0.06] shadow-sm">
+
+          <div className="px-4 sm:px-5 py-3.5 border-b border-black/[0.06] flex items-center justify-between
+                          sticky top-0 bg-white z-10 rounded-t-2xl">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
               {t('playlist.mac_address') || 'Your Playlists'}
             </span>
@@ -356,7 +359,7 @@ const PlaylistManager = () => {
 
           {/* Empty */}
           {!loadingList && playlists.length === 0 && (
-            <div className="py-12 text-center">
+            <div className="py-12 text-center px-4">
               <div className="w-12 h-12 rounded-2xl bg-[#800000]/[0.06] flex items-center justify-center mx-auto mb-3">
                 <ListMusic size={22} className="text-[#800000]/40" />
               </div>
@@ -365,154 +368,228 @@ const PlaylistManager = () => {
             </div>
           )}
 
-          {/* Rows */}
+          {/*
+           * ══ MOBILE & TABLET (< lg) — stacked card rows ══════════════
+           * Vertical stacking is the natural mobile pattern — no
+           * horizontal scroll needed since each field stacks below name.
+           */}
           {!loadingList && playlists.length > 0 && (
-            <AnimatePresence initial={false}>
-              {playlists.map((p, index) => {
-                const isEditing  = editingId === p.id;
-                const isDeleting = deletingId === p.id;
-                const isXtream   = p.type === 'XTREAM';
-                const isLast     = index === playlists.length - 1;
+            <div className="lg:hidden overflow-hidden rounded-b-2xl">
+              <AnimatePresence initial={false}>
+                {playlists.map((p, index) => {
+                  const isEditing  = editingId === p.id;
+                  const isDeleting = deletingId === p.id;
+                  const isXtream   = p.type === 'XTREAM';
+                  const isLast     = index === playlists.length - 1;
 
-                return (
-                  <motion.div
-                    key={p.id}
-                    variants={rowAnim}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    layout
-                    className={`px-5 py-4 ${!isLast ? 'border-b border-black/[0.04]' : ''}
-                               transition-colors duration-150 hover:bg-gray-50/50`}
-                  >
-                    {isEditing ? (
-                      /* ── EDIT MODE — same two fields as Add form: Name + Link ── */
-                      <div className="space-y-3">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <div>
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
-                              {t('playlist.name') || 'Name'}
-                            </label>
-                            <input
-                              type="text"
-                              value={editName}
-                              onChange={(e) => setEditName(e.target.value)}
-                              autoFocus
-                              className="w-full h-10 px-3 rounded-xl border-2 border-[#800000]/40 bg-white text-sm text-[#1a1a1a]
-                                         outline-none focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15
-                                         transition-colors duration-200"
-                            />
+                  return (
+                    <motion.div
+                      key={p.id}
+                      variants={rowAnim}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      layout
+                      className={`px-4 sm:px-5 py-4 ${!isLast ? 'border-b border-black/[0.04]' : ''}
+                                 transition-colors duration-150 hover:bg-gray-50/50`}
+                    >
+                      {isEditing ? (
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-1 gap-3">
+                            <div>
+                              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                                {t('playlist.name') || 'Name'}
+                              </label>
+                              <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)}
+                                autoFocus className={editInputCls} />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                                {t('playlist.link') || 'Link'}
+                              </label>
+                              <input type="text" value={editUrl} onChange={(e) => setEditUrl(e.target.value)}
+                                className={editInputCls} />
+                            </div>
                           </div>
-                          <div>
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
-                              {t('playlist.link') || 'Link'}
-                            </label>
-                            <input
-                              type="text"
-                              value={editUrl}
-                              onChange={(e) => setEditUrl(e.target.value)}
-                              className="w-full h-10 px-3 rounded-xl border-2 border-[#800000]/40 bg-white text-sm text-[#1a1a1a]
-                                         outline-none focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15
-                                         transition-colors duration-200"
-                            />
+                          <div className="flex items-center justify-end gap-2">
+                            <button onClick={cancelEdit} disabled={isUpdating}
+                              className="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 bg-gray-100
+                                         hover:bg-gray-200 transition-colors border-0 disabled:opacity-50">
+                              Cancel
+                            </button>
+                            <motion.button
+                              whileHover={!isUpdating ? { scale: 1.04 } : {}}
+                              whileTap={!isUpdating ? { scale: 0.96 } : {}}
+                              onClick={() => handleUpdate(p)}
+                              disabled={isUpdating}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
+                                         text-white bg-[#800000] hover:bg-[#6a0000] border-0 transition-colors
+                                         disabled:opacity-60"
+                            >
+                              {isUpdating ? (
+                                <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                                </svg>
+                              ) : <Check size={12} />}
+                              {isUpdating ? 'Saving...' : 'Save'}
+                            </motion.button>
                           </div>
                         </div>
-
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={cancelEdit}
-                            disabled={isUpdating}
-                            className="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 bg-gray-100
-                                       hover:bg-gray-200 transition-colors border-0 disabled:opacity-50"
-                          >
-                            Cancel
-                          </button>
-                          {/* SAVE → calls updatePlaylist (PUT) */}
-                          <motion.button
-                            whileHover={!isUpdating ? { scale: 1.04 } : {}}
-                            whileTap={!isUpdating ? { scale: 0.96 } : {}}
-                            onClick={() => handleUpdate(p)}
-                            disabled={isUpdating}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
-                                       text-white bg-[#800000] hover:bg-[#6a0000] border-0 transition-colors
-                                       disabled:opacity-60"
-                          >
-                            {isUpdating ? (
-                              <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                              </svg>
-                            ) : <Check size={12} />}
-                            {isUpdating ? 'Saving...' : 'Save'}
-                          </motion.button>
+                      ) : (
+                        <div className="flex items-start sm:items-center gap-3">
+                          <span className={`text-[9px] font-black px-2 py-0.5 rounded shrink-0 mt-0.5 sm:mt-0 ${
+                            isXtream ? 'bg-[#6e1216]/10 text-[#6e1216]' : 'bg-[#800000]/10 text-[#800000]'
+                          }`}>
+                            {p.type || 'M3U'}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-[#1a1a1a] truncate">{p.name}</p>
+                            <p className="text-xs text-gray-400 font-mono truncate mt-0.5">
+                              {isXtream ? `${p.serverUrl} • ${p.username}` : (p.m3uUrl || '—')}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+                              onClick={() => startEdit(p)}
+                              className="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center
+                                         text-gray-400 hover:text-[#800000] hover:border-[#800000]/40 transition-colors duration-150">
+                              <Pencil size={13} />
+                            </motion.button>
+                            <motion.button whileHover={!isDeleting ? { scale: 1.1 } : {}} whileTap={!isDeleting ? { scale: 0.9 } : {}}
+                              onClick={() => requestDelete(p)} disabled={isDeleting}
+                              className="w-8 h-8 rounded-lg border border-red-200 bg-white flex items-center justify-center
+                                         text-red-500 hover:bg-red-600 hover:border-red-600 hover:text-white transition-colors duration-150">
+                              {isDeleting ? (
+                                <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                                </svg>
+                              ) : <Trash2 size={13} />}
+                            </motion.button>
+                          </div>
                         </div>
-                      </div>
-
-                    ) : (
-                      /* ── VIEW MODE ─────────────────────────── */
-                      <div className="flex items-center gap-3">
-                        {/* Type badge — brand maroon for both types, no blue */}
-                        <span className={`text-[9px] font-black px-2 py-0.5 rounded shrink-0 ${
-                          isXtream
-                            ? 'bg-[#6e1216]/10 text-[#6e1216]'
-                            : 'bg-[#800000]/10 text-[#800000]'
-                        }`}>
-                          {p.type || 'M3U'}
-                        </span>
-
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-[#1a1a1a] truncate">{p.name}</p>
-                          <p className="text-xs text-gray-400 font-mono truncate mt-0.5">
-                            {isXtream
-                              ? `${p.serverUrl} • ${p.username}`
-                              : (p.m3uUrl || '—')
-                            }
-                          </p>
-                        </div>
-
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          {/* Edit — opens PUT update form, now available for ALL types */}
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => startEdit(p)}
-                            className="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center
-                                       text-gray-400 hover:text-[#800000] hover:border-[#800000]/40
-                                       transition-colors duration-150"
-                          >
-                            <Pencil size={13} />
-                          </motion.button>
-
-                          {/* Delete — opens confirmation modal */}
-                          <motion.button
-                            whileHover={!isDeleting ? { scale: 1.1 } : {}}
-                            whileTap={!isDeleting ? { scale: 0.9 } : {}}
-                            onClick={() => requestDelete(p)}
-                            disabled={isDeleting}
-                            className="w-8 h-8 rounded-lg border border-red-200 bg-white flex items-center justify-center
-                                       text-red-500 hover:bg-red-600 hover:border-red-600 hover:text-white
-                                       transition-colors duration-150"
-                          >
-                            {isDeleting ? (
-                              <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                              </svg>
-                            ) : <Trash2 size={13} />}
-                          </motion.button>
-                        </div>
-                      </div>
-                    )}
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
           )}
-        </motion.div>
 
-      </motion.div>
+          {/*
+           * ══ DESKTOP (lg+) — true <table>, horizontally scrollable ════
+           * overflow-x-auto wraps ONLY the table — if content reaches the
+           * edge of the screen, a horizontal scrollbar appears just for
+           * the table, not the whole page.
+           */}
+          {!loadingList && playlists.length > 0 && (
+            <div className="hidden lg:block overflow-x-auto rounded-b-2xl [scrollbar-width:thin]">
+              <table className="w-full text-sm min-w-[640px]">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-black/[0.06]">
+                    <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500 w-24">Type</th>
+                    <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500">Name</th>
+                    <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500">Source</th>
+                    <th className="px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-gray-500 w-32">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-black/[0.04]">
+                  <AnimatePresence initial={false}>
+                    {playlists.map((p) => {
+                      const isEditing  = editingId === p.id;
+                      const isDeleting = deletingId === p.id;
+                      const isXtream   = p.type === 'XTREAM';
 
-      {/* ── DELETE CONFIRMATION MODAL — brand consistent ───────── */}
+                      if (isEditing) {
+                        return (
+                          <motion.tr key={p.id} variants={rowAnim} initial="hidden" animate="visible" exit="exit" layout
+                            className="bg-[#800000]/[0.02]">
+                            <td className="px-5 py-3.5" colSpan={2}>
+                              <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)}
+                                autoFocus placeholder="Name" className={editInputCls} />
+                            </td>
+                            <td className="px-5 py-3.5">
+                              <input type="text" value={editUrl} onChange={(e) => setEditUrl(e.target.value)}
+                                placeholder="Link" className={editInputCls} />
+                            </td>
+                            <td className="px-5 py-3.5">
+                              <div className="flex items-center justify-center gap-2">
+                                <button onClick={cancelEdit} disabled={isUpdating}
+                                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 bg-gray-100
+                                             hover:bg-gray-200 transition-colors border-0 disabled:opacity-50">
+                                  Cancel
+                                </button>
+                                <motion.button
+                                  whileHover={!isUpdating ? { scale: 1.04 } : {}}
+                                  whileTap={!isUpdating ? { scale: 0.96 } : {}}
+                                  onClick={() => handleUpdate(p)} disabled={isUpdating}
+                                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
+                                             text-white bg-[#800000] hover:bg-[#6a0000] border-0 transition-colors disabled:opacity-60">
+                                  {isUpdating ? (
+                                    <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
+                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                                    </svg>
+                                  ) : <Check size={12} />}
+                                </motion.button>
+                              </div>
+                            </td>
+                          </motion.tr>
+                        );
+                      }
+
+                      return (
+                        <motion.tr key={p.id} variants={rowAnim} initial="hidden" animate="visible" exit="exit" layout
+                          className="transition-colors duration-150 hover:bg-gray-50/60">
+                          <td className="px-5 py-3.5">
+                            <span className={`text-[9px] font-black px-2 py-0.5 rounded ${
+                              isXtream ? 'bg-[#6e1216]/10 text-[#6e1216]' : 'bg-[#800000]/10 text-[#800000]'
+                            }`}>
+                              {p.type || 'M3U'}
+                            </span>
+                          </td>
+                          <td className="px-5 py-3.5">
+                            <p className="text-sm font-bold text-[#1a1a1a] truncate max-w-[220px]">{p.name}</p>
+                          </td>
+                          <td className="px-5 py-3.5">
+                            <p className="text-xs text-gray-400 font-mono truncate max-w-[320px]">
+                              {isXtream ? `${p.serverUrl} • ${p.username}` : (p.m3uUrl || '—')}
+                            </p>
+                          </td>
+                          <td className="px-5 py-3.5">
+                            <div className="flex items-center justify-center gap-1.5">
+                              <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+                                onClick={() => startEdit(p)}
+                                className="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center
+                                           text-gray-400 hover:text-[#800000] hover:border-[#800000]/40 transition-colors duration-150">
+                                <Pencil size={13} />
+                              </motion.button>
+                              <motion.button whileHover={!isDeleting ? { scale: 1.1 } : {}} whileTap={!isDeleting ? { scale: 0.9 } : {}}
+                                onClick={() => requestDelete(p)} disabled={isDeleting}
+                                className="w-8 h-8 rounded-lg border border-red-200 bg-white flex items-center justify-center
+                                           text-red-500 hover:bg-red-600 hover:border-red-600 hover:text-white transition-colors duration-150">
+                                {isDeleting ? (
+                                  <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                                  </svg>
+                                ) : <Trash2 size={13} />}
+                              </motion.button>
+                            </div>
+                          </td>
+                        </motion.tr>
+                      );
+                    })}
+                  </AnimatePresence>
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ══ DELETE CONFIRMATION MODAL ═══════════════════════════════════════ */}
       <AnimatePresence>
         {deleteTarget && (
           <motion.div
@@ -570,16 +647,19 @@ const PlaylistManager = () => {
         )}
       </AnimatePresence>
 
-      {/* ── FOOTER ───────────────────────────────────────────── */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-black/[0.06] py-3 px-4">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-1.5 max-w-3xl mx-auto">
+      {/* ══ FOOTER — shrink-0 flex item, sits naturally at the bottom of the
+           fixed viewport container. Not a separate `fixed` element anymore,
+           so it can't overlap the scrollable list above it. ══════════════ */}
+      <div className="shrink-0 bg-white border-t border-black/[0.06] py-3 px-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-1.5 max-w-5xl mx-auto">
           <Footer />
         </div>
       </div>
+      </div>
 
-      {/* ── BRAND TOAST ──────────────────────────────────────── */}
+      {/* ══ BRAND TOAST — sibling, not nested, always overlays full viewport ══ */}
       <BrandToast toasts={toasts} />
-    </div>
+    </>
   );
 };
 

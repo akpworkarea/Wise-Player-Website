@@ -126,8 +126,7 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated }) => {
       animate={{ opacity: 1, y: 0,   scale: 1    }}
       exit={{   opacity: 0, y: -10,  scale: 0.96 }}
       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-      className="absolute top-14 right-0 w-80 rounded-2xl border border-black/[0.08] shadow-2xl overflow-hidden z-[9999]"
-      style={{ background: 'var(--surface-2)' }}
+      className="absolute top-14 right-0 w-80 rounded-2xl border border-black/[0.08] shadow-2xl overflow-hidden z-[9999] bg-white"
     >
       {/* ── Close button ── */}
       <button onClick={onClose}
@@ -271,7 +270,7 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated }) => {
       </div>
 
       {/* ── Change Password section ─────────────────────────────── */}
-      <div className="border-t border-gray-100">
+      <div className="border-t border-gray-100 bg-white">
         <button
           onClick={() => setShowPwSection((v) => !v)}
           className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[#800000]/5 transition"
