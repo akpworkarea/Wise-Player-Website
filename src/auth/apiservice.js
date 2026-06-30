@@ -171,26 +171,6 @@ export const validateDevice = async (fingerprint) => {
   }
 };
 
-// ─── Playlist ─────────────────────────────────────────────────────────────────
-
-export const saveM3uPlaylist = async (macAddress, playlistData) => {
-  try {
-    if (!macAddress) return { success: false, message: 'MAC address is missing!' };
-    const response = await api.post(`/api/playlist/public/${macAddress}/m3u`, {
-      name: playlistData.name, m3uUrl: playlistData.m3uUrl,
-    });
-    return { success: true, message: response.data.message || 'Playlist saved!' };
-  } catch (error) {
-    return {
-      success: false,
-      message:
-        error.response?.data?.error   ||
-        error.response?.data?.message ||
-        'Failed to save playlist',
-    };
-  }
-};
-
 // ─── Payment ──────────────────────────────────────────────────────────────────
 
 export const checkoutPayment = async ({ deviceId, planName, successUrl, cancelUrl }) => {
@@ -251,4 +231,41 @@ export const submitSupportTicket = async (ticketData) => {
       message: error.response?.data?.message || 'Failed to submit ticket',
     };
   }
+  
 };
+
+/**
+ * Update reseller profile (fullName).
+ * PUT /api/reseller/profile  body: { fullName }
+ */
+export const updateProfile = async (payload) => {
+  try {
+    const response = await api.put('/api/reseller/profile', payload);
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to update profile',
+    };
+  }
+};
+ 
+/**
+ * Change password for logged-in reseller.
+ * PUT /api/reseller/change-password  body: { currentPassword, newPassword }
+ */
+export const changePassword = async (currentPassword, newPassword) => {
+  try {
+    const response = await api.put('/api/reseller/change-password', {
+      currentPassword,
+      newPassword,
+    });
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to change password',
+    };
+  }
+};
+ 

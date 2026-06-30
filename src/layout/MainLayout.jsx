@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import Sidebar from '../component/Sidebar';
 import Navbar from '../component/Navbar';
 import { useTranslation } from 'react-i18next';
-import { useDashboard } from '../context/dashboardContext'
+import { useDashboard } from '../context/dashboardContext';
 import {
   Menu, Flame, User, Mail, Shield, ChevronDown, X,
   Pencil, Check, Copy, CheckCircle2, Lock, Eye, EyeOff,
@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-// import { updateProfile, changePassword } from '../auth/apiservice';
+import { updateProfile, changePassword } from '../auth/apiservice';
 
 // ── Outside component — stable ────────────────────────────────
 const availableLanguages = [
@@ -365,11 +365,15 @@ const MainLayout = ({ children }) => {
 
   const currentLang = availableLanguages.find((l) => l.code === i18n.language);
 
-  // Read logged-in user from localStorage (saved on login)
-  const storedUser = (() => {
+  // Read logged-in user from localStorage — reactive state so topbar updates on name edit
+  const [storedUser, setStoredUser] = useState(() => {
     try { return JSON.parse(localStorage.getItem('user')) || {}; }
     catch { return {}; }
-  })();
+  });
+
+  const handleProfileUpdated = (updated) => {
+    setStoredUser(updated);
+  };
 
   const avatarSeed = encodeURIComponent(storedUser.username || storedUser.fullName || 'user');
   const avatarUrl  = `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${avatarSeed}`;
@@ -512,6 +516,7 @@ const MainLayout = ({ children }) => {
                         user={storedUser}
                         avatarUrl={avatarUrl}
                         onClose={() => setIsProfileOpen(false)}
+                        onProfileUpdated={handleProfileUpdated}
                       />
                     )}
                   </AnimatePresence>
