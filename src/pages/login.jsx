@@ -106,8 +106,7 @@ const LoginPage = () => {
   const { t, i18n }         = useTranslation();
   const navigate             = useNavigate();
   const { refetchDashboard } = useDashboard();
-  const { setUserRole }      = useAuth();
-
+ const { updateUser }       = useAuth();
   const [isLangOpen,   setIsLangOpen]   = useState(false);
   // views: 'login' | 'forgot' | 'sent'
   const [view,         setView]         = useState('login');
@@ -133,19 +132,19 @@ const LoginPage = () => {
     const result = await loginReseller({ username, password });
     setLoading(false);
 
-    if (result.success) {
-      // Email verified → dashboard
-      localStorage.setItem('userName', username);
-      setUserRole(result.data?.role);
-      showToast('Success! Redirecting...', 'success');
-      setTimeout(() => navigate('/dashboard'), 800);
-    } else if (result.data?.token) {
-      // success=false but token present → unverified email → OTP page
-      // token + user already stored in apiservice, just set role + redirect
-      localStorage.setItem('userName', username);
-      setUserRole(result.data?.role);
-      showToast('Please verify your email to continue.', 'info');
-      setTimeout(() => navigate('/verify-otp'), 900);
+   if (result.success) {
+  // Email verified → dashboard
+  localStorage.setItem('userName', username);
+  updateUser(result.data);
+  showToast('Success! Redirecting...', 'success');
+  setTimeout(() => navigate('/dashboard'), 800);
+} else if (result.data?.token) {
+  // success=false but token present → unverified email → OTP page
+  localStorage.setItem('userName', username);
+  updateUser(result.data);
+  showToast('Please verify your email to continue.', 'info');
+  setTimeout(() => navigate('/verify-otp'), 900);
+
     } else {
       // No token → truly bad credentials
       showToast(result.message || 'Invalid credentials', 'error');

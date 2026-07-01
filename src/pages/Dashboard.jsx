@@ -186,17 +186,14 @@ const DonutCard = ({ title, subtitle, data, options, legend, total, icon: Icon }
 // ═════════════════════════════════════════════════════════════════════════════
 const Dashboard = () => {
   const { t } = useTranslation();
-  const { userRole } = useAuth();
+  
   const [activeTab, setActiveTab] = useState("overview");
   const { dashboard, refetchDashboard } = useDashboard();
   const [copiedId, setCopiedId] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // ── Pull logged-in user details from localStorage (saved on login) ─────────
-  const storedUser = (() => {
-    try { return JSON.parse(localStorage.getItem("user")) || {}; }
-    catch { return {}; }
-  })();
+  const { userRole, user: storedUser } = useAuth();
   const displayName = storedUser.fullName || storedUser.username || "User";
   const avatarSeed  = encodeURIComponent(storedUser.username || storedUser.fullName || "user");
   const avatarUrl   = `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${avatarSeed}`;

@@ -38,9 +38,9 @@ const hideNavbarRoutes = [
 
 // ─── ProfileDropdown — Split panel with edit / copy / change-password ─────────
 const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole }) => {
-  const roleLabel = user.role === 'SUB_RESELLER' ? 'Sub Reseller'
-                  : user.role === 'RESELLER'     ? 'Reseller'
-                  : user.role ?? 'User';
+  const roleLabel = user?.role === 'SUB_RESELLER' ? 'Sub Reseller'
+                : user?.role === 'RESELLER'     ? 'Reseller'
+                : user?.role ?? 'User';
 
   // ── Name edit ─────────────────────────────────────────────────
   const [editingName,  setEditingName]  = useState(false);
@@ -59,12 +59,11 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole 
     setSavingName(true);
     const res = await updateProfile(userRole, { fullName: nameValue.trim() });
     setSavingName(false);
-    if (res.success) {
-      const updated = { ...user, fullName: nameValue.trim() };
-      localStorage.setItem('user', JSON.stringify(updated));
-      onProfileUpdated?.(updated);
-      toast.success('Name updated');
-    } else {
+   if (res.success) {
+  const updated = { ...user, fullName: nameValue.trim() };
+  onProfileUpdated?.(updated);
+  toast.success('Name updated');
+} else {
       toast.error(res.message || 'Failed to update name');
     }
     setEditingName(false);
@@ -351,7 +350,6 @@ const MainLayout = ({ children }) => {
   const location = useLocation();
   const { t, i18n } = useTranslation();
   const { dashboard } = useDashboard();
-  const { userRole } = useAuth();
 
   const [collapsed,   setCollapsed]   = useState(false);
   const [mobileOpen,  setMobileOpen]  = useState(false);
@@ -368,16 +366,13 @@ const MainLayout = ({ children }) => {
   const currentLang = availableLanguages.find((l) => l.code === i18n.language);
 
   // Read logged-in user from localStorage — reactive state so topbar updates on name edit
-  const [storedUser, setStoredUser] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('user')) || {}; }
-    catch { return {}; }
-  });
+ const { userRole, user: storedUser, updateUser } = useAuth();
 
-  const handleProfileUpdated = (updated) => {
-    setStoredUser(updated);
-  };
+const handleProfileUpdated = (updated) => {
+  updateUser(updated);
+};
 
-  const avatarSeed = encodeURIComponent(storedUser.username || storedUser.fullName || 'user');
+  const avatarSeed = encodeURIComponent(storedUser?.username || storedUser?.fullName || 'user');
   const avatarUrl  = `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${avatarSeed}`;
 
   // Close dropdowns on outside click
@@ -507,7 +502,7 @@ const MainLayout = ({ children }) => {
                     </div>
                     {/* Name — hidden on mobile */}
                     <span className={`hidden sm:block text-xs font-bold truncate max-w-[80px] transition-colors ${isProfileOpen ? 'text-white' : 'text-[#1a1a1a]'}`}>
-                      {storedUser.fullName || storedUser.username || 'Profile'}
+                     {storedUser?.fullName || storedUser?.username || 'Profile'}
                     </span>
                     <ChevronDown size={12} className={`shrink-0 transition-all duration-200 ${isProfileOpen ? 'rotate-180 text-white' : 'text-gray-400'}`} />
                   </motion.button>
