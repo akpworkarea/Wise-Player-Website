@@ -234,38 +234,5 @@ export const submitSupportTicket = async (ticketData) => {
   
 };
 
-/**
- * Update reseller profile (fullName).
- * PUT /api/reseller/profile  body: { fullName }
- */
-export const updateProfile = async (payload) => {
-  try {
-    const response = await api.put('/api/reseller/profile', payload);
-    return { success: true, data: response.data };
-  } catch (error) {
-    return {
-      success: false,
-      message: error.response?.data?.message || 'Failed to update profile',
-    };
-  }
-};
- 
-/**
- * Change password for logged-in reseller.
- * PUT /api/reseller/change-password  body: { currentPassword, newPassword }
- */
-export const changePassword = async (currentPassword, newPassword) => {
-  try {
-    const response = await api.put('/api/reseller/change-password', {
-      currentPassword,
-      newPassword,
-    });
-    return { success: true, data: response.data };
-  } catch (error) {
-    return {
-      success: false,
-      message: error.response?.data?.message || 'Failed to change password',
-    };
-  }
-};
+
  

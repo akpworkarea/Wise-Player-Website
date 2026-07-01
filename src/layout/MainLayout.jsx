@@ -4,6 +4,7 @@ import Sidebar from '../component/Sidebar';
 import Navbar from '../component/Navbar';
 import { useTranslation } from 'react-i18next';
 import { useDashboard } from '../context/dashboardContext';
+import { useAuth } from '../context/AuthContext';
 import {
   Menu, Flame, User, Mail, Shield, ChevronDown, X,
   Pencil, Check, Copy, CheckCircle2, Lock, Eye, EyeOff,
@@ -11,7 +12,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { updateProfile, changePassword } from '../auth/apiservice';
+import { updateProfile, changePassword } from '../auth/api/Profileapi';
 
 // ── Outside component — stable ────────────────────────────────
 const availableLanguages = [
@@ -28,6 +29,7 @@ const availableLanguages = [
 const adminRoutes = [
   '/dashboard', '/users', '/requests', '/subreseller',
   '/purchase-credit', '/transition-history', '/payment-status',
+  '/profile',
 ];
 
 const hideNavbarRoutes = [
@@ -35,7 +37,7 @@ const hideNavbarRoutes = [
 ];
 
 // ─── ProfileDropdown — Split panel with edit / copy / change-password ─────────
-const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated }) => {
+const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole }) => {
   const roleLabel = user.role === 'SUB_RESELLER' ? 'Sub Reseller'
                   : user.role === 'RESELLER'     ? 'Reseller'
                   : user.role ?? 'User';
@@ -55,7 +57,7 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated }) => {
       setEditingName(false); return;
     }
     setSavingName(true);
-    const res = await updateProfile({ fullName: nameValue.trim() });
+    const res = await updateProfile(userRole, { fullName: nameValue.trim() });
     setSavingName(false);
     if (res.success) {
       const updated = { ...user, fullName: nameValue.trim() };
@@ -107,7 +109,7 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated }) => {
     if (newPw.length < 8)          { setPwError('Password must be at least 8 characters.'); return; }
     if (newPw !== confirmPw)        { setPwError("Passwords don't match."); return; }
     setSavingPw(true);
-    const res = await changePassword(currentPw, newPw);
+    const res = await changePassword(userRole, currentPw, newPw, confirmPw);
     setSavingPw(false);
     if (res.success) {
       toast.success('Password changed successfully');
@@ -349,6 +351,7 @@ const MainLayout = ({ children }) => {
   const location = useLocation();
   const { t, i18n } = useTranslation();
   const { dashboard } = useDashboard();
+  const { userRole } = useAuth();
 
   const [collapsed,   setCollapsed]   = useState(false);
   const [mobileOpen,  setMobileOpen]  = useState(false);
@@ -516,6 +519,7 @@ const MainLayout = ({ children }) => {
                         avatarUrl={avatarUrl}
                         onClose={() => setIsProfileOpen(false)}
                         onProfileUpdated={handleProfileUpdated}
+                        userRole={userRole}
                       />
                     )}
                   </AnimatePresence>
