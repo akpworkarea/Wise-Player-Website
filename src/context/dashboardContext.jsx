@@ -6,7 +6,7 @@ import { useAuth } from "./AuthContext";
 const DashboardContext = createContext(null);
 
 export const DashboardProvider = ({ children }) => {
-  const { userRole } = useAuth();
+  const { userRole, user } = useAuth();
 
   const [dashboard, setDashboard] = useState({
     stats: {},
@@ -52,8 +52,11 @@ export const DashboardProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    // Reset immediately so a different account never renders with the
+    // previous account's stale data, even for a split second.
+    setDashboard({ stats: {}, devices: [] });
     fetchDashboard();
-  }, [userRole]);
+  }, [userRole, user?.username]); // user?.username makes this re-fire per-account, not just per-role
 
   return (
     <DashboardContext.Provider

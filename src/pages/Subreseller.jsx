@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   UserPlus, Pencil, Trash2, Search, X, Filter, ChevronDown,
   SlidersHorizontal, Calendar, Coins, ShieldCheck, AlertTriangle,
-  ShieldAlert, Eye, EyeOff, User, Lock, AtSign, Layers,
+  ShieldAlert, Eye, EyeOff, User, Lock, AtSign, Layers, Mail,
   CheckCircle2, XCircle, Info,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,14 +23,14 @@ const BrandToast = ({ toasts }) => (
     <AnimatePresence>
       {toasts.map((t) => {
         const isSuccess = t.type === "success";
-        const isError   = t.type === "error";
+        const isError = t.type === "error";
         const Icon = isSuccess ? CheckCircle2 : isError ? XCircle : Info;
         return (
           <motion.div
             key={t.id}
             initial={{ opacity: 0, y: -16, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0,   scale: 1     }}
-            exit={{   opacity: 0, y: -12,  scale: 0.96  }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 400, damping: 28 }}
             className={`pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-2xl shadow-xl
               text-sm font-bold text-white max-w-sm w-full
@@ -74,9 +74,9 @@ const FilterPanelContent = ({
   activeFilterCount, clearAll,
 }) => {
   const STATUS_OPTS = [
-    { value: "",      label: "All",      dot: "bg-gray-300"  },
-    { value: "true",  label: "Active",   dot: "bg-green-500" },
-    { value: "false", label: "Inactive", dot: "bg-red-500"   },
+    { value: "", label: "All", dot: "bg-gray-300" },
+    { value: "true", label: "Active", dot: "bg-green-500" },
+    { value: "false", label: "Inactive", dot: "bg-red-500" },
   ];
   return (
     <div className="space-y-5">
@@ -100,7 +100,7 @@ const FilterPanelContent = ({
         <div className="grid grid-cols-2 gap-3">
           {[
             { label: "From", value: fromDate, set: setFromDate, min: undefined },
-            { label: "To",   value: toDate,   set: setToDate,   min: fromDate || undefined },
+            { label: "To", value: toDate, set: setToDate, min: fromDate || undefined },
           ].map(({ label, value, set, min }) => (
             <div key={label} className="space-y-1">
               <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide block">{label}</label>
@@ -340,53 +340,53 @@ const inputCls = "w-full px-4 py-3 bg-[#f4f4f7] border-2 border-transparent roun
 
 // ═════════════════════════════════════════════════════════════════════════════
 const SubresellerDashboard = () => {
-  const { t }                           = useTranslation();
+  const { t } = useTranslation();
   const { dashboard, refetchDashboard } = useDashboard();
 
   // ── Data ──────────────────────────────────────────────────────────────────
-  const [users,       setUsers]       = useState([]);
-  const [totalPages,  setTotalPages]  = useState(1);
+  const [users, setUsers] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingData, setLoadingData] = useState(true);
 
   // ── Search ────────────────────────────────────────────────────────────────
-  const [search,        setSearch]        = useState("");
-  const debouncedSearch                   = useDebounce(search, 450);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 450);
 
   // ── Filter panel ──────────────────────────────────────────────────────────
-  const [showFilter,   setShowFilter]   = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
-  const [fromDate,     setFromDate]     = useState("");
-  const [toDate,       setToDate]       = useState("");
-  const [minCredits,   setMinCredits]   = useState("");
-  const [maxCredits,   setMaxCredits]   = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [minCredits, setMinCredits] = useState("");
+  const [maxCredits, setMaxCredits] = useState("");
   const debouncedMin = useDebounce(minCredits, 500);
   const debouncedMax = useDebounce(maxCredits, 500);
 
   // ── Modals ────────────────────────────────────────────────────────────────
-  const [openModel,     setOpenModel]     = useState(false);
-  const [editModal,     setEditModal]     = useState(false);
+  const [openModel, setOpenModel] = useState(false);
+  const [editModal, setEditModal] = useState(false);
   const [transferModal, setTransferModal] = useState(false);
-  const [deleteModal,   setDeleteModal]   = useState(false);
-  const [deleting,      setDeleting]      = useState(false);
-  const [selectedUser,  setSelectedUser]  = useState(null);
-  const [userToDelete,  setUserToDelete]  = useState(null);
-  const [editUserId,    setEditUserId]    = useState(null);
-  const [editData,      setEditData]      = useState({ fullName: "", email: "", password: "" });
-  const [showEditPwd,   setShowEditPwd]   = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [editUserId, setEditUserId] = useState(null);
+  const [editData, setEditData] = useState({ fullName: "", email: "", password: "" });
+  const [showEditPwd, setShowEditPwd] = useState(false);
 
   // ── Create form ───────────────────────────────────────────────────────────
-  const [formData,    setFormData]    = useState({ username: "", password: "", fullName: "" });
-  const [showPwd,     setShowPwd]     = useState(false);
-  const [creating,    setCreating]    = useState(false);
-  const [error,       setError]       = useState("");
+  const [formData, setFormData] = useState({ username: "", password: "", fullName: "", email: "" });
+  const [showPwd, setShowPwd] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [error, setError] = useState("");
 
   // ── Bulk permissions modal ────────────────────────────────────────────────
-  const [permModal,     setPermModal]     = useState(false);
-  const [permSaving,    setPermSaving]    = useState(false);
-  const [permissions,   setPermissions]   = useState({
+  const [permModal, setPermModal] = useState(false);
+  const [permSaving, setPermSaving] = useState(false);
+  const [permissions, setPermissions] = useState({
     canCreate: false,
-    canRead:   false,
+    canRead: false,
     canUpdate: false,
     canDelete: false,
   });
@@ -465,7 +465,7 @@ const SubresellerDashboard = () => {
     setCreating(false);
     if (res.success) {
       setOpenModel(false);
-      setFormData({ username: "", password: "", fullName: "" });
+      setFormData({ username: "", password: "", fullName: "", email: "" });
       setCurrentPage(1); fetchData(1); await refetchDashboard();
       showToast("Sub-reseller created successfully", "success");
     } else {
@@ -542,15 +542,15 @@ const SubresellerDashboard = () => {
     setPermissions((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const PERM_CONFIG = [
-    { key: "canRead",   label: "View",   description: "Can view dashboard & data",     icon: Eye         },
-    { key: "canCreate", label: "Create", description: "Can create new records",         icon: UserPlus    },
-    { key: "canUpdate", label: "Edit",   description: "Can edit existing records",      icon: Pencil      },
-    { key: "canDelete", label: "Delete", description: "Can permanently delete records", icon: Trash2      },
+    { key: "canRead", label: "View", description: "Can view dashboard & data", icon: Eye },
+    { key: "canCreate", label: "Create", description: "Can create new records", icon: UserPlus },
+    { key: "canUpdate", label: "Edit", description: "Can edit existing records", icon: Pencil },
+    { key: "canDelete", label: "Delete", description: "Can permanently delete records", icon: Trash2 },
   ];
 
   const activeFilterCount = [statusFilter, fromDate, toDate, minCredits, maxCredits].filter(Boolean).length;
-  const hasFilters        = !!(debouncedSearch || activeFilterCount);
-  const showPagination    = totalPages > 1;
+  const hasFilters = !!(debouncedSearch || activeFilterCount);
+  const showPagination = totalPages > 1;
 
   const filterProps = {
     statusFilter, setStatusFilter,
@@ -564,13 +564,13 @@ const SubresellerDashboard = () => {
     onTransfer: handleOpenTransfer,
     onEdit: handleEditOpen,
     onDelete: handleDeleteOpen,
-    copyLabel:     t("admin_dashboard.copy")   || "Copy",
-    copiedLabel:   t("admin_dashboard.copied") || "Copied!",
-    transferLabel: t("transfer")               || "Transfer",
-    editLabel:     t("edit")                   || "Edit",
-    deleteLabel:   t("delete")                 || "Delete",
-    createdLabel:  t("created")                || "Created",
-    coinLabel:     t("coin")                   || "Coins",
+    copyLabel: t("admin_dashboard.copy") || "Copy",
+    copiedLabel: t("admin_dashboard.copied") || "Copied!",
+    transferLabel: t("transfer") || "Transfer",
+    editLabel: t("edit") || "Edit",
+    deleteLabel: t("delete") || "Delete",
+    createdLabel: t("created") || "Created",
+    coinLabel: t("coin") || "Coins",
     truncateId,
   };
 
@@ -814,135 +814,135 @@ const SubresellerDashboard = () => {
       <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-3
                       [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
-      {/* ══ DESKTOP TABLE ═══════════════════════════════════════════════════ */}
-      <div className="hidden lg:block bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
-        <table className="w-full text-sm table-fixed">
-          <colgroup>
-            <col style={{ width: "33%" }} />
-            <col style={{ width: "11%" }} />
-            <col style={{ width: "15%" }} />
-            <col style={{ width: "9%"  }} />
-            <col style={{ width: "32%" }} />
-          </colgroup>
-          <thead>
-            <tr className="bg-gray-100 border-b border-gray-200">
-              {[
-                t("user_details") || "User Details",
-                t("status")       || "Status",
-                t("created")      || "Created",
-                t("coin")         || "Coins",
-                t("action")       || "Actions",
-              ].map((col) => (
-                <th key={col} className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-gray-600 first:text-left">
-                  {col}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {loadingData ? (
-              [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
-            ) : users.length > 0 ? (
-              users.map((user, idx) => (
-                <tr key={user.id}
-                  className={`group transition-colors duration-150 hover:bg-red-50/30 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50/60"}`}>
-                  <td className="px-4 py-3.5 text-left">
-                    <div className="font-bold text-gray-800 text-sm truncate mb-1">{user.fullName}</div>
-                    <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-                      <span className="text-[11px] text-gray-400 font-medium">Username:</span>
-                      <span className="text-[11px] text-blue-600 font-semibold">{user.username}</span>
-                      <CopyButton value={user.username} copiedId={copiedId} onCopy={onCopy}
-                        copyLabel={t("admin_dashboard.copy")||"Copy"} copiedLabel={t("admin_dashboard.copied")||"Copied!"} />
-                    </div>
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-[11px] text-gray-400 font-medium">ID:</span>
-                      <span className="text-[11px] text-[#800000] font-semibold cursor-default" title={user.id}>
-                        {truncateId(user.id)}
-                      </span>
-                      <CopyButton value={user.id} copiedId={copiedId} onCopy={onCopy}
-                        copyLabel={t("admin_dashboard.copy")||"Copy"} copiedLabel={t("admin_dashboard.copied")||"Copied!"} />
-                    </div>
-                  </td>
-                  <td className="px-4 py-3.5 text-center"><StatusBadge active={user.active} /></td>
-                  <td className="px-4 py-3.5 text-center text-xs text-gray-500">{formatDate(user.createdAt)}</td>
-                  <td className="px-4 py-3.5 text-center">
-                    <span className="font-black text-[#800000] text-sm">{user.credits ?? 0}</span>
-                  </td>
-                  <td className="px-4 py-3.5 text-center">
-                    <div className="flex justify-center gap-2">
-                      <button onClick={() => handleOpenTransfer(user)}
-                        className="px-3 py-1.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] text-xs font-bold transition active:scale-95 shadow-sm">
-                        {t("transfer") || "Transfer"}
-                      </button>
-                      <button onClick={() => handleEditOpen(user)}
-                        className="p-1.5 rounded-lg border border-gray-200 hover:border-[#800000] hover:text-[#800000] hover:bg-red-50 text-gray-500 transition active:scale-95"
-                        title={t("edit") || "Edit"}>
-                        <Pencil size={13} />
-                      </button>
-                      <button onClick={() => handleDeleteOpen(user)}
-                        className="p-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-600 hover:border-red-600 hover:text-white transition active:scale-95"
-                        title={t("delete") || "Delete"}>
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
+        {/* ══ DESKTOP TABLE ═══════════════════════════════════════════════════ */}
+        <div className="hidden lg:block bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+          <table className="w-full text-sm table-fixed">
+            <colgroup>
+              <col style={{ width: "33%" }} />
+              <col style={{ width: "11%" }} />
+              <col style={{ width: "15%" }} />
+              <col style={{ width: "9%" }} />
+              <col style={{ width: "32%" }} />
+            </colgroup>
+            <thead>
+              <tr className="bg-gray-100 border-b border-gray-200">
+                {[
+                  t("user_details") || "User Details",
+                  t("status") || "Status",
+                  t("created") || "Created",
+                  t("coin") || "Coins",
+                  t("action") || "Actions",
+                ].map((col) => (
+                  <th key={col} className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-gray-600 first:text-left">
+                    {col}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {loadingData ? (
+                [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
+              ) : users.length > 0 ? (
+                users.map((user, idx) => (
+                  <tr key={user.id}
+                    className={`group transition-colors duration-150 hover:bg-red-50/30 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50/60"}`}>
+                    <td className="px-4 py-3.5 text-left">
+                      <div className="font-bold text-gray-800 text-sm truncate mb-1">{user.fullName}</div>
+                      <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+                        <span className="text-[11px] text-gray-400 font-medium">Username:</span>
+                        <span className="text-[11px] text-blue-600 font-semibold">{user.username}</span>
+                        <CopyButton value={user.username} copiedId={copiedId} onCopy={onCopy}
+                          copyLabel={t("admin_dashboard.copy") || "Copy"} copiedLabel={t("admin_dashboard.copied") || "Copied!"} />
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[11px] text-gray-400 font-medium">ID:</span>
+                        <span className="text-[11px] text-[#800000] font-semibold cursor-default" title={user.id}>
+                          {truncateId(user.id)}
+                        </span>
+                        <CopyButton value={user.id} copiedId={copiedId} onCopy={onCopy}
+                          copyLabel={t("admin_dashboard.copy") || "Copy"} copiedLabel={t("admin_dashboard.copied") || "Copied!"} />
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5 text-center"><StatusBadge active={user.active} /></td>
+                    <td className="px-4 py-3.5 text-center text-xs text-gray-500">{formatDate(user.createdAt)}</td>
+                    <td className="px-4 py-3.5 text-center">
+                      <span className="font-black text-[#800000] text-sm">{user.credits ?? 0}</span>
+                    </td>
+                    <td className="px-4 py-3.5 text-center">
+                      <div className="flex justify-center gap-2">
+                        <button onClick={() => handleOpenTransfer(user)}
+                          className="px-3 py-1.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] text-xs font-bold transition active:scale-95 shadow-sm">
+                          {t("transfer") || "Transfer"}
+                        </button>
+                        <button onClick={() => handleEditOpen(user)}
+                          className="p-1.5 rounded-lg border border-gray-200 hover:border-[#800000] hover:text-[#800000] hover:bg-red-50 text-gray-500 transition active:scale-95"
+                          title={t("edit") || "Edit"}>
+                          <Pencil size={13} />
+                        </button>
+                        <button onClick={() => handleDeleteOpen(user)}
+                          className="p-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-600 hover:border-red-600 hover:text-white transition active:scale-95"
+                          title={t("delete") || "Delete"}>
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="py-12">
+                    <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="py-12">
-                  <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-      {/* ══ TABLET CARDS (2-col) ════════════════════════════════════════════ */}
-      <div className="hidden md:grid lg:hidden grid-cols-2 gap-3">
-        {loadingData ? (
-          [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
-        ) : users.length > 0 ? (
-          <AnimatePresence>
-            {users.map((user) => <SubCard key={user.id} user={user} {...cardProps} />)}
-          </AnimatePresence>
-        ) : (
-          <div className="col-span-2">
+        {/* ══ TABLET CARDS (2-col) ════════════════════════════════════════════ */}
+        <div className="hidden md:grid lg:hidden grid-cols-2 gap-3">
+          {loadingData ? (
+            [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
+          ) : users.length > 0 ? (
+            <AnimatePresence>
+              {users.map((user) => <SubCard key={user.id} user={user} {...cardProps} />)}
+            </AnimatePresence>
+          ) : (
+            <div className="col-span-2">
+              <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
+            </div>
+          )}
+        </div>
+
+        {/* ══ MOBILE CARDS ════════════════════════════════════════════════════ */}
+        <div className="md:hidden space-y-3">
+          {loadingData ? (
+            [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
+          ) : users.length > 0 ? (
+            <AnimatePresence>
+              {users.map((user) => <SubCard key={user.id} user={user} {...cardProps} />)}
+            </AnimatePresence>
+          ) : (
             <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
+          )}
+        </div>
+
+        {/* ══ PAGINATION ═══════════════════════════════════════════════════════ */}
+        {showPagination && (
+          <div className="flex justify-center items-center gap-3 p-3 flex-wrap">
+            <button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}
+              className="text-xs border border-gray-300 px-3 py-1.5 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
+              {t("transaction.prev") || "Prev"}
+            </button>
+            <span className="text-sm font-semibold text-gray-700">
+              {t("transaction.page") || "Page"} {currentPage} {t("transaction.of") || "of"} {totalPages}
+            </span>
+            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage((p) => p + 1)}
+              className="text-xs border border-gray-300 px-3 py-1.5 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
+              {t("transaction.next") || "Next"}
+            </button>
           </div>
         )}
-      </div>
-
-      {/* ══ MOBILE CARDS ════════════════════════════════════════════════════ */}
-      <div className="md:hidden space-y-3">
-        {loadingData ? (
-          [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
-        ) : users.length > 0 ? (
-          <AnimatePresence>
-            {users.map((user) => <SubCard key={user.id} user={user} {...cardProps} />)}
-          </AnimatePresence>
-        ) : (
-          <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
-        )}
-      </div>
-
-      {/* ══ PAGINATION ═══════════════════════════════════════════════════════ */}
-      {showPagination && (
-        <div className="flex justify-center items-center gap-3 p-3 flex-wrap">
-          <button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}
-            className="text-xs border border-gray-300 px-3 py-1.5 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
-            {t("transaction.prev") || "Prev"}
-          </button>
-          <span className="text-sm font-semibold text-gray-700">
-            {t("transaction.page") || "Page"} {currentPage} {t("transaction.of") || "of"} {totalPages}
-          </span>
-          <button disabled={currentPage === totalPages} onClick={() => setCurrentPage((p) => p + 1)}
-            className="text-xs border border-gray-300 px-3 py-1.5 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
-            {t("transaction.next") || "Next"}
-          </button>
-        </div>
-      )}
 
       </div>{/* end scrollable content */}
 
@@ -959,7 +959,7 @@ const SubresellerDashboard = () => {
 
               {/* Header */}
               <div className="bg-[#800000] px-6 pt-6 pb-5 relative">
-                <button onClick={() => { setOpenModel(false); setError(""); setFormData({ username: "", password: "", fullName: "" }); }}
+                <button onClick={() => { setOpenModel(false); setError(""); setFormData({ username: "", password: "", fullName: "", email: "" }); }}
                   className="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/20 p-1.5 rounded-full transition">
                   <MdClose size={20} />
                 </button>
@@ -994,6 +994,11 @@ const SubresellerDashboard = () => {
                   <input className={inputCls} placeholder="e.g. johndoe123"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })} required />
+                </FormField>
+                <FormField label="Email" icon={Mail} required>
+                  <input type="email" className={inputCls} placeholder="e.g. john@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
                 </FormField>
                 <FormField label="Password" icon={Lock} required>
                   <div className="relative">
