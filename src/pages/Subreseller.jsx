@@ -16,8 +16,7 @@ import TransferModal from "../component/TransferModal";
 import { useTranslation } from "react-i18next";
 import { useDashboard } from "../context/dashboardContext";
 
-// ─── Brand Toast — centered in viewport, brand-consistent ─────────────────────
-// type: 'success' | 'error' | 'info'
+// ─── Brand Toast ──────────────────────────────────────────────────────────────
 const BrandToast = ({ toasts }) => (
   <div className="fixed top-5 inset-x-0 z-[99999] flex flex-col items-center gap-2 pointer-events-none px-4">
     <AnimatePresence>
@@ -293,28 +292,23 @@ const EmptyState = ({ hasFilters, noDataLabel, onClear }) => (
 );
 
 // ─── PermissionToggle ─────────────────────────────────────────────────────────
-const PermissionToggle = ({ label, description, icon: Icon, checked, onChange, color }) => (
+const PermissionToggle = ({ label, description, icon: Icon, checked, onChange }) => (
   <div
     onClick={() => onChange(!checked)}
     className={`flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all duration-200 select-none
-      ${checked
-        ? "border-[#800000] bg-[#800000]/[0.04]"
-        : "border-gray-200 bg-gray-50 hover:border-gray-300"}`}
+      ${checked ? "border-[#800000] bg-[#800000]/[0.04]" : "border-gray-200 bg-gray-50 hover:border-gray-300"}`}
   >
     <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-200
       ${checked ? "bg-[#800000] text-white" : "bg-white border border-gray-200 text-gray-400"}`}>
       <Icon size={16} />
     </div>
     <div className="flex-1 min-w-0">
-      <p className={`text-sm font-bold leading-none mb-0.5 transition-colors duration-200
-        ${checked ? "text-[#800000]" : "text-gray-600"}`}>
+      <p className={`text-sm font-bold leading-none mb-0.5 transition-colors duration-200 ${checked ? "text-[#800000]" : "text-gray-600"}`}>
         {label}
       </p>
       <p className="text-[11px] text-gray-400 leading-none">{description}</p>
     </div>
-    {/* Toggle pill */}
-    <div className={`w-10 h-5 rounded-full relative shrink-0 transition-colors duration-200
-      ${checked ? "bg-[#800000]" : "bg-gray-200"}`}>
+    <div className={`w-10 h-5 rounded-full relative shrink-0 transition-colors duration-200 ${checked ? "bg-[#800000]" : "bg-gray-200"}`}>
       <motion.div
         animate={{ x: checked ? 20 : 2 }}
         transition={{ type: "spring", stiffness: 500, damping: 30 }}
@@ -344,51 +338,49 @@ const SubresellerDashboard = () => {
   const { dashboard, refetchDashboard } = useDashboard();
 
   // ── Data ──────────────────────────────────────────────────────────────────
-  const [users, setUsers] = useState([]);
-  const [totalPages, setTotalPages] = useState(1);
+  const [users,       setUsers]       = useState([]);
+  const [totalPages,  setTotalPages]  = useState(1);
+  const [totalUsers,  setTotalUsers]  = useState(0);   // ← ADDED: total count for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingData, setLoadingData] = useState(true);
 
   // ── Search ────────────────────────────────────────────────────────────────
-  const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 450);
+  const [search,        setSearch]        = useState("");
+  const debouncedSearch                   = useDebounce(search, 450);
 
   // ── Filter panel ──────────────────────────────────────────────────────────
-  const [showFilter, setShowFilter] = useState(false);
+  const [showFilter,   setShowFilter]   = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
-  const [minCredits, setMinCredits] = useState("");
-  const [maxCredits, setMaxCredits] = useState("");
+  const [fromDate,     setFromDate]     = useState("");
+  const [toDate,       setToDate]       = useState("");
+  const [minCredits,   setMinCredits]   = useState("");
+  const [maxCredits,   setMaxCredits]   = useState("");
   const debouncedMin = useDebounce(minCredits, 500);
   const debouncedMax = useDebounce(maxCredits, 500);
 
   // ── Modals ────────────────────────────────────────────────────────────────
-  const [openModel, setOpenModel] = useState(false);
-  const [editModal, setEditModal] = useState(false);
+  const [openModel,     setOpenModel]     = useState(false);
+  const [editModal,     setEditModal]     = useState(false);
   const [transferModal, setTransferModal] = useState(false);
-  const [deleteModal, setDeleteModal] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [userToDelete, setUserToDelete] = useState(null);
-  const [editUserId, setEditUserId] = useState(null);
-  const [editData, setEditData] = useState({ fullName: "", email: "", password: "" });
-  const [showEditPwd, setShowEditPwd] = useState(false);
+  const [deleteModal,   setDeleteModal]   = useState(false);
+  const [deleting,      setDeleting]      = useState(false);
+  const [selectedUser,  setSelectedUser]  = useState(null);
+  const [userToDelete,  setUserToDelete]  = useState(null);
+  const [editUserId,    setEditUserId]    = useState(null);
+  const [editData,      setEditData]      = useState({ fullName: "", email: "", password: "" });
+  const [showEditPwd,   setShowEditPwd]   = useState(false);
 
   // ── Create form ───────────────────────────────────────────────────────────
   const [formData, setFormData] = useState({ username: "", password: "", fullName: "", email: "" });
-  const [showPwd, setShowPwd] = useState(false);
+  const [showPwd,  setShowPwd]  = useState(false);
   const [creating, setCreating] = useState(false);
-  const [error, setError] = useState("");
+  const [error,    setError]    = useState("");
 
   // ── Bulk permissions modal ────────────────────────────────────────────────
-  const [permModal, setPermModal] = useState(false);
-  const [permSaving, setPermSaving] = useState(false);
+  const [permModal,   setPermModal]   = useState(false);
+  const [permSaving,  setPermSaving]  = useState(false);
   const [permissions, setPermissions] = useState({
-    canCreate: false,
-    canRead: false,
-    canUpdate: false,
-    canDelete: false,
+    canCreate: false, canRead: false, canUpdate: false, canDelete: false,
   });
 
   // ── Copy ──────────────────────────────────────────────────────────────────
@@ -426,6 +418,7 @@ const SubresellerDashboard = () => {
       if (res.success) {
         setUsers(res.data?.content ?? []);
         setTotalPages(res.data?.totalPages || 1);
+        setTotalUsers(res.data?.totalElements ?? res.data?.content?.length ?? 0); // ← ADDED
       }
     } catch (err) {
       console.error(err); setUsers([]);
@@ -538,19 +531,15 @@ const SubresellerDashboard = () => {
     }
   };
 
-  const togglePerm = (key) =>
-    setPermissions((prev) => ({ ...prev, [key]: !prev[key] }));
-
   const PERM_CONFIG = [
-    { key: "canRead", label: "View", description: "Can view dashboard & data", icon: Eye },
-    { key: "canCreate", label: "Create", description: "Can create new records", icon: UserPlus },
-    { key: "canUpdate", label: "Edit", description: "Can edit existing records", icon: Pencil },
-    { key: "canDelete", label: "Delete", description: "Can permanently delete records", icon: Trash2 },
+    { key: "canRead",   label: "View",   description: "Can view dashboard & data",     icon: Eye      },
+    { key: "canCreate", label: "Create", description: "Can create new records",         icon: UserPlus },
+    { key: "canUpdate", label: "Edit",   description: "Can edit existing records",      icon: Pencil   },
+    { key: "canDelete", label: "Delete", description: "Can permanently delete records", icon: Trash2   },
   ];
 
   const activeFilterCount = [statusFilter, fromDate, toDate, minCredits, maxCredits].filter(Boolean).length;
-  const hasFilters = !!(debouncedSearch || activeFilterCount);
-  const showPagination = totalPages > 1;
+  const hasFilters        = !!(debouncedSearch || activeFilterCount);
 
   const filterProps = {
     statusFilter, setStatusFilter,
@@ -564,42 +553,30 @@ const SubresellerDashboard = () => {
     onTransfer: handleOpenTransfer,
     onEdit: handleEditOpen,
     onDelete: handleDeleteOpen,
-    copyLabel: t("admin_dashboard.copy") || "Copy",
-    copiedLabel: t("admin_dashboard.copied") || "Copied!",
-    transferLabel: t("transfer") || "Transfer",
-    editLabel: t("edit") || "Edit",
-    deleteLabel: t("delete") || "Delete",
-    createdLabel: t("created") || "Created",
-    coinLabel: t("coin") || "Coins",
+    copyLabel:     t("admin_dashboard.copy")   || "Copy",
+    copiedLabel:   t("admin_dashboard.copied") || "Copied!",
+    transferLabel: t("transfer")               || "Transfer",
+    editLabel:     t("edit")                   || "Edit",
+    deleteLabel:   t("delete")                 || "Delete",
+    createdLabel:  t("created")                || "Created",
+    coinLabel:     t("coin")                   || "Coins",
     truncateId,
   };
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     /*
-     * ROOT: h-screen + flex-col so the page never scrolls itself.
-     * The parent layout (sidebar + main) already fills the viewport;
-     * this component just needs to occupy whatever space it's given.
-     * overflow-hidden on root prevents any stray scrollbar.
+     * CHANGE 1: h-full flex flex-col overflow-hidden — sticky header,
+     * only the table/cards region scrolls vertically (no page scroll).
      */
-    <div className="h-full min-h-screen flex flex-col bg-[#f4f4f7] overflow-hidden">
+    <div className="h-full flex flex-col bg-[#f4f4f7] overflow-hidden">
 
-      {/* ══ STICKY HEADER — sticks regardless of parent scroll model ════════ */}
+      {/* ══ STICKY HEADER — title + search + filter + create — never scrolls ══ */}
       <div className="shrink-0 sticky top-0 bg-[#f4f4f7] px-4 pt-4 pb-3 space-y-3 z-30">
 
-        {/*
-         * HEADER LAYOUT
-         * ─────────────────────────────────────────────────────
-         * mobile  (<768px)   : title+subtitle top row, controls full-width row below, buttons icon-only squares
-         * tablet  (768-1023px): same two-row layout, search fills space, buttons icon-only squares
-         * lg      (1024-1279px): ONE ROW — title+subtitle LEFT, controls RIGHT — buttons still icon-only squares
-         * lg       (1024-1279px): ONE ROW — title+subtitle LEFT, controls RIGHT — buttons icon-only squares
-         * xl       (1280-1399px): ONE ROW — title+subtitle LEFT, controls RIGHT — buttons STILL icon-only squares
-         * 1400px+              : ONE ROW — same, buttons expand with text labels
-         */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
 
-          {/* Title + subtitle — always visible, left-aligned at lg+ */}
+          {/* Title + subtitle */}
           <div className="shrink-0">
             <h3 className="font-bold text-[#800000] text-lg leading-tight">
               {t("subreseller_management")}
@@ -609,13 +586,10 @@ const SubresellerDashboard = () => {
             </p>
           </div>
 
-          {/* Controls — full width below title on mobile/tablet, auto-width right of title at lg+ */}
+          {/* Controls */}
           <div className="flex items-center gap-2 w-full lg:w-auto min-w-0">
 
-            {/* Search
-                <lg           : flex-1 fills full row
-                lg–1399px     : fixed 220px — safe beside title
-                1400px+       : wider 280px                        */}
+            {/* Search */}
             <div className="flex items-center rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm
                             flex-1 min-w-0 lg:flex-none lg:w-[220px] min-[1400px]:w-[280px]">
               <div className="relative w-full">
@@ -640,7 +614,7 @@ const SubresellerDashboard = () => {
               </div>
             </div>
 
-            {/* Filter — icon-only square up to 1400px, text label at 1400px+ */}
+            {/* Filter */}
             <div className="relative shrink-0" ref={desktopFilterRef}>
               <motion.button
                 whileTap={{ scale: 0.95 }}
@@ -663,14 +637,12 @@ const SubresellerDashboard = () => {
                 </AnimatePresence>
                 <ChevronDown size={12} className={`hidden min-[1400px]:block transition-transform duration-200 ${showFilter ? "rotate-180" : ""}`} />
               </motion.button>
-              {/* Active count badge — visible below 1400px */}
               {activeFilterCount > 0 && (
                 <span className="min-[1400px]:hidden absolute -top-1 -right-1 w-4 h-4 bg-[#800000] text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-[#f4f4f7]">
                   {activeFilterCount}
                 </span>
               )}
 
-              {/* Filter dropdown (md+) */}
               <AnimatePresence>
                 {showFilter && (
                   <motion.div
@@ -696,7 +668,7 @@ const SubresellerDashboard = () => {
               </AnimatePresence>
             </div>
 
-            {/* Permissions — icon-only square up to 1400px, text at 1400px+ */}
+            {/* Permissions */}
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setPermModal(true)}
@@ -709,7 +681,7 @@ const SubresellerDashboard = () => {
               <span className="hidden min-[1400px]:inline">Permissions</span>
             </motion.button>
 
-            {/* Create — icon-only square up to 1400px, text at 1400px+ */}
+            {/* Create */}
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => { setOpenModel(true); setError(""); }}
@@ -724,7 +696,7 @@ const SubresellerDashboard = () => {
           </div>
         </div>
 
-        {/* Active filter pills — part of sticky header */}
+        {/* Active filter pills */}
         <AnimatePresence>
           {hasFilters && (
             <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
@@ -773,7 +745,6 @@ const SubresellerDashboard = () => {
       <AnimatePresence>
         {showFilter && (
           <>
-            {/* Full-page backdrop — covers sidebar, navbar, everything */}
             <motion.div key="sr-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowFilter(false)}
               className="md:hidden fixed inset-0 bg-black/40 z-[9990]" />
@@ -806,158 +777,174 @@ const SubresellerDashboard = () => {
         )}
       </AnimatePresence>
 
-      {/* ══ SCROLLABLE CONTENT AREA — header stays fixed above ═════════════ */}
       {/*
-       * flex-1 + overflow-y-auto: only this region scrolls.
-       * [scrollbar-width:none] + webkit variant: scroll works but bar is invisible.
+       * OUTER WRAPPER — flex-1 + min-h-0 + flex-col
+       * No overflow here — just divides remaining space into:
+       *   1. table/cards area (flex-1, scrolls when rows overflow)
+       *   2. pagination (shrink-0, always visible at bottom)
        */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-3
-                      [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex-1 min-h-0 flex flex-col px-4 pb-3 gap-3">
 
-        {/* ══ DESKTOP TABLE ═══════════════════════════════════════════════════ */}
-        <div className="hidden lg:block bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
-          <table className="w-full text-sm table-fixed">
-            <colgroup>
-              <col style={{ width: "33%" }} />
-              <col style={{ width: "11%" }} />
-              <col style={{ width: "15%" }} />
-              <col style={{ width: "9%" }} />
-              <col style={{ width: "32%" }} />
-            </colgroup>
-            <thead>
-              <tr className="bg-gray-100 border-b border-gray-200">
-                {[
-                  t("user_details") || "User Details",
-                  t("status") || "Status",
-                  t("created") || "Created",
-                  t("coin") || "Coins",
-                  t("action") || "Actions",
-                ].map((col) => (
-                  <th key={col} className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-gray-600 first:text-left">
-                    {col}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {loadingData ? (
-                [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
-              ) : users.length > 0 ? (
-                users.map((user, idx) => (
-                  <tr key={user.id}
-                    className={`group transition-colors duration-150 hover:bg-red-50/30 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50/60"}`}>
-                    <td className="px-4 py-3.5 text-left">
-                      <div className="font-bold text-gray-800 text-sm truncate mb-1">{user.fullName}</div>
-                      <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-                        <span className="text-[11px] text-gray-400 font-medium">Username:</span>
-                        <span className="text-[11px] text-blue-600 font-semibold">{user.username}</span>
-                        <CopyButton value={user.username} copiedId={copiedId} onCopy={onCopy}
-                          copyLabel={t("admin_dashboard.copy") || "Copy"} copiedLabel={t("admin_dashboard.copied") || "Copied!"} />
-                      </div>
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-[11px] text-gray-400 font-medium">ID:</span>
-                        <span className="text-[11px] text-[#800000] font-semibold cursor-default" title={user.id}>
-                          {truncateId(user.id)}
-                        </span>
-                        <CopyButton value={user.id} copiedId={copiedId} onCopy={onCopy}
-                          copyLabel={t("admin_dashboard.copy") || "Copy"} copiedLabel={t("admin_dashboard.copied") || "Copied!"} />
-                      </div>
-                    </td>
-                    <td className="px-4 py-3.5 text-center"><StatusBadge active={user.active} /></td>
-                    <td className="px-4 py-3.5 text-center text-xs text-gray-500">{formatDate(user.createdAt)}</td>
-                    <td className="px-4 py-3.5 text-center">
-                      <span className="font-black text-[#800000] text-sm">{user.credits ?? 0}</span>
-                    </td>
-                    <td className="px-4 py-3.5 text-center">
-                      <div className="flex justify-center gap-2">
-                        <button onClick={() => handleOpenTransfer(user)}
-                          className="px-3 py-1.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] text-xs font-bold transition active:scale-95 shadow-sm">
-                          {t("transfer") || "Transfer"}
-                        </button>
-                        <button onClick={() => handleEditOpen(user)}
-                          className="p-1.5 rounded-lg border border-gray-200 hover:border-[#800000] hover:text-[#800000] hover:bg-red-50 text-gray-500 transition active:scale-95"
-                          title={t("edit") || "Edit"}>
-                          <Pencil size={13} />
-                        </button>
-                        <button onClick={() => handleDeleteOpen(user)}
-                          className="p-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-600 hover:border-red-600 hover:text-white transition active:scale-95"
-                          title={t("delete") || "Delete"}>
-                          <Trash2 size={13} />
-                        </button>
-                      </div>
+        {/* ══ DESKTOP TABLE (lg+) — scrolls vertically when rows exceed space ══ */}
+        <div className="hidden lg:flex flex-col flex-1 min-h-0 bg-white rounded-xl shadow border border-gray-200">
+          {/* Horizontal scroll wrapper */}
+          <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto rounded-xl
+                          [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <table className="w-full text-sm min-w-[680px]">
+              <colgroup>
+                <col style={{ width: "33%" }} />
+                <col style={{ width: "11%" }} />
+                <col style={{ width: "15%" }} />
+                <col style={{ width: "9%"  }} />
+                <col style={{ width: "32%" }} />
+              </colgroup>
+              <thead className="sticky top-0 z-10">
+                <tr className="bg-gray-100 border-b border-gray-200">
+                  {[
+                    t("user_details")  || "User Details",
+                    t("status")        || "Status",
+                    t("created")       || "Created",
+                    t("coin")          || "Coins",
+                    t("action")        || "Actions",
+                  ].map((col) => (
+                    <th key={col} className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-gray-600 first:text-left">
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {loadingData ? (
+                  [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
+                ) : users.length > 0 ? (
+                  users.map((user, idx) => (
+                    <tr key={user.id}
+                      className={`group transition-colors duration-150 hover:bg-red-50/30 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50/60"}`}>
+                      <td className="px-4 py-3.5 text-left">
+                        <div className="font-bold text-gray-800 text-sm truncate mb-1">{user.fullName}</div>
+                        <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+                          <span className="text-[11px] text-gray-400 font-medium">Username:</span>
+                          <span className="text-[11px] text-blue-600 font-semibold">{user.username}</span>
+                          <CopyButton value={user.username} copiedId={copiedId} onCopy={onCopy}
+                            copyLabel={t("admin_dashboard.copy")||"Copy"} copiedLabel={t("admin_dashboard.copied")||"Copied!"} />
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-[11px] text-gray-400 font-medium">ID:</span>
+                          <span className="text-[11px] text-[#800000] font-semibold cursor-default" title={user.id}>
+                            {truncateId(user.id)}
+                          </span>
+                          <CopyButton value={user.id} copiedId={copiedId} onCopy={onCopy}
+                            copyLabel={t("admin_dashboard.copy")||"Copy"} copiedLabel={t("admin_dashboard.copied")||"Copied!"} />
+                        </div>
+                      </td>
+                      <td className="px-4 py-3.5 text-center"><StatusBadge active={user.active} /></td>
+                      <td className="px-4 py-3.5 text-center text-xs text-gray-500">{formatDate(user.createdAt)}</td>
+                      <td className="px-4 py-3.5 text-center">
+                        <span className="font-black text-[#800000] text-sm">{user.credits ?? 0}</span>
+                      </td>
+                      <td className="px-4 py-3.5 text-center">
+                        <div className="flex justify-center gap-2">
+                          <button onClick={() => handleOpenTransfer(user)}
+                            className="px-3 py-1.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] text-xs font-bold transition active:scale-95 shadow-sm">
+                            {t("transfer") || "Transfer"}
+                          </button>
+                          <button onClick={() => handleEditOpen(user)}
+                            className="p-1.5 rounded-lg border border-gray-200 hover:border-[#800000] hover:text-[#800000] hover:bg-red-50 text-gray-500 transition active:scale-95"
+                            title={t("edit") || "Edit"}>
+                            <Pencil size={13} />
+                          </button>
+                          <button onClick={() => handleDeleteOpen(user)}
+                            className="p-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-600 hover:border-red-600 hover:text-white transition active:scale-95"
+                            title={t("delete") || "Delete"}>
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="py-12">
+                      <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" className="py-12">
-                    <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* ══ TABLET CARDS (2-col) ════════════════════════════════════════════ */}
-        <div className="hidden md:grid lg:hidden grid-cols-2 gap-3">
-          {loadingData ? (
-            [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
-          ) : users.length > 0 ? (
-            <AnimatePresence>
-              {users.map((user) => <SubCard key={user.id} user={user} {...cardProps} />)}
-            </AnimatePresence>
-          ) : (
-            <div className="col-span-2">
-              <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
-            </div>
-          )}
-        </div>
-
-        {/* ══ MOBILE CARDS ════════════════════════════════════════════════════ */}
-        <div className="md:hidden space-y-3">
-          {loadingData ? (
-            [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
-          ) : users.length > 0 ? (
-            <AnimatePresence>
-              {users.map((user) => <SubCard key={user.id} user={user} {...cardProps} />)}
-            </AnimatePresence>
-          ) : (
-            <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
-          )}
-        </div>
-
-        {/* ══ PAGINATION ═══════════════════════════════════════════════════════ */}
-        {showPagination && (
-          <div className="flex justify-center items-center gap-3 p-3 flex-wrap">
-            <button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}
-              className="text-xs border border-gray-300 px-3 py-1.5 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
-              {t("transaction.prev") || "Prev"}
-            </button>
-            <span className="text-sm font-semibold text-gray-700">
-              {t("transaction.page") || "Page"} {currentPage} {t("transaction.of") || "of"} {totalPages}
-            </span>
-            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage((p) => p + 1)}
-              className="text-xs border border-gray-300 px-3 py-1.5 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
-              {t("transaction.next") || "Next"}
-            </button>
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
+        </div>
 
-      </div>{/* end scrollable content */}
+        {/* ══ TABLET CARDS (md–lg) — scrollable block ═════════════════════ */}
+        <div className="hidden md:block lg:hidden flex-1 min-h-0 overflow-y-auto
+                        [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="grid grid-cols-2 gap-3 pb-2">
+            {loadingData ? (
+              [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
+            ) : users.length > 0 ? (
+              <AnimatePresence>
+                {users.map((user) => <SubCard key={user.id} user={user} {...cardProps} />)}
+              </AnimatePresence>
+            ) : (
+              <div className="col-span-2">
+                <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
+              </div>
+            )}
+          </div>
+        </div>
 
-      {/* ══ CREATE MODAL
-           Backdrop: fixed, but left edge starts after sidebar on md+.
-           This means the dark overlay only covers the content area.
-           The modal card centers within that remaining space.              */}
+        {/* ══ MOBILE CARDS (< md) — scrollable block ══════════════════════ */}
+        <div className="md:hidden flex-1 min-h-0 overflow-y-auto
+                        [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="space-y-3 pb-2">
+            {loadingData ? (
+              [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
+            ) : users.length > 0 ? (
+              <AnimatePresence>
+                {users.map((user) => <SubCard key={user.id} user={user} {...cardProps} />)}
+              </AnimatePresence>
+            ) : (
+              <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
+            )}
+          </div>
+        </div>
+
+        {/* ══ PAGINATION — always visible, shows total count even on 1 page ══ */}
+          <div className="shrink-0 flex flex-col items-center gap-1.5 py-2 bg-[#f4f4f7]">
+            <div className="flex items-center gap-3">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((p) => p - 1)}
+                className="text-xs border border-gray-300 px-3 py-1.5 rounded-lg bg-white hover:bg-gray-50
+                           disabled:opacity-40 disabled:cursor-not-allowed transition font-semibold text-gray-600">
+                ← {t("transaction.prev") || "Prev"}
+              </button>
+              <div className="flex items-center gap-1.5 px-4 py-1.5 bg-white border border-gray-200 rounded-lg">
+                <span className="text-xs font-bold text-[#800000]">{currentPage}</span>
+                <span className="text-xs text-gray-400">/</span>
+                <span className="text-xs font-semibold text-gray-600">{totalPages}</span>
+              </div>
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((p) => p + 1)}
+                className="text-xs border border-gray-300 px-3 py-1.5 rounded-lg bg-white hover:bg-gray-50
+                           disabled:opacity-40 disabled:cursor-not-allowed transition font-semibold text-gray-600">
+                {t("transaction.next") || "Next"} →
+              </button>
+            </div>
+            <span className="text-[10px] text-gray-400 font-medium">
+              {totalUsers} {totalUsers === 1 ? "sub-reseller" : "sub-resellers"}
+            </span>
+          </div>
+
+      </div>{/* end outer flex column */}
+
+      {/* ══ CREATE MODAL ═════════════════════════════════════════════════════ */}
       <AnimatePresence>
         {openModel && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed top-0 right-0 bottom-0 left-0 md:left-[240px] lg:left-[260px] bg-black/60 z-[9999] flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-
-              {/* Header */}
               <div className="bg-[#800000] px-6 pt-6 pb-5 relative">
                 <button onClick={() => { setOpenModel(false); setError(""); setFormData({ username: "", password: "", fullName: "", email: "" }); }}
                   className="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/20 p-1.5 rounded-full transition">
@@ -975,8 +962,6 @@ const SubresellerDashboard = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Body */}
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 {error && (
                   <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
@@ -1199,7 +1184,7 @@ const SubresellerDashboard = () => {
         refreshData={async () => { await fetchData(currentPage); await refetchDashboard(); }}
       />
 
-      {/* ══ BRAND TOAST — centered at top, brand-consistent ══════════════════ */}
+      {/* ══ BRAND TOAST ══════════════════════════════════════════════════════ */}
       <BrandToast toasts={toasts} />
     </div>
   );

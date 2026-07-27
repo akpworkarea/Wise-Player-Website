@@ -356,8 +356,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className=" bg-[#f4f4f7] w-full overflow-x-hidden">
-
+   <div className="h-full flex flex-col overflow-hidden bg-[#f4f4f7]">
+     <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 pt-4 pb-4
+                    [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {/* ── PAGE HEADER ─────────────────────────────────────────────────── */}
       <div className="flex flex-row items-center justify-between gap-2 mb-5">
         <h5 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-500 truncate min-w-0">
@@ -487,6 +488,7 @@ const Dashboard = () => {
         {activeTab === "subreseller" && <SubReseller />}
 
       </div>
+    </div>
     </div>
   );
 };

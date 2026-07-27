@@ -386,13 +386,13 @@ const handleProfileUpdated = (updated) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#f4f4f7] overflow-x-hidden">
+   <div className="h-screen bg-[#f4f4f7] ">
 
       {/* ── PUBLIC NAVBAR ── */}
       {!hideNavbar && !isAdmin && <Navbar />}
 
       {isAdmin ? (
-        <div className="flex min-h-screen w-full overflow-x-hidden">
+        <div className="flex h-full w-full overflow-hidden">
 
           <Sidebar
             collapsed={collapsed}
@@ -402,11 +402,23 @@ const handleProfileUpdated = (updated) => {
           />
 
           {/* ── MAIN CONTENT ── */}
-          <div className={`
-            flex-1 bg-[#f4f4f7] transition-all duration-300
-            ml-0 w-full min-w-0 overflow-x-hidden
-            ${collapsed ? 'md:ml-[72px]' : 'md:ml-[240px] lg:ml-[260px]'}
-          `}>
+          <div
+  className={`
+    flex-1
+    flex
+    flex-col
+    h-full
+    min-h-0
+    bg-[#f4f4f7]
+    transition-all
+    duration-300
+    ml-0
+    w-full
+    min-w-0
+    overflow-hidden
+    ${collapsed ? 'md:ml-[72px]' : 'md:ml-[240px] lg:ml-[260px]'}
+`}
+>
 
             {/* ── TOPBAR — fixed, never scrolls ── */}
             <div className={`
@@ -524,9 +536,16 @@ const handleProfileUpdated = (updated) => {
             </div>
 
             {/* ── PAGE CONTENT ── */}
-            <div className="p-4 pt-[76px] w-full min-w-0 overflow-x-hidden">
-              {children}
-            </div>
+           {/* ── PAGE CONTENT ── */}
+{/* shrink-0 spacer = topbar height. This is the fix:
+    pt-16 adds padding INSIDE the flex child, making h-full
+    = viewport + 64px extra → causes overflow.
+    A sibling spacer div correctly reserves 64px before the
+    content area, so child h-full = exactly remaining height. */}
+<div className="shrink-0 h-16" />
+<main className="flex-1 min-h-0 overflow-hidden">
+  {children}
+</main>
           </div>
         </div>
 
