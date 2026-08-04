@@ -3,13 +3,14 @@ import {
   UserPlus, Pencil, Trash2, Search, X, Filter, ChevronDown,
   SlidersHorizontal, Calendar, Coins, ShieldCheck, AlertTriangle,
   ShieldAlert, Eye, EyeOff, User, Lock, AtSign, Layers, Mail,
-  CheckCircle2, XCircle, Info,
+  CheckCircle2, XCircle, Info, KeyRound, RefreshCw, History, Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdClose } from "react-icons/md";
 import {
   createReseller, getAllResellerInfo, updateSubReseller,
   deleteSubReseller, updateBulkPermissions,
+  updateIndividualPermission,
 } from "../auth/reSeller";
 import { formatDate } from "../auth/utilfunction";
 import TransferModal from "../component/TransferModal";
@@ -219,9 +220,9 @@ const SkeletonRow = () => (
 
 // ─── SubCard ──────────────────────────────────────────────────────────────────
 const SubCard = ({
-  user, copiedId, onCopy, onTransfer, onEdit, onDelete,
+  user, copiedId, onCopy, onTransfer, onEdit, onDelete, onPermissions, hasOverride,
   copyLabel, copiedLabel, truncateId,
-  transferLabel, editLabel, deleteLabel, createdLabel, coinLabel,
+  transferLabel, editLabel, deleteLabel, permissionsLabel, createdLabel, coinLabel,
 }) => (
   <motion.div
     initial={{ opacity: 0, y: 8 }}
@@ -264,6 +265,13 @@ const SubCard = ({
         className="flex-1 py-2.5 rounded-xl bg-[#800000] text-white text-sm font-bold hover:bg-[#6a0000] transition active:scale-95">
         {transferLabel}
       </button>
+      <button onClick={() => onPermissions(user)} title={permissionsLabel}
+        className="relative w-10 h-10 shrink-0 flex items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:border-[#800000] hover:text-[#800000] hover:bg-red-50 transition active:scale-95">
+        <KeyRound size={15} />
+        {hasOverride(user.id) && (
+          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-500 border-2 border-white" />
+        )}
+      </button>
       <button onClick={() => onEdit(user)} title={editLabel}
         className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:border-[#800000] hover:text-[#800000] hover:bg-red-50 transition active:scale-95">
         <Pencil size={15} />
@@ -291,32 +299,57 @@ const EmptyState = ({ hasFilters, noDataLabel, onClear }) => (
   </div>
 );
 
-// ─── PermissionToggle ─────────────────────────────────────────────────────────
+// ─── PermissionToggle — single labeled switch row ──────────────────────────
 const PermissionToggle = ({ label, description, icon: Icon, checked, onChange }) => (
-  <div
+  <button
+    type="button"
     onClick={() => onChange(!checked)}
-    className={`flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all duration-200 select-none
-      ${checked ? "border-[#800000] bg-[#800000]/[0.04]" : "border-gray-200 bg-gray-50 hover:border-gray-300"}`}
+    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition
+      ${checked ? "bg-red-50 border-[#800000]/30" : "bg-[#f4f4f7] border-transparent hover:border-gray-200"}`}
   >
-    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-200
-      ${checked ? "bg-[#800000] text-white" : "bg-white border border-gray-200 text-gray-400"}`}>
-      <Icon size={16} />
+    <div className={`w-8 h-8 shrink-0 rounded-lg flex items-center justify-center
+      ${checked ? "bg-[#800000] text-white" : "bg-white text-gray-400 border border-gray-200"}`}>
+      <Icon size={14} />
     </div>
     <div className="flex-1 min-w-0">
-      <p className={`text-sm font-bold leading-none mb-0.5 transition-colors duration-200 ${checked ? "text-[#800000]" : "text-gray-600"}`}>
-        {label}
-      </p>
-      <p className="text-[11px] text-gray-400 leading-none">{description}</p>
+      <div className={`text-sm font-bold ${checked ? "text-[#800000]" : "text-gray-700"}`}>{label}</div>
+      {description && <div className="text-[11px] text-gray-500 mt-0.5">{description}</div>}
     </div>
-    <div className={`w-10 h-5 rounded-full relative shrink-0 transition-colors duration-200 ${checked ? "bg-[#800000]" : "bg-gray-200"}`}>
-      <motion.div
-        animate={{ x: checked ? 20 : 2 }}
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm"
+    <span
+      role="switch"
+      aria-checked={checked}
+      className={`relative shrink-0 w-10 h-6 rounded-full transition-colors duration-200
+        ${checked ? "bg-[#800000]" : "bg-gray-300"}`}
+    >
+      <span
+        className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200
+          ${checked ? "translate-x-4" : "translate-x-0"}`}
       />
-    </div>
-  </div>
+    </span>
+  </button>
 );
+
+// ─── PermissionsPanel — shared toggle grid w/ skeleton state ───────────────
+const PermissionsPanel = ({ permissions, onChange, loading, config }) => {
+  if (loading) {
+    return (
+      <div className="space-y-2.5">
+        {config.map((c) => (
+          <div key={c.key} className="h-[62px] rounded-xl bg-gray-100 animate-pulse" />
+        ))}
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-2.5">
+      {config.map(({ key, label, description, icon }) => (
+        <PermissionToggle key={key} label={label} description={description} icon={icon}
+          checked={permissions[key]}
+          onChange={(val) => onChange(key, val)} />
+      ))}
+    </div>
+  );
+};
 
 // ─── FormField ────────────────────────────────────────────────────────────────
 const FormField = ({ label, icon: Icon, required, children }) => (
@@ -340,7 +373,7 @@ const SubresellerDashboard = () => {
   // ── Data ──────────────────────────────────────────────────────────────────
   const [users,       setUsers]       = useState([]);
   const [totalPages,  setTotalPages]  = useState(1);
-  const [totalUsers,  setTotalUsers]  = useState(0);   // ← ADDED: total count for pagination
+  const [totalUsers,  setTotalUsers]  = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingData, setLoadingData] = useState(true);
 
@@ -376,15 +409,28 @@ const SubresellerDashboard = () => {
   const [creating, setCreating] = useState(false);
   const [error,    setError]    = useState("");
 
-  // ── Bulk permissions modal ────────────────────────────────────────────────
-  const [permModal,   setPermModal]   = useState(false);
-  const [permSaving,  setPermSaving]  = useState(false);
-  const [permissions, setPermissions] = useState({
+  // ── Permission sync (bulk + individual) ──────────────────────────────────
+  // NOTE: role-level defaults now arrive embedded in the sub-resellers list
+  // response (`bulkPermissions`), and each user row already carries its own
+  // canCreate/canRead/canUpdate/canDelete — so there's no separate
+  // /api/admin/crud-permissions call anymore. Everything below is hydrated
+  // straight out of fetchData().
+  const [permModal,       setPermModal]       = useState(false);
+  const [permInitialized, setPermInitialized] = useState(false); // true once bulkPermissions has arrived at least once
+  const [permSaving,      setPermSaving]      = useState(false);
+  const [permissions,     setPermissions]     = useState({
     canCreate: false, canRead: false, canUpdate: false, canDelete: false,
   });
+  const [permUpdatedAt,   setPermUpdatedAt]   = useState(null);
 
-  // ── Copy ──────────────────────────────────────────────────────────────────
-  const [copiedId, setCopiedId] = useState(null);
+  const [indivModal,        setIndivModal]        = useState(false);
+  const [indivUser,         setIndivUser]         = useState(null);
+  const [indivPermissions,  setIndivPermissions]  = useState({
+    canCreate: false, canRead: false, canUpdate: false, canDelete: false,
+  });
+  const [indivUpdatedAt,    setIndivUpdatedAt]    = useState(null);
+  const [indivRecent,       setIndivRecent]       = useState(false);
+  const [indivSaving,       setIndivSaving]       = useState(false);
 
   // ── Brand toasts ──────────────────────────────────────────────────────────
   const [toasts, setToasts] = useState([]);
@@ -395,6 +441,8 @@ const SubresellerDashboard = () => {
   }, []);
 
   const desktopFilterRef = useRef(null);
+  const fetchAbortRef = useRef(null);
+  const fetchSeqRef   = useRef(0);
 
   useEffect(() => {
     const h = (e) => {
@@ -405,27 +453,57 @@ const SubresellerDashboard = () => {
     return () => document.removeEventListener("mousedown", h);
   }, []);
 
+  // ── Copy ──────────────────────────────────────────────────────────────────
+  const [copiedId, setCopiedId] = useState(null);
+
   // ── Fetch ─────────────────────────────────────────────────────────────────
   const fetchData = useCallback(async (page = 1) => {
-    setLoadingData(true);
-    try {
-      const res = await getAllResellerInfo(
-        page - 1, 20,
-        debouncedSearch, statusFilter,
-        fromDate, toDate,
-        debouncedMin, debouncedMax,
-      );
-      if (res.success) {
-        setUsers(res.data?.content ?? []);
-        setTotalPages(res.data?.totalPages || 1);
-        setTotalUsers(res.data?.totalElements ?? res.data?.content?.length ?? 0); // ← ADDED
+  // cancel whatever is still in flight
+  if (fetchAbortRef.current) fetchAbortRef.current.abort();
+  const controller = new AbortController();
+  fetchAbortRef.current = controller;
+  const seq = ++fetchSeqRef.current;
+
+  setLoadingData(true);
+  try {
+    const res = await getAllResellerInfo(
+      page - 1, 20,
+      debouncedSearch, statusFilter,
+      fromDate, toDate,
+      debouncedMin, debouncedMax,
+      controller.signal,           // NEW
+    );
+
+    // a newer fetchData call has since started — ignore this stale result
+    if (seq !== fetchSeqRef.current || res.cancelled) return;
+
+    if (res.success) {
+      setUsers(res.data?.content ?? []);
+      setTotalPages(res.data?.totalPages || 1);
+      setTotalUsers(res.data?.totalElements ?? res.data?.content?.length ?? 0);
+
+      const bp = res.data?.bulkPermissions;
+      if (bp) {
+        setPermissions({
+          canCreate: !!bp.canCreate,
+          canRead:   !!bp.canRead,
+          canUpdate: !!bp.canUpdate,
+          canDelete: !!bp.canDelete,
+        });
+        setPermUpdatedAt(bp.updatedAt ?? null);
+        setPermInitialized(true);
       }
-    } catch (err) {
-      console.error(err); setUsers([]);
-    } finally {
-      setLoadingData(false);
+    } else {
+      showToast(res.message || "Failed to load sub-resellers", "error");
     }
-  }, [debouncedSearch, statusFilter, fromDate, toDate, debouncedMin, debouncedMax]);
+  } catch (err) {
+    if (seq === fetchSeqRef.current) { console.error(err); setUsers([]); }
+  } finally {
+    if (seq === fetchSeqRef.current) setLoadingData(false);
+  }
+}, [debouncedSearch, statusFilter, fromDate, toDate, debouncedMin, debouncedMax, showToast]);
+
+useEffect(() => () => fetchAbortRef.current?.abort(), []);
 
   useEffect(() => { setCurrentPage(1); },
     [debouncedSearch, statusFilter, fromDate, toDate, debouncedMin, debouncedMax]);
@@ -443,6 +521,22 @@ const SubresellerDashboard = () => {
     if (!id) return "—";
     if (id.length <= start + end) return id;
     return `${id.slice(0, start)}…${id.slice(-end)}`;
+  };
+
+  const timeAgo = (iso) => {
+    if (!iso) return null;
+    const diffMs = Date.now() - new Date(iso).getTime();
+    const mins = Math.floor(diffMs / 60000);
+    if (mins < 1) return "just now";
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    return `${Math.floor(hrs / 24)}d ago`;
+  };
+
+  const isRecentlyChanged = (iso, windowMs = 5 * 60 * 1000) => {
+    if (!iso) return false;
+    return (Date.now() - new Date(iso).getTime()) < windowMs;
   };
 
   const clearFilters = () => {
@@ -526,6 +620,46 @@ const SubresellerDashboard = () => {
     if (res.success) {
       showToast("Permissions applied to all sub-resellers", "success");
       setPermModal(false);
+      fetchData(currentPage); // resync bulkPermissions + per-user CRUD flags
+    } else {
+      showToast(res.message || "Failed to update permissions", "error");
+    }
+  };
+
+  // A row is "overridden" when its own CRUD flags differ from the role defaults.
+  const hasOverride = (userId) => {
+    const u = users.find((x) => x.id === userId);
+    if (!u) return false;
+    return (
+      u.canCreate !== permissions.canCreate ||
+      u.canRead   !== permissions.canRead   ||
+      u.canUpdate !== permissions.canUpdate ||
+      u.canDelete !== permissions.canDelete
+    );
+  };
+
+  const openIndivPerm = (user) => {
+    setIndivUser(user);
+    setIndivPermissions({
+      canCreate: user.canCreate ?? permissions.canCreate,
+      canRead:   user.canRead   ?? permissions.canRead,
+      canUpdate: user.canUpdate ?? permissions.canUpdate,
+      canDelete: user.canDelete ?? permissions.canDelete,
+    });
+    setIndivUpdatedAt(user.updatedAt ?? null);
+    setIndivRecent(isRecentlyChanged(user.updatedAt));
+    setIndivModal(true);
+  };
+
+  const handleIndivPermSave = async () => {
+    if (!indivUser) return;
+    setIndivSaving(true);
+    const res = await updateIndividualPermission(indivUser.id, indivPermissions);
+    setIndivSaving(false);
+    if (res.success) {
+      showToast(`Permissions updated for "${indivUser.fullName}"`, "success");
+      setIndivModal(false);
+      fetchData(currentPage); // resync this user's CRUD flags + updatedAt
     } else {
       showToast(res.message || "Failed to update permissions", "error");
     }
@@ -553,11 +687,14 @@ const SubresellerDashboard = () => {
     onTransfer: handleOpenTransfer,
     onEdit: handleEditOpen,
     onDelete: handleDeleteOpen,
+    onPermissions: openIndivPerm,
+    hasOverride,
     copyLabel:     t("admin_dashboard.copy")   || "Copy",
     copiedLabel:   t("admin_dashboard.copied") || "Copied!",
     transferLabel: t("transfer")               || "Transfer",
     editLabel:     t("edit")                   || "Edit",
     deleteLabel:   t("delete")                 || "Delete",
+    permissionsLabel: "Permissions",
     createdLabel:  t("created")                || "Created",
     coinLabel:     t("coin")                   || "Coins",
     truncateId,
@@ -565,10 +702,6 @@ const SubresellerDashboard = () => {
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    /*
-     * CHANGE 1: h-full flex flex-col overflow-hidden — sticky header,
-     * only the table/cards region scrolls vertically (no page scroll).
-     */
     <div className="h-full flex flex-col bg-[#f4f4f7] overflow-hidden">
 
       {/* ══ STICKY HEADER — title + search + filter + create — never scrolls ══ */}
@@ -777,17 +910,10 @@ const SubresellerDashboard = () => {
         )}
       </AnimatePresence>
 
-      {/*
-       * OUTER WRAPPER — flex-1 + min-h-0 + flex-col
-       * No overflow here — just divides remaining space into:
-       *   1. table/cards area (flex-1, scrolls when rows overflow)
-       *   2. pagination (shrink-0, always visible at bottom)
-       */}
       <div className="flex-1 min-h-0 flex flex-col px-4 pb-3 gap-3">
 
         {/* ══ DESKTOP TABLE (lg+) — scrolls vertically when rows exceed space ══ */}
         <div className="hidden lg:flex flex-col flex-1 min-h-0 bg-white rounded-xl shadow border border-gray-200">
-          {/* Horizontal scroll wrapper */}
           <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto rounded-xl
                           [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <table className="w-full text-sm min-w-[680px]">
@@ -847,6 +973,14 @@ const SubresellerDashboard = () => {
                           <button onClick={() => handleOpenTransfer(user)}
                             className="px-3 py-1.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] text-xs font-bold transition active:scale-95 shadow-sm">
                             {t("transfer") || "Transfer"}
+                          </button>
+                          <button onClick={() => openIndivPerm(user)}
+                            className="relative p-1.5 rounded-lg border border-gray-200 hover:border-[#800000] hover:text-[#800000] hover:bg-red-50 text-gray-500 transition active:scale-95"
+                            title="Permissions">
+                            <KeyRound size={13} />
+                            {hasOverride(user.id) && (
+                              <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500 border border-white" />
+                            )}
                           </button>
                           <button onClick={() => handleEditOpen(user)}
                             className="p-1.5 rounded-lg border border-gray-200 hover:border-[#800000] hover:text-[#800000] hover:bg-red-50 text-gray-500 transition active:scale-95"
@@ -909,32 +1043,32 @@ const SubresellerDashboard = () => {
         </div>
 
         {/* ══ PAGINATION — always visible, shows total count even on 1 page ══ */}
-          <div className="shrink-0 flex flex-col items-center gap-1.5 py-2 bg-[#f4f4f7]">
-            <div className="flex items-center gap-3">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((p) => p - 1)}
-                className="text-xs border border-gray-300 px-3 py-1.5 rounded-lg bg-white hover:bg-gray-50
-                           disabled:opacity-40 disabled:cursor-not-allowed transition font-semibold text-gray-600">
-                ← {t("transaction.prev") || "Prev"}
-              </button>
-              <div className="flex items-center gap-1.5 px-4 py-1.5 bg-white border border-gray-200 rounded-lg">
-                <span className="text-xs font-bold text-[#800000]">{currentPage}</span>
-                <span className="text-xs text-gray-400">/</span>
-                <span className="text-xs font-semibold text-gray-600">{totalPages}</span>
-              </div>
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((p) => p + 1)}
-                className="text-xs border border-gray-300 px-3 py-1.5 rounded-lg bg-white hover:bg-gray-50
-                           disabled:opacity-40 disabled:cursor-not-allowed transition font-semibold text-gray-600">
-                {t("transaction.next") || "Next"} →
-              </button>
+        <div className="shrink-0 flex flex-col items-center gap-1.5 py-2 bg-[#f4f4f7]">
+          <div className="flex items-center gap-3">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => p - 1)}
+              className="text-xs border border-gray-300 px-3 py-1.5 rounded-lg bg-white hover:bg-gray-50
+                         disabled:opacity-40 disabled:cursor-not-allowed transition font-semibold text-gray-600">
+              ← {t("transaction.prev") || "Prev"}
+            </button>
+            <div className="flex items-center gap-1.5 px-4 py-1.5 bg-white border border-gray-200 rounded-lg">
+              <span className="text-xs font-bold text-[#800000]">{currentPage}</span>
+              <span className="text-xs text-gray-400">/</span>
+              <span className="text-xs font-semibold text-gray-600">{totalPages}</span>
             </div>
-            <span className="text-[10px] text-gray-400 font-medium">
-              {totalUsers} {totalUsers === 1 ? "sub-reseller" : "sub-resellers"}
-            </span>
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => p + 1)}
+              className="text-xs border border-gray-300 px-3 py-1.5 rounded-lg bg-white hover:bg-gray-50
+                         disabled:opacity-40 disabled:cursor-not-allowed transition font-semibold text-gray-600">
+              {t("transaction.next") || "Next"} →
+            </button>
           </div>
+          <span className="text-[10px] text-gray-400 font-medium">
+            {totalUsers} {totalUsers === 1 ? "sub-reseller" : "sub-resellers"}
+          </span>
+        </div>
 
       </div>{/* end outer flex column */}
 
@@ -1137,31 +1271,36 @@ const SubresellerDashboard = () => {
                   <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" />
                   <p className="text-xs text-amber-700 font-medium leading-relaxed">
                     These settings apply to <span className="font-bold">all sub-resellers</span> under your account at once.
+                    Individual overrides you've set will stay untouched until edited.
                   </p>
                 </div>
-                <div className="space-y-2.5 pt-1">
-                  {PERM_CONFIG.map(({ key, label, description, icon }) => (
-                    <PermissionToggle key={key} label={label} description={description} icon={icon}
-                      checked={permissions[key]}
-                      onChange={(val) => setPermissions((prev) => ({ ...prev, [key]: val }))} />
-                  ))}
+
+                <div className="pt-1">
+                  <PermissionsPanel
+                    permissions={permissions}
+                    loading={!permInitialized}
+                    config={PERM_CONFIG}
+                    onChange={(key, val) => setPermissions((prev) => ({ ...prev, [key]: val }))}
+                  />
                 </div>
+
                 <div className="flex gap-2 pt-1">
-                  <button type="button"
+                  <button type="button" disabled={!permInitialized}
                     onClick={() => setPermissions({ canCreate: true, canRead: true, canUpdate: true, canDelete: true })}
-                    className="flex-1 py-2 text-xs font-bold text-[#800000] border border-[#800000]/30 rounded-xl hover:bg-[#800000]/5 transition">
+                    className="flex-1 py-2 text-xs font-bold text-[#800000] border border-[#800000]/30 rounded-xl hover:bg-[#800000]/5 transition disabled:opacity-50">
                     Enable All
                   </button>
-                  <button type="button"
+                  <button type="button" disabled={!permInitialized}
                     onClick={() => setPermissions({ canCreate: false, canRead: false, canUpdate: false, canDelete: false })}
-                    className="flex-1 py-2 text-xs font-bold text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition">
+                    className="flex-1 py-2 text-xs font-bold text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition disabled:opacity-50">
                     Disable All
                   </button>
                 </div>
-                <motion.button onClick={handlePermSave} disabled={permSaving}
+
+                <motion.button onClick={handlePermSave} disabled={permSaving || !permInitialized}
                   whileHover={!permSaving ? { scale: 1.01 } : {}} whileTap={!permSaving ? { scale: 0.98 } : {}}
                   className={`w-full h-12 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 mt-1
-                    ${permSaving ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm"}`}>
+                    ${permSaving || !permInitialized ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm"}`}>
                   {permSaving ? (
                     <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -1169,6 +1308,91 @@ const SubresellerDashboard = () => {
                     </svg>
                   ) : <><ShieldAlert size={15} />Apply Permissions</>}
                 </motion.button>
+
+                {/* Sync footer */}
+                <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                  <span className="text-[10px] text-gray-400 font-medium flex items-center gap-1">
+                    <History size={11} />
+                    {!permInitialized ? "Syncing…" : permUpdatedAt ? `Updated ${timeAgo(permUpdatedAt)}` : "Not synced yet"}
+                  </span>
+                  <button onClick={() => fetchData(currentPage)} disabled={loadingData}
+                    className="text-[10px] font-bold text-[#800000] flex items-center gap-1 hover:underline disabled:opacity-50">
+                    <motion.span animate={loadingData ? { rotate: 360 } : { rotate: 0 }}
+                      transition={loadingData ? { repeat: Infinity, duration: 0.8, ease: "linear" } : {}}
+                      className="inline-flex">
+                      <RefreshCw size={11} />
+                    </motion.span>
+                    Refresh
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ══ INDIVIDUAL PERMISSIONS MODAL ═════════════════════════════════════ */}
+      <AnimatePresence>
+        {indivModal && indivUser && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed top-0 right-0 bottom-0 left-0 md:left-[240px] lg:left-[260px] bg-black/60 z-[9999] flex items-center justify-center p-4">
+            <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+              <div className="bg-[#800000] px-6 pt-6 pb-5 relative">
+                <button onClick={() => setIndivModal(false)}
+                  className="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/20 p-1.5 rounded-full transition">
+                  <MdClose size={20} />
+                </button>
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center shrink-0 font-black text-white text-sm">
+                    {indivUser.fullName?.[0]?.toUpperCase() ?? "U"}
+                  </div>
+                  <div className="min-w-0">
+                    <h5 className="text-white font-extrabold text-base leading-tight truncate">{indivUser.fullName}</h5>
+                    <p className="text-white/60 text-xs mt-0.5 truncate">
+                      @{indivUser.username} · {indivUser.email || "no email"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6 space-y-3">
+                {indivRecent && (
+                  <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl">
+                    <motion.span
+                      animate={{ scale: [1, 1.4, 1], opacity: [1, 0.4, 1] }}
+                      transition={{ repeat: Infinity, duration: 1.6 }}
+                      className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                    <span className="text-[11px] font-bold text-amber-700 flex items-center gap-1">
+                      <Sparkles size={11} /> Recently changed
+                    </span>
+                  </div>
+                )}
+
+                <PermissionsPanel
+                  permissions={indivPermissions}
+                  loading={false}
+                  config={PERM_CONFIG}
+                  onChange={(key, val) => setIndivPermissions((prev) => ({ ...prev, [key]: val }))}
+                />
+
+                <motion.button onClick={handleIndivPermSave} disabled={indivSaving}
+                  whileHover={!indivSaving ? { scale: 1.01 } : {}} whileTap={!indivSaving ? { scale: 0.98 } : {}}
+                  className={`w-full h-12 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 mt-1
+                    ${indivSaving ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm"}`}>
+                  {indivSaving ? (
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                    </svg>
+                  ) : <><KeyRound size={15} />Save Permissions</>}
+                </motion.button>
+
+                <div className="flex items-center justify-center pt-1">
+                  <span className="text-[10px] text-gray-400 font-medium flex items-center gap-1">
+                    <History size={11} />
+                    {indivUpdatedAt ? `Updated ${timeAgo(indivUpdatedAt)}` : "Using bulk defaults — no individual override yet"}
+                  </span>
+                </div>
               </div>
             </motion.div>
           </motion.div>

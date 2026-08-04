@@ -2,6 +2,8 @@ import api from "./axiosInstance";
 
 /**
  * GET all sub-resellers with optional server-side filters.
+ * NOTE: response now also embeds `bulkPermissions` (role-level CRUD defaults)
+ * alongside `content`, so a separate crud-permissions call is no longer needed.
  */
 export const getAllResellerInfo = async (
   page       = 0,
@@ -12,6 +14,7 @@ export const getAllResellerInfo = async (
   toDate     = "",
   minCredits = "",
   maxCredits = "",
+  signal,                       // NEW
 ) => {
   try {
     const params = new URLSearchParams();
@@ -24,9 +27,15 @@ export const getAllResellerInfo = async (
     if (minCredits)    params.append("minCredits", minCredits);
     if (maxCredits)    params.append("maxCredits", maxCredits);
 
-    const response = await api.get(`/api/reseller/sub-resellers?${params.toString()}`);
+    const response = await api.get(
+      `/api/reseller/sub-resellers?${params.toString()}`,
+      { signal },                // NEW
+    );
     return { success: true, data: response.data };
   } catch (error) {
+    if (error.name === "CanceledError" || error.code === "ERR_CANCELED") {
+      return { success: false, cancelled: true };   // NEW — swallow silently
+    }
     return {
       success: false,
       message: error.response?.data?.message || "Failed to fetch reseller data",
@@ -76,7 +85,6 @@ export const updateSubReseller = async (id, payload) => {
  */
 export const deleteSubReseller = async (id) => {
   try {
-    // ✅ Fixed: was incorrectly using api.put — must be api.delete
     const response = await api.delete(`/api/reseller/sub-resellers/${id}`);
     return { success: true, data: response.data };
   } catch (error) {
@@ -96,6 +104,25 @@ export const updateBulkPermissions = async (permissions) => {
   try {
     const response = await api.put(
       "/api/reseller/sub-resellers/bulk-permissions",
+      permissions,
+    );
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Failed to update permissions",
+    };
+  }
+};
+
+/**
+ * PATCH individual CRUD permissions for a single sub-reseller.
+ * PATCH /api/reseller/crud-permissions/{subresellerUuid}
+ */
+export const updateIndividualPermission = async (subresellerId, permissions) => {
+  try {
+    const response = await api.patch(
+      `/api/reseller/crud-permissions/${subresellerId}`,
       permissions,
     );
     return { success: true, data: response.data };
