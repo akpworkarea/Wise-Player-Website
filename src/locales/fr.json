@@ -356,6 +356,11 @@
         "desc": "Prise en charge de la 4K et 8K réelles pour écrans OLED."
       }
     ],
+    "disclaimerLabel1": "Contenu",
+    "disclaimerLabel2": "Sécurité",
+    "disclaimerLabel3": "Conditions",
+    "disclaimerLabel4": "Assistance",
+    "live_badge": "En direct",
      "contactUs": "Contactez-nous",
     "system_online": "SYSTÈME EN LIGNE V2.0",
     "type_ultra_fast": "Ultra Rapide",

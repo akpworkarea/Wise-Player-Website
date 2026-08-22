@@ -22,10 +22,13 @@ import WisePlayerUploadPlayList from "../pages/UploadPlayList";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import VerifyOtp from '../pages/VerifyOtp';
 import ResetPassword from '../pages/Resetpassword';
+import PlaylistManagement from "../pages/PlaylistManagement";
+import ScrollToTop from "../component/ScrollToTop";
 
 const AppRoutes = () => {
   return (
     <MainLayout>
+      <ScrollToTop />
       <Routes>
 
         {/* ✅ PUBLIC */}
@@ -50,7 +53,7 @@ const AppRoutes = () => {
         <Route path="/purchase-credit" element={<PurchaseCredit />} />
         <Route path="/transition-history" element={<TransitionHistory />} />
         <Route path="/payment-status" element={<PaymentStatus />} />
-        
+        <Route path="/playlists" element={<PlaylistManagement />} />
 
         <Route path="*" element={<Home />} />
       </Routes>

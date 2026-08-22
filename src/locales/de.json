@@ -45,6 +45,11 @@
         "desc": "Unterstützt echtes 4K und 8K für OLED-Bildschirme."
       }
     ],
+    "disclaimerLabel1": "Inhalte",
+    "disclaimerLabel2": "Sicherheit",
+    "disclaimerLabel3": "Bedingungen",
+    "disclaimerLabel4": "Support",
+    "live_badge": "Live",
      "contactUs": "Kontakt",
     "dashboard": "Dashboard",
     "device_management": "Geräteverwaltung",

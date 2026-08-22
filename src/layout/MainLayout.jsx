@@ -29,7 +29,7 @@ const availableLanguages = [
 const adminRoutes = [
   '/dashboard', '/users',  '/subreseller',
   '/purchase-credit', '/transition-history', '/payment-status',
-  '/profile',
+  '/profile', '/playlists'
 ];  //'/requests',
 
 const hideNavbarRoutes = [
