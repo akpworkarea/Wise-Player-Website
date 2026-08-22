@@ -2,14 +2,13 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   UserPlus, Power, X, Search, Filter, ChevronDown,
-  SlidersHorizontal, Calendar, Tag, ShieldCheck,
+  SlidersHorizontal, Calendar, Tag, ShieldCheck, Zap,
   CheckCircle2, XCircle, Info,
 } from "lucide-react";
-import { subscibedUserinfo, DisableUserAccount, createUser } from "../auth/userManagement";
+import { getUserDevices, createDevice, disableDevice, getPlans, activateDevicePlan } from "../auth/api/userManagement";
 import { formatDate } from "../auth/utilfunction";
 import { useAuth } from "../context/AuthContext";
-import { createSubResellerUser, subResellerUserInfo, disableSubResellerUser } from "../auth/subReseller/userManagement";
-import { fetchPublicPlans } from "../auth/apiservice";
+import { useDashboard } from "../context/dashboardContext";
 import { useTranslation } from "react-i18next";
 
 // ─── Debounce ─────────────────────────────────────────────────────────────────
@@ -95,7 +94,7 @@ const DevStatusBadge = ({ status }) => {
 
 const SkeletonRow = () => (
   <tr className="border-t animate-pulse">
-    {[17, 20, 11, 12, 16, 13, 11].map((w, i) => (
+    {[16, 18, 10, 11, 15, 12, 10, 8].map((w, i) => (
       <td key={i} className="px-3 py-3.5">
         <div className="h-3 bg-gray-200 rounded mx-auto" style={{ width: `${w * 4}%` }} />
       </td>
@@ -119,9 +118,9 @@ const SkeletonCard = () => (
 );
 
 const DeviceCard = ({
-  item, copiedId, onCopy, onToggle,
+  item, copiedId, onCopy, onToggle, onActivate,
   copyLabel, copiedLabel, truncateId,
-  planLabel, expiresLabel, registeredLabel, toggleLabel,
+  planLabel, expiresLabel, registeredLabel, toggleLabel, activateLabel,
 }) => (
   <motion.div
     initial={{ opacity: 0, y: 8 }}
@@ -160,14 +159,21 @@ const DeviceCard = ({
         <span className="text-right">{formatDate(item.expiresAt)}</span>
       </div>
     </div>
-    <button onClick={() => onToggle(item)}
-      className={`w-full py-2.5 rounded-xl text-sm font-bold transition active:scale-95 ${
-        item.deviceStatus === "INACTIVE"
-          ? "border border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white"
-          : "bg-[#800000] text-white hover:bg-[#6a0000]"
-      }`}>
-      {toggleLabel}
-    </button>
+    <div className="flex gap-2">
+      <button onClick={() => onActivate(item)}
+        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-bold transition active:scale-95
+                   bg-[#800000] text-white hover:bg-[#6a0000]">
+        <Zap size={14} /> {activateLabel}
+      </button>
+      <button onClick={() => onToggle(item)}
+        className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition active:scale-95 border ${
+          item.deviceStatus === "INACTIVE"
+            ? "border-green-600 text-green-700 hover:bg-green-600 hover:text-white"
+            : "border-gray-300 text-gray-600 hover:bg-gray-100"
+        }`}>
+        {toggleLabel}
+      </button>
+    </div>
   </motion.div>
 );
 
@@ -287,6 +293,7 @@ const FilterPanelContent = ({
 function UserManagement() {
   const { t }        = useTranslation();
   const { userRole } = useAuth();
+  const { refetchDashboard } = useDashboard();
 
   const [devices,     setDevices]     = useState([]);
   const [planOptions, setPlanOptions] = useState([]);
@@ -314,6 +321,16 @@ function UserManagement() {
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [copiedId,       setCopiedId]       = useState(null);
 
+  // ── Activate Plan modal (replaces old RequestManagement "New Request" flow) ──
+  // Device is pre-selected from the row/card that was clicked — no more
+  // copy/paste of the device ID into a separate page. Submitting deducts
+  // credits and activates the device immediately; there is no pending state.
+  const [activateModal,   setActivateModal]   = useState(false);
+  const [activateDevice,  setActivateDevice]  = useState(null);
+  const [activatePlan,    setActivatePlan]    = useState("");
+  const [activateLoading, setActivateLoading] = useState(false);
+  const [activateError,   setActivateError]   = useState("");
+
   // Brand toasts
   const [toasts, setToasts] = useState([]);
   const showToast = useCallback((msg, type = "success") => {
@@ -334,17 +351,15 @@ function UserManagement() {
   }, []);
 
   useEffect(() => {
-    fetchPublicPlans()
-      .then((data) => setPlanOptions((data || []).map((p) => p.name)))
+    getPlans(userRole)
+      .then((res) => { if (res.success) setPlanOptions((res.data || []).map((p) => p.name)); })
       .catch(() => {});
-  }, []);
+  }, [userRole]);
 
   const fetchPage = useCallback(async (page = 1) => {
     setLoadingData(true);
     try {
-      const res = userRole === "SUB_RESELLER"
-        ? await subResellerUserInfo(page - 1, 20, debouncedSearch, statusFilter, subFilter, registeredFrom, registeredTo, expiresFrom, expiresTo)
-        : await subscibedUserinfo(page - 1, 20, debouncedSearch, statusFilter, subFilter, registeredFrom, registeredTo, expiresFrom, expiresTo);
+      const res = await getUserDevices(userRole, page - 1, 20, debouncedSearch, statusFilter, subFilter, registeredFrom, registeredTo, expiresFrom, expiresTo);
       if (res.success) {
         const data = [...(res.data?.content || [])].sort((a, b) => new Date(b.registeredAt) - new Date(a.registeredAt));
         setDevices(data);
@@ -384,9 +399,7 @@ function UserManagement() {
   const handleDisable = async () => {
     if (!selectedDevice) return;
     const deviceId = selectedDevice.deviceId;
-    const response = userRole === "SUB_RESELLER"
-      ? await disableSubResellerUser(deviceId)
-      : await DisableUserAccount(deviceId);
+    const response = await disableDevice(userRole, deviceId);
     if (response?.success) {
       setDevices((prev) => {
         const updated = prev.map((item) =>
@@ -411,9 +424,7 @@ function UserManagement() {
     if (!macRegex.test(newUser.deviceId)) { showToast(t("userManagement.invalid_mac"), "error"); return; }
     setLoading(true);
     const payload = { deviceId: newUser.deviceId, deviceModel: "Generic Smart Device", osVersion: "1.0.0", platform: "UNKNOWN" };
-    const response = userRole === "SUB_RESELLER"
-      ? await createSubResellerUser(payload)
-      : await createUser(newUser.deviceId);
+    const response = await createDevice(userRole, payload);
     if (response?.success) {
       setShowModal(false); setNewUser({ deviceId: "" }); setError("");
       showToast("Device created successfully", "success");
@@ -423,6 +434,36 @@ function UserManagement() {
       showToast(response?.message || "Failed to create device", "error");
     }
     setLoading(false);
+  };
+
+  // ── Activate Plan — device is already known (row/card clicked), only the
+  //    plan needs to be picked. Deducts credits and activates instantly. ──
+  const openActivate = (item) => {
+    setActivateDevice(item);
+    setActivatePlan("");
+    setActivateError("");
+    setActivateModal(true);
+  };
+
+  const handleActivateSubmit = async (e) => {
+    e.preventDefault();
+    if (!activatePlan) { setActivateError("Please select a plan"); return; }
+    setActivateError("");
+    setActivateLoading(true);
+    const payload = { deviceId: activateDevice.deviceId, planName: activatePlan, amount: 5, currency: "CREDITS" };
+    const res = await activateDevicePlan(userRole, payload);
+    if (res?.success) {
+      setActivateModal(false);
+      setActivateDevice(null);
+      setActivatePlan("");
+      showToast("Plan activated — credits deducted", "success");
+      fetchPage(currentPage);
+      refetchDashboard();
+    } else {
+      setActivateError(res?.message || "Failed to activate plan — check your credit balance");
+      showToast(res?.message || "Failed to activate plan", "error");
+    }
+    setActivateLoading(false);
   };
 
   const activeFilterCount = [statusFilter, subFilter, registeredFrom, registeredTo, expiresFrom, expiresTo].filter(Boolean).length;
@@ -437,7 +478,7 @@ function UserManagement() {
   };
 
   const cardProps = {
-    copiedId, onCopy: copyToClipboard, onToggle: handleToggle,
+    copiedId, onCopy: copyToClipboard, onToggle: handleToggle, onActivate: openActivate,
     copyLabel:       t("userManagement.copy")          || "Copy",
     copiedLabel:     t("userManagement.copied")        || "Copied!",
     truncateId,
@@ -445,6 +486,7 @@ function UserManagement() {
     expiresLabel:    t("userManagement.expires")       || "Expires",
     registeredLabel: t("userManagement.registered")    || "Registered",
     toggleLabel:     t("userManagement.toggle_status") || "Toggle Status",
+    activateLabel:   t("userManagement.activate_plan") || "Activate Plan",
   };
 
   const inputCls = "w-full px-4 py-3 bg-[#f4f4f7] border border-gray-200 rounded-xl focus:border-[#800000] focus:outline-none transition text-sm font-semibold text-gray-800";
@@ -670,25 +712,22 @@ function UserManagement() {
         )}
       </AnimatePresence>
 
-      {/* ══ SCROLLABLE CONTENT — table + cards + pagination ═════════════════
-           flex-1 + min-h-0 so only this area scrolls, header stays fixed.
-           Scrollbar hidden but scroll works.
-      ════════════════════════════════════════════════════════════════════ */}
+      {/* ══ SCROLLABLE CONTENT — table + cards + pagination ═════════════════ */}
       <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-4 space-y-3
                       [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
         {/* ── Desktop table (lg+) ── */}
         <div className="hidden lg:block bg-white rounded-xl shadow border border-gray-200">
           <div className="overflow-x-auto rounded-xl [scrollbar-width:thin]">
-            <table className="w-full text-sm min-w-[760px]">
+            <table className="w-full text-sm min-w-[840px]">
               <colgroup>
-                <col style={{ width: "20%" }} />
                 <col style={{ width: "18%" }} />
+                <col style={{ width: "16%" }} />
+                <col style={{ width: "9%"  }} />
                 <col style={{ width: "10%" }} />
-                <col style={{ width: "10%" }} />
-                <col style={{ width: "14%" }} />
-                <col style={{ width: "14%" }} />
-                <col style={{ width: "14%" }} />
+                <col style={{ width: "13%" }} />
+                <col style={{ width: "13%" }} />
+                <col style={{ width: "21%" }} />
               </colgroup>
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200 sticky top-0">
@@ -739,12 +778,18 @@ function UserManagement() {
                       <td className="px-3 py-3.5 text-gray-500 text-xs">{formatDate(item.registeredAt)}</td>
                       <td className="px-3 py-3.5 text-gray-500 text-xs">{formatDate(item.expiresAt)}</td>
                       <td className="px-3 py-3.5">
-                        <div className="flex justify-center">
+                        <div className="flex justify-center gap-2">
+                          <button onClick={() => openActivate(item)}
+                            title={t("userManagement.activate_plan") || "Activate Plan"}
+                            className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-bold transition active:scale-95
+                                       bg-[#800000] text-white hover:bg-[#6a0000]">
+                            <Zap size={13} />
+                          </button>
                           <button onClick={() => handleToggle(item)}
                             className={`p-2 rounded-lg border transition active:scale-95 ${
                               item.deviceStatus === "INACTIVE"
-                                ? "border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white"
-                                : "bg-[#800000] text-white border-[#800000] hover:bg-[#6a0000]"
+                                ? "border-green-600 text-green-700 hover:bg-green-600 hover:text-white"
+                                : "border-gray-300 text-gray-500 hover:bg-gray-100"
                             }`}
                             title={item.deviceStatus === "ACTIVE" ? t("userManagement.disable") : t("userManagement.activate")}>
                             <Power size={13} />
@@ -785,7 +830,7 @@ function UserManagement() {
           }
         </div>
 
-        {/* ── Pagination — inside scrollable area, always at the bottom ── */}
+        {/* ── Pagination ── */}
         {showPagination && (
           <div className="flex items-center justify-center gap-3 py-3 flex-wrap">
             <button
@@ -795,8 +840,6 @@ function UserManagement() {
                          disabled:opacity-40 disabled:cursor-not-allowed transition font-semibold text-gray-600">
               ← {t("userManagement.prev") || "Prev"}
             </button>
-
-            {/* Page count display */}
             <div className="flex items-center gap-2 px-4 py-1.5 bg-white border border-gray-200 rounded-lg">
               <span className="text-xs font-bold text-[#800000]">{currentPage}</span>
               <span className="text-xs text-gray-400">/</span>
@@ -805,7 +848,6 @@ function UserManagement() {
                 · {totalUser} {totalUser === 1 ? "device" : "devices"}
               </span>
             </div>
-
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage((p) => p + 1)}
@@ -868,6 +910,92 @@ function UserManagement() {
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                     </svg>
                   ) : <><UserPlus size={15} />{t("userManagement.create") || "Create Device"}</>}
+                </motion.button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ══ ACTIVATE PLAN MODAL ═════════════════════════════════════════════
+          Replaces the old separate "New Request" page. Device is already
+          known (the row/card the user clicked), so only the plan is picked.
+          Submitting deducts credits and activates the device immediately —
+          no pending state, no admin approval step.
+      ════════════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {activateModal && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4">
+            <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+              <div className="bg-[#800000] px-6 pt-6 pb-5 relative">
+                <button onClick={() => { setActivateModal(false); setActivateError(""); }}
+                  className="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/20 p-1.5 rounded-full transition">
+                  <X size={20} />
+                </button>
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <Zap size={20} className="text-white" />
+                  </div>
+                  <div>
+                    <h5 className="text-white font-extrabold text-base leading-tight">
+                      {t("userManagement.activate_plan") || "Activate Plan"}
+                    </h5>
+                    <p className="text-white/60 text-xs mt-0.5">Credits will be deducted on activation</p>
+                  </div>
+                </div>
+              </div>
+              <form onSubmit={handleActivateSubmit} className="p-6 space-y-4">
+                {activateError && (
+                  <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl font-semibold">
+                    {activateError}
+                  </div>
+                )}
+
+                {/* Read-only device summary — no copy/paste needed anymore */}
+                <div className="bg-[#f4f4f7] rounded-xl px-4 py-3 space-y-1.5 border border-gray-200">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500 font-semibold">MAC Address</span>
+                    <span className="font-mono font-bold text-gray-700">{activateDevice?.macAddress || "—"}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500 font-semibold">Device ID</span>
+                    <span className="font-semibold text-[#800000] truncate max-w-[60%]" title={activateDevice?.deviceId}>
+                      {truncateId(activateDevice?.deviceId, 10, 6)}
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                    Plan
+                  </label>
+                  <div className="relative">
+                    <select required value={activatePlan}
+                      onChange={(e) => setActivatePlan(e.target.value)}
+                      className={`${inputCls} appearance-none pr-10 cursor-pointer`}>
+                      <option value="">Select a plan</option>
+                      {planOptions.map((name) => <option key={name} value={name}>{name}</option>)}
+                    </select>
+                    <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#800000]">
+                      <ChevronDown size={14} />
+                    </div>
+                  </div>
+                </div>
+
+                <motion.button
+                  disabled={activateLoading} type="submit"
+                  whileHover={!activateLoading ? { scale: 1.01 } : {}}
+                  whileTap={!activateLoading  ? { scale: 0.98 } : {}}
+                  className={`w-full h-12 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200
+                    ${activateLoading ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-[#800000] hover:bg-[#6a0000] text-white shadow-sm"}`}>
+                  {activateLoading ? (
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                    </svg>
+                  ) : <><Zap size={15} />Activate Device</>}
                 </motion.button>
               </form>
             </motion.div>

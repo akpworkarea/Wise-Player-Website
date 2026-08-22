@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import UserManagement from "./UserManagement";
-import RequestManagement from "./RequestManagement";
+// import RequestManagement from "./RequestManagement";
 import SubReseller from "./Subreseller";
 import { Users, CheckCircle, Clock, TrendingUp, TrendingDown, Smartphone, Wifi, WifiOff } from "lucide-react";
 import { BsCoin } from "react-icons/bs";
@@ -69,7 +69,7 @@ const StatusPill = ({ status }) => {
       {active ? <Wifi size={11} /> : <WifiOff size={11} />}
       {status}
     </span>
-  );
+  ); 
 };
 
 // ─── SkeletonRow — MODULE LEVEL ───────────────────────────────────────────────

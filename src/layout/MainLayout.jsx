@@ -27,10 +27,10 @@ const availableLanguages = [
 ];
 
 const adminRoutes = [
-  '/dashboard', '/users', '/requests', '/subreseller',
+  '/dashboard', '/users',  '/subreseller',
   '/purchase-credit', '/transition-history', '/payment-status',
   '/profile',
-];
+];  //'/requests',
 
 const hideNavbarRoutes = [
   '/login', '/register', '/register-success', '/verify-otp', '/reset-password',
