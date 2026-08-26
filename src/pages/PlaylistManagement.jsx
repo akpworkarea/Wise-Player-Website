@@ -13,9 +13,9 @@ import {
   updatePlaylist, deletePlaylist, assignPlaylist,
   unassignPlaylist, togglePinPlaylist,
 } from "../auth/api/playlistApi";
-import { getUserDevices } from "../auth/api/userManagement"; // adjust to your actual device-api file path
+import { getUserDevices } from "../auth/api/userManagement";
 
-// ─── Brand Toast — same pattern as SubresellerDashboard ────────────────────
+// ─── Brand Toast ────────────────────────────────────────────────────────
 const BrandToast = ({ toasts }) => (
   <div className="fixed top-5 inset-x-0 z-[99999] flex flex-col items-center gap-2 pointer-events-none px-4">
     <AnimatePresence>
@@ -43,7 +43,6 @@ const BrandToast = ({ toasts }) => (
   </div>
 );
 
-// ─── Debounce ─────────────────────────────────────────────────────────────
 function useDebounce(value, delay) {
   const [d, setD] = useState(value);
   useEffect(() => {
@@ -53,7 +52,7 @@ function useDebounce(value, delay) {
   return d;
 }
 
-// ─── TypeBadge — MODULE LEVEL ───────────────────────────────────────────────
+// ─── TypeBadge ──────────────────────────────────────────────────────────
 const TypeBadge = ({ type }) => {
   const isXtream = type === "XTREAM";
   return (
@@ -65,7 +64,15 @@ const TypeBadge = ({ type }) => {
   );
 };
 
-// ─── PinButton — animated star toggle, MODULE LEVEL ────────────────────────
+// ─── LockBadge — NEW: shows isLocked (PIN-protected), distinct from "pinned" ──
+const LockBadge = ({ locked }) =>
+  locked ? (
+    <span title="PIN protected" className="inline-flex items-center justify-center text-gray-400 shrink-0">
+      <Lock size={11} />
+    </span>
+  ) : null;
+
+// ─── PinButton ──────────────────────────────────────────────────────────
 const PinButton = ({ pinned, onClick, busy }) => (
   <button
     onClick={onClick}
@@ -89,7 +96,6 @@ const PinButton = ({ pinned, onClick, busy }) => (
   </button>
 );
 
-// ─── CopyButton — MODULE LEVEL ──────────────────────────────────────────────
 const CopyButton = ({ value, copiedId, onCopy }) => {
   const isThis = copiedId === value;
   return (
@@ -101,7 +107,6 @@ const CopyButton = ({ value, copiedId, onCopy }) => {
   );
 };
 
-// ─── EmptyState — MODULE LEVEL ──────────────────────────────────────────────
 const EmptyState = ({ hasFilters, onClear, onCreate }) => (
   <div className="flex flex-col items-center gap-2 py-14 text-gray-400">
     <div className="w-14 h-14 rounded-2xl bg-[#800000]/5 flex items-center justify-center mb-1">
@@ -121,7 +126,6 @@ const EmptyState = ({ hasFilters, onClear, onCreate }) => (
   </div>
 );
 
-// ─── SkeletonCard — MODULE LEVEL ────────────────────────────────────────────
 const SkeletonCard = () => (
   <div className="bg-white rounded-xl shadow border border-gray-200 p-4 animate-pulse space-y-3">
     <div className="flex justify-between">
@@ -151,7 +155,7 @@ const FormField = ({ label, icon: Icon, required, children }) => (
 
 const inputCls = "w-full px-4 py-3 bg-[#f4f4f7] border-2 border-transparent rounded-xl focus:border-[#800000] focus:bg-white focus:outline-none transition-all duration-200 text-sm font-semibold text-gray-800 placeholder:font-normal placeholder:text-gray-400";
 
-// ─── PlaylistCard — mobile/tablet, MODULE LEVEL ─────────────────────────────
+// ─── PlaylistCard — mobile/tablet ───────────────────────────────────────
 const PlaylistCard = ({
   playlist, copiedId, onCopy, onEdit, onDelete, onAssign, onTogglePin, pinBusyId,
 }) => (
@@ -165,7 +169,10 @@ const PlaylistCard = ({
   >
     <div className="flex items-start justify-between gap-2">
       <div className="min-w-0">
-        <p className="font-bold text-sm text-gray-800 truncate">{playlist.name}</p>
+        <p className="font-bold text-sm text-gray-800 truncate flex items-center gap-1.5">
+          {playlist.name}
+          <LockBadge locked={playlist.isLocked} />
+        </p>
         <div className="mt-1"><TypeBadge type={playlist.type} /></div>
       </div>
       <PinButton pinned={playlist.pinned} busy={pinBusyId === playlist.id} onClick={() => onTogglePin(playlist)} />
@@ -198,13 +205,13 @@ const PlaylistCard = ({
 
 // ═════════════════════════════════════════════════════════════════════════
 const PlaylistManagement = () => {
-  const { userRole } = useAuth(); // "RESELLER" | "SUB_RESELLER" — drives every endpoint below
+  const { userRole } = useAuth();
 
   const [playlists,   setPlaylists]   = useState([]);
   const [loading,      setLoading]      = useState(true);
   const [search,        setSearch]        = useState("");
   const debouncedSearch                   = useDebounce(search, 350);
-  const [typeFilter,   setTypeFilter]   = useState("");   // "" | "M3U" | "XTREAM"
+  const [typeFilter,   setTypeFilter]   = useState("");
   const [pinnedOnly,   setPinnedOnly]   = useState(false);
   const [showFilter,   setShowFilter]   = useState(false);
 
@@ -218,29 +225,41 @@ const PlaylistManagement = () => {
     setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 3500);
   }, []);
 
-  // ── Create modal ──────────────────────────────────────────────────────
+  // ── Create modal ────────────────────────────────────────────────────
   const [createModal, setCreateModal] = useState(false);
-  const [createType,  setCreateType]  = useState("M3U"); // tab within modal
+  const [createType,  setCreateType]  = useState("M3U");
   const [creating,    setCreating]    = useState(false);
   const [createError, setCreateError] = useState("");
-  const [m3uForm,     setM3uForm]     = useState({ name: "", m3uUrl: "" });
-  const [xtreamForm,  setXtreamForm]  = useState({ name: "", serverUrl: "", username: "", password: "" });
+  // NEW: pin added to both form shapes
+  const [m3uForm,     setM3uForm]     = useState({ name: "", m3uUrl: "", pin: "" });
+  const [xtreamForm,  setXtreamForm]  = useState({ name: "", serverUrl: "", username: "", password: "", pin: "" });
   const [showXtreamPwd, setShowXtreamPwd] = useState(false);
+  const [showCreatePin, setShowCreatePin] = useState(false);
 
-  // ── Edit modal ─────────────────────────────────────────────────────────
+  // Helper so one PIN field can serve whichever tab is active
+  const activeForm    = createType === "M3U" ? m3uForm : xtreamForm;
+  const setActivePin  = (v) => {
+    const digits = v.replace(/\D/g, "").slice(0, 4);
+    createType === "M3U"
+      ? setM3uForm((p) => ({ ...p, pin: digits }))
+      : setXtreamForm((p) => ({ ...p, pin: digits }));
+  };
+
+  // ── Edit modal ───────────────────────────────────────────────────────
   const [editModal, setEditModal] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
   const [editForm,   setEditForm]   = useState({});
   const [saving,     setSaving]     = useState(false);
   const [editError,  setEditError]  = useState("");
   const [showEditPwd, setShowEditPwd] = useState(false);
+  const [showEditPin, setShowEditPin] = useState(false);
 
-  // ── Delete modal ──────────────────────────────────────────────────────
+  // ── Delete modal ─────────────────────────────────────────────────────
   const [deleteModal, setDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  // ── Assign modal ──────────────────────────────────────────────────────
+  // ── Assign modal ─────────────────────────────────────────────────────
   const [assignModal,  setAssignModal]  = useState(false);
   const [assignTarget, setAssignTarget] = useState(null);
   const [deviceSearch, setDeviceSearch] = useState("");
@@ -257,7 +276,6 @@ const PlaylistManagement = () => {
     return () => document.removeEventListener("mousedown", h);
   }, []);
 
-  // ── Fetch playlists — refetches whenever role becomes known/changes ────
   const fetchPlaylists = useCallback(async () => {
     if (!userRole) return;
     setLoading(true);
@@ -269,7 +287,6 @@ const PlaylistManagement = () => {
 
   useEffect(() => { fetchPlaylists(); }, [fetchPlaylists]);
 
-  // ── Fetch devices for assign modal ──────────────────────────────────────
   useEffect(() => {
     if (!assignModal || !userRole) return;
     let active = true;
@@ -282,7 +299,6 @@ const PlaylistManagement = () => {
     return () => { active = false; };
   }, [assignModal, userRole, debouncedDeviceSearch]);
 
-  // ── Client-side search + filter (list endpoint has no server filters) ──
   const filtered = playlists.filter((p) => {
     const matchesSearch = !debouncedSearch ||
       p.name?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
@@ -303,7 +319,6 @@ const PlaylistManagement = () => {
     setTimeout(() => setCopiedId(null), 1500);
   };
 
-  // ── Pin toggle ────────────────────────────────────────────────────────
   const handleTogglePin = async (playlist) => {
     setPinBusyId(playlist.id);
     const res = await togglePinPlaylist(userRole, playlist.id);
@@ -316,16 +331,20 @@ const PlaylistManagement = () => {
     }
   };
 
-  // ── Create ────────────────────────────────────────────────────────────
+  // ── Create ──────────────────────────────────────────────────────────
   const openCreate = () => {
-    setCreateType("M3U"); setCreateError("");
-    setM3uForm({ name: "", m3uUrl: "" });
-    setXtreamForm({ name: "", serverUrl: "", username: "", password: "" });
+    setCreateType("M3U"); setCreateError(""); setShowCreatePin(false);
+    setM3uForm({ name: "", m3uUrl: "", pin: "" });
+    setXtreamForm({ name: "", serverUrl: "", username: "", password: "", pin: "" });
     setCreateModal(true);
   };
 
   const handleCreate = async (e) => {
     e.preventDefault();
+    if (activeForm.pin.length !== 4) {
+      setCreateError("Security PIN must be exactly 4 digits");
+      return;
+    }
     setCreating(true); setCreateError("");
     const res = createType === "M3U"
       ? await createM3uPlaylist(userRole, m3uForm)
@@ -341,14 +360,14 @@ const PlaylistManagement = () => {
     }
   };
 
-  // ── Edit ──────────────────────────────────────────────────────────────
+  // ── Edit ────────────────────────────────────────────────────────────
   const openEdit = (playlist) => {
     setEditTarget(playlist);
-    setEditError(""); setShowEditPwd(false);
+    setEditError(""); setShowEditPwd(false); setShowEditPin(false);
     setEditForm(
       playlist.type === "XTREAM"
-        ? { name: playlist.name, serverUrl: playlist.serverUrl || "", username: playlist.username || "", password: "" }
-        : { name: playlist.name, m3uUrl: playlist.m3uUrl || "" }
+        ? { name: playlist.name, serverUrl: playlist.serverUrl || "", username: playlist.username || "", password: "", pin: "" }
+        : { name: playlist.name, m3uUrl: playlist.m3uUrl || "", pin: "" }
     );
     setEditModal(true);
   };
@@ -358,6 +377,7 @@ const PlaylistManagement = () => {
     setSaving(true); setEditError("");
     const payload = { ...editForm };
     if (editTarget.type === "XTREAM" && !payload.password) delete payload.password;
+    if (!payload.pin) delete payload.pin; // only send pin if the user actually typed a new one
     const res = await updatePlaylist(userRole, editTarget.id, payload);
     setSaving(false);
     if (res.success) {
@@ -370,7 +390,7 @@ const PlaylistManagement = () => {
     }
   };
 
-  // ── Delete ────────────────────────────────────────────────────────────
+  // ── Delete ──────────────────────────────────────────────────────────
   const openDelete = (playlist) => { setDeleteTarget(playlist); setDeleteModal(true); };
 
   const handleDelete = async () => {
@@ -387,7 +407,7 @@ const PlaylistManagement = () => {
     }
   };
 
-  // ── Assign ────────────────────────────────────────────────────────────
+  // ── Assign ──────────────────────────────────────────────────────────
   const openAssign = (playlist) => {
     setAssignTarget(playlist);
     setDeviceSearch(""); setSelectedDevice(null); setDevices([]);
@@ -412,7 +432,7 @@ const PlaylistManagement = () => {
   return (
     <div className="h-full flex flex-col bg-[#f4f4f7] overflow-hidden">
 
-      {/* ══ STICKY HEADER ══════════════════════════════════════════════════ */}
+      {/* ══ STICKY HEADER ══════════════════════════════════════════════ */}
       <div className="shrink-0 sticky top-0 bg-[#f4f4f7] px-4 pt-4 pb-3 space-y-3 z-30">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
           <div className="shrink-0">
@@ -423,7 +443,6 @@ const PlaylistManagement = () => {
           </div>
 
           <div className="flex items-center gap-2 w-full lg:w-auto min-w-0">
-            {/* Search */}
             <div className="flex items-center rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm
                             flex-1 min-w-0 lg:flex-none lg:w-[220px] min-[1400px]:w-[280px]">
               <div className="relative w-full">
@@ -444,7 +463,6 @@ const PlaylistManagement = () => {
               </div>
             </div>
 
-            {/* Filter */}
             <div className="relative shrink-0" ref={filterRef}>
               <motion.button whileTap={{ scale: 0.95 }} onClick={() => setShowFilter((v) => !v)}
                 className={`flex items-center justify-center gap-1.5 w-10 min-[1400px]:w-auto min-[1400px]:px-4 h-10 rounded-xl border text-sm font-semibold transition
@@ -498,7 +516,6 @@ const PlaylistManagement = () => {
               </AnimatePresence>
             </div>
 
-            {/* Create */}
             <motion.button whileTap={{ scale: 0.95 }} onClick={openCreate}
               className="flex items-center justify-center gap-1.5 w-10 min-[1400px]:w-auto min-[1400px]:px-4 h-10
                          bg-[#800000] text-white rounded-xl text-sm font-semibold hover:bg-[#6a0000] transition shadow-sm shrink-0">
@@ -509,10 +526,9 @@ const PlaylistManagement = () => {
         </div>
       </div>
 
-      {/* ══ CONTENT ═══════════════════════════════════════════════════════ */}
+      {/* ══ CONTENT ═══════════════════════════════════════════════════ */}
       <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
-        {/* Desktop table */}
         <div className="hidden lg:block bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
           <table className="w-full text-sm">
             <colgroup>
@@ -542,6 +558,7 @@ const PlaylistManagement = () => {
                       <span className="font-bold text-gray-800 text-sm truncate flex items-center gap-1.5">
                         {p.pinned && <Star size={12} fill="currentColor" className="text-amber-400 shrink-0" />}
                         {p.name}
+                        <LockBadge locked={p.isLocked} />
                       </span>
                     </td>
                     <td className="px-4 py-3.5 text-center"><TypeBadge type={p.type} /></td>
@@ -573,7 +590,6 @@ const PlaylistManagement = () => {
           </table>
         </div>
 
-        {/* Tablet + mobile cards */}
         <div className="lg:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
           {loading ? (
             [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
@@ -591,7 +607,7 @@ const PlaylistManagement = () => {
         </div>
       </div>
 
-      {/* ══ CREATE MODAL ══════════════════════════════════════════════════ */}
+      {/* ══ CREATE MODAL ══════════════════════════════════════════════ */}
       <AnimatePresence>
         {createModal && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -613,7 +629,6 @@ const PlaylistManagement = () => {
                   </div>
                 </div>
 
-                {/* Type tabs */}
                 <div className="flex bg-white/10 rounded-xl p-1 mt-4">
                   {[{ v: "M3U", label: "M3U", icon: Radio }, { v: "XTREAM", label: "Xtream", icon: Tv2 }].map((tab) => (
                     <button key={tab.v} type="button" onClick={() => { setCreateType(tab.v); setCreateError(""); }}
@@ -674,6 +689,27 @@ const PlaylistManagement = () => {
                   )}
                 </AnimatePresence>
 
+                {/* NEW — Security PIN, shared across both tabs */}
+                <FormField label="Security PIN (4 digits)" icon={Lock} required>
+                  <div className="relative">
+                    <input
+                      type={showCreatePin ? "text" : "password"}
+                      inputMode="numeric"
+                      maxLength={4}
+                      className={`${inputCls} pr-11 tracking-[6px] font-mono`}
+                      placeholder="5678"
+                      value={activeForm.pin}
+                      onChange={(e) => setActivePin(e.target.value)}
+                      required
+                    />
+                    <button type="button" tabIndex={-1} onClick={() => setShowCreatePin((v) => !v)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#800000] transition">
+                      {showCreatePin ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-1">Used to lock this playlist's credentials from prying eyes.</p>
+                </FormField>
+
                 <motion.button type="submit" disabled={creating}
                   whileHover={!creating ? { scale: 1.01 } : {}} whileTap={!creating ? { scale: 0.98 } : {}}
                   className={`w-full h-12 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200
@@ -686,7 +722,7 @@ const PlaylistManagement = () => {
         )}
       </AnimatePresence>
 
-      {/* ══ EDIT MODAL ════════════════════════════════════════════════════ */}
+      {/* ══ EDIT MODAL ════════════════════════════════════════════════ */}
       <AnimatePresence>
         {editModal && editTarget && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -749,6 +785,25 @@ const PlaylistManagement = () => {
                   </FormField>
                 )}
 
+                {/* NEW — optional PIN update */}
+                <FormField label="New Security PIN" icon={Lock}>
+                  <div className="relative">
+                    <input
+                      type={showEditPin ? "text" : "password"}
+                      inputMode="numeric"
+                      maxLength={4}
+                      className={`${inputCls} pr-11 tracking-[6px] font-mono`}
+                      placeholder="Leave blank to keep current"
+                      value={editForm.pin || ""}
+                      onChange={(e) => setEditForm({ ...editForm, pin: e.target.value.replace(/\D/g, "").slice(0, 4) })}
+                    />
+                    <button type="button" tabIndex={-1} onClick={() => setShowEditPin((v) => !v)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#800000] transition">
+                      {showEditPin ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </FormField>
+
                 <button type="submit" disabled={saving}
                   className="w-full h-12 bg-[#800000] text-white font-bold rounded-xl hover:bg-[#6a0000] transition active:scale-95 flex items-center justify-center gap-2 disabled:opacity-60">
                   {saving ? <Loader2 size={16} className="animate-spin" /> : <><Pencil size={14} /> Save Changes</>}
@@ -759,7 +814,7 @@ const PlaylistManagement = () => {
         )}
       </AnimatePresence>
 
-      {/* ══ DELETE MODAL ══════════════════════════════════════════════════ */}
+      {/* ══ DELETE MODAL ══════════════════════════════════════════════ */}
       <AnimatePresence>
         {deleteModal && deleteTarget && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -793,7 +848,7 @@ const PlaylistManagement = () => {
         )}
       </AnimatePresence>
 
-      {/* ══ ASSIGN MODAL ══════════════════════════════════════════════════ */}
+      {/* ══ ASSIGN MODAL ══════════════════════════════════════════════ */}
       <AnimatePresence>
         {assignModal && assignTarget && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -821,7 +876,7 @@ const PlaylistManagement = () => {
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     className="w-full pl-9 pr-3 py-2.5 text-sm bg-[#f4f4f7] border border-gray-200 rounded-xl focus:border-[#800000] focus:outline-none transition text-gray-700 font-semibold placeholder-gray-400"
-                    placeholder="Search device by ID / MAC…"
+                    placeholder="Search device by MAC address…"
                     value={deviceSearch}
                     onChange={(e) => setDeviceSearch(e.target.value)}
                   />
@@ -833,6 +888,8 @@ const PlaylistManagement = () => {
                   ) : devices.length > 0 ? (
                     devices.map((d) => {
                       const id = d.deviceId || d.id;
+                      // NEW — surface the MAC address instead of the raw internal ID
+                      const mac = d.macAddress || d.mac || id;
                       const isSelected = (selectedDevice?.deviceId || selectedDevice?.id) === id;
                       return (
                         <button key={id} onClick={() => setSelectedDevice(d)}
@@ -842,7 +899,7 @@ const PlaylistManagement = () => {
                             <Smartphone size={14} />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="text-xs font-bold text-gray-800 truncate">{id}</p>
+                            <p className="text-xs font-bold text-gray-800 truncate font-mono tracking-wider uppercase">{mac}</p>
                             {d.subscriptionType && <p className="text-[10px] text-gray-400">{d.subscriptionType}</p>}
                           </div>
                           {isSelected && <CheckCircle2 size={16} className="text-[#800000] shrink-0" />}
