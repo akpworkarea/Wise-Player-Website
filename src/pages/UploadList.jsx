@@ -11,7 +11,16 @@ const formatMac = (raw) => {
   return hex.match(/.{1,2}/g)?.join(':') ?? '';
 };
 
-const isMacComplete = (mac) => /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(mac);
+// FIXED - was checking against a UUID-style pattern (8-4-4-4-12 hex groups
+// separated by hyphens), which a colon-separated MAC address like
+// AA:BB:CC:DD:EE:FF can never match. That mismatch kept isMacComplete
+// permanently false, so the Validate button was always disabled even with
+// a complete MAC and valid PIN entered.
+const isMacComplete = (mac) =>
+  /^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/.test(mac);
+
+// NEW - PIN validation helper
+const isPinValid = (p) => /^\d{4}$/.test(p);
 
 const WiseplayerUpload = () => {
   const location = useLocation();
@@ -19,6 +28,7 @@ const WiseplayerUpload = () => {
   const { t } = useTranslation();
 
   const [uploadMac, setUploadMac] = useState('');
+  const [pin, setPin] = useState(''); // NEW - PIN state
   const [statusError, setStatusError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,31 +38,33 @@ const WiseplayerUpload = () => {
     if (mac) setUploadMac(formatMac(mac));
   }, [location]);
 
-  const handleMacChange = (e) => {
+ const handleMacChange = (e) => {
+  if (statusError) setStatusError('');
+  setUploadMac(e.target.value);
+};
+
+  // NEW - PIN change handler
+  const handlePinChange = (e) => {
     if (statusError) setStatusError('');
-    setUploadMac(formatMac(e.target.value));
+    const onlyNums = e.target.value.replace(/[^0-9]/g, '').slice(0, 4);
+    setPin(onlyNums);
   };
 
   const handleConfigure = async () => {
+    if (!isMacComplete(uploadMac) || !isPinValid(pin)) return; // NEW - safety gate, API call yahi rukega
+
     setIsLoading(true);
     setStatusError('');
     try {
-      const res = await validateDevice(uploadMac);
-      if (!res.success || !res.data) {
-        setStatusError('Device is not registered.');
+      const res = await validateDevice(uploadMac, pin); // CHANGED - pin bhi pass kiya
+
+      // CHANGED - naye API response shape { success, data: [playlists] } ke hisaab se check
+      if (!res.success || !res.data?.success) {
+        setStatusError('Invalid PIN or Device ID.');
         return;
       }
-      const { status, allowed, message } = res.data;
-      if (!allowed) {
-        setStatusError(message || 'Your Subscription expired. Please renew.');
-      }
-      if (status === 'ACTIVE') {
-        navigate('/upload-playlist', { state: { mac: uploadMac } });
-      } else if (status === 'INACTIVE') {
-        setStatusError('Device is registered but status is Inactive.');
-      } else {
-        setStatusError('Device is not registered.');
-      }
+
+      navigate('/upload-playlist', { state: { mac: uploadMac, playlists: res.data.data } });
     } catch {
       setStatusError('Connection error. Please try again.');
     } finally {
@@ -60,7 +72,7 @@ const WiseplayerUpload = () => {
     }
   };
 
-  const isValid = isMacComplete(uploadMac) && !isLoading;
+  const isValid = isMacComplete(uploadMac) && isPinValid(pin) && !isLoading; // CHANGED - pin check merge kiya
 
   return (
     <div className="fixed inset-0 bg-[#f4f4f7] flex flex-col items-center justify-center px-4 pt-[85px] pb-[72px]">
@@ -107,7 +119,7 @@ const WiseplayerUpload = () => {
           placeholder="AA:BB:CC:DD:EE:FF"
           value={uploadMac}
           onChange={handleMacChange}
-          maxLength={17}
+          maxLength={36}
           className={`
             w-full h-12 px-4 rounded-xl border-2 text-center
             font-bold text-lg tracking-[4px] uppercase outline-none
@@ -120,6 +132,38 @@ const WiseplayerUpload = () => {
             }
           `}
         />
+
+        {/* NEW - PIN Label */}
+        <label className="block text-xs font-bold text-[#1a1a1a] tracking-wide uppercase text-center mb-2 mt-4">
+          Enter PIN
+        </label>
+
+        {/* NEW - PIN Input */}
+        <input
+          type="text"
+          inputMode="numeric"
+         placeholder="Enter PIN"
+          value={pin}
+          onChange={handlePinChange}
+          maxLength={4}
+          className={`
+            w-full h-12 px-4 rounded-xl border-2 text-center
+            font-bold text-lg tracking-[4px] outline-none
+            transition-colors duration-200 shadow-none bg-white
+            ${pin && !isPinValid(pin)
+              ? 'border-red-400 bg-red-50 text-red-700'
+              : pin
+                ? 'border-[#800000] bg-[#800000]/[0.04] text-[#800000]'
+                : 'border-gray-200 text-[#1a1a1a] focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15'
+            }
+          `}
+        />
+        {/* NEW - PIN inline error */}
+        {pin.length > 0 && !isPinValid(pin) && (
+          <p className="text-sm font-semibold text-red-600 text-center mt-2">
+            PIN must be 4 digits
+          </p>
+        )}
 
         {/* Error */}
         {statusError && (

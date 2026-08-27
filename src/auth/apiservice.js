@@ -67,9 +67,12 @@ export const activateDeviceApi = async (deviceId, activationKey) => {
   }
 };
 
-export const validateDevice = async (fingerprint) => {
+// CHANGED - ab deviceId + pin ke saath GET call karta hai naye endpoint pe
+export const validateDevice = async (deviceId, pin) => {
   try {
-    const response = await api.post('/api/device/validate', { fingerprint });
+    const response = await api.get(`/api/playlist/public/${deviceId}`, {
+      params: { pin },
+    });
     return { success: true, data: response.data };
   } catch (error) {
     return {
