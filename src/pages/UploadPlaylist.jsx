@@ -5,10 +5,12 @@ import {
   Plus, Trash2, Check, Pencil, ListMusic,
   CheckCircle2, XCircle, Info, X,
 } from 'lucide-react';
-import { getPlaylists, saveM3uPlaylist, updatePlaylist, deletePlaylist } from '../auth/playlistApi';
+import { getPlaylists, saveM3uPlaylist, updatePlaylist, deletePlaylist } from '../auth/Playlistapi';
 import { useTranslation } from 'react-i18next';
 import Footer from '../component/Footer';
 import WisePlayerLogo from '../component/WisePlayerLogo';
+
+const DEFAULT_PIN = '0000';
 
 // ── Animation variants ────────────────────────────────────────
 const slideDown = {
@@ -60,6 +62,7 @@ const PlaylistManager = () => {
   const { t } = useTranslation();
 
   const [macAddress, setMacAddress]       = useState('');
+  const [devicePin, setDevicePin]         = useState(DEFAULT_PIN);
   const [playlists, setPlaylists]         = useState([]);
   const [loadingList, setLoadingList]     = useState(false);
 
@@ -87,19 +90,28 @@ const PlaylistManager = () => {
     setTimeout(() => setToasts((prev) => prev.filter((x) => x.id !== id)), 3500);
   }, []);
 
-  // ── Load MAC + playlists on mount ──────────────────────────
+  // ── Load MAC + PIN + playlists on mount ────────────────────
+  // PIN is optional end-to-end: if the device never set one, we (and the
+  // API) fall back to "0000" so playlists still resolve correctly.
   useEffect(() => {
     const macFromState = location.state?.mac;
-    const savedMac     = localStorage.getItem('macAddress');
+    const pinFromState = location.state?.pin;
+    const savedMac      = localStorage.getItem('macAddress');
+    const savedPin       = localStorage.getItem('devicePin');
     const mac = macFromState || savedMac || '';
+    const pin = pinFromState || savedPin || DEFAULT_PIN;
+
     if (macFromState) localStorage.setItem('macAddress', macFromState);
+    if (pinFromState) localStorage.setItem('devicePin', pinFromState);
+
     setMacAddress(mac);
-    if (mac) loadPlaylists(mac);
+    setDevicePin(pin);
+    if (mac) loadPlaylists(mac, pin);
   }, [location.state]);
 
-  const loadPlaylists = async (mac) => {
+  const loadPlaylists = async (mac, pin = devicePin) => {
     setLoadingList(true);
-    const res = await getPlaylists(mac);
+    const res = await getPlaylists(mac, pin);
     setLoadingList(false);
     if (res.success && Array.isArray(res.data)) {
       setPlaylists([...res.data].reverse());
@@ -121,7 +133,7 @@ const PlaylistManager = () => {
       setNewUrl('');
       setNewName('');
       setShowAddForm(false);
-      loadPlaylists(macAddress);
+      loadPlaylists(macAddress, devicePin);
     } else {
       showToast(res.message, 'error');
     }
@@ -151,7 +163,7 @@ const PlaylistManager = () => {
     if (res.success) {
       showToast(res.message || 'Playlist updated', 'success');
       cancelEdit();
-      loadPlaylists(macAddress);
+      loadPlaylists(macAddress, devicePin);
     } else {
       showToast(res.message || 'Failed to update playlist', 'error');
     }
@@ -222,12 +234,19 @@ const PlaylistManager = () => {
             </div>
           </div>
 
-          {/* MAC pill + Add button — wraps under header on small mobile, inline on sm+ */}
-          <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
-            <div className="flex items-center px-3 py-1.5 rounded-xl bg-[#800000]/[0.06] border border-[#800000]/20 min-w-0">
-              <span className="font-mono font-bold text-[#800000] text-xs tracking-widest truncate">
-                {macAddress || '—'}
-              </span>
+          {/* MAC pill + PIN pill + Add button — wraps under header on small mobile, inline on sm+ */}
+          <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <div className="flex items-center px-3 py-1.5 rounded-xl bg-[#800000]/[0.06] border border-[#800000]/20 min-w-0">
+                <span className="font-mono font-bold text-[#800000] text-xs tracking-widest truncate">
+                  {macAddress || '—'}
+                </span>
+              </div>
+              <div className="hidden sm:flex items-center px-3 py-1.5 rounded-xl bg-gray-100 border border-gray-200 shrink-0">
+                <span className="font-mono font-bold text-gray-500 text-xs tracking-widest">
+                  PIN {devicePin}
+                </span>
+              </div>
             </div>
 
             <motion.button

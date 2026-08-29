@@ -13,19 +13,27 @@ const formatMac = (raw) => {
 
 const isMacComplete = (mac) => /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(mac);
 
+// ── PIN formatter — digits only, capped at 4 ─────────────────────
+const formatPin = (raw) => raw.replace(/\D/g, '').slice(0, 4);
+
+const DEFAULT_PIN = '0000';
+
 const WiseplayerUpload = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const [uploadMac, setUploadMac] = useState('');
+  const [uploadPin, setUploadPin] = useState('');
   const [statusError, setStatusError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
     const mac = query.get('mac');
+    const pin = query.get('pin');
     if (mac) setUploadMac(formatMac(mac));
+    if (pin) setUploadPin(formatPin(pin));
   }, [location]);
 
   const handleMacChange = (e) => {
@@ -33,9 +41,17 @@ const WiseplayerUpload = () => {
     setUploadMac(formatMac(e.target.value));
   };
 
+  const handlePinChange = (e) => {
+    if (statusError) setStatusError('');
+    setUploadPin(formatPin(e.target.value));
+  };
+
   const handleConfigure = async () => {
     setIsLoading(true);
     setStatusError('');
+    // If the user never set a device pin, we fall back to the default "0000"
+    // — matches the API's own default, so playlists still resolve correctly.
+    const pinToUse = uploadPin.trim() ? uploadPin.trim() : DEFAULT_PIN;
     try {
       const res = await validateDevice(uploadMac);
       if (!res.success || !res.data) {
@@ -47,7 +63,7 @@ const WiseplayerUpload = () => {
         setStatusError(message || 'Your Subscription expired. Please renew.');
       }
       if (status === 'ACTIVE') {
-        navigate('/upload-playlist', { state: { mac: uploadMac } });
+        navigate('/upload-playlist', { state: { mac: uploadMac, pin: pinToUse } });
       } else if (status === 'INACTIVE') {
         setStatusError('Device is registered but status is Inactive.');
       } else {
@@ -100,7 +116,7 @@ const WiseplayerUpload = () => {
           {t('uploadlist.device_id_label')}
         </label>
 
-        {/* Input */}
+        {/* MAC Input */}
         <input
           type="text"
           inputMode="text"
@@ -120,6 +136,35 @@ const WiseplayerUpload = () => {
             }
           `}
         />
+
+        {/* PIN label — optional, defaults to 0000 if the device has none set */}
+        <label className="block text-xs font-bold text-[#1a1a1a] tracking-wide uppercase text-center mb-2 mt-4">
+          {t('uploadlist.device_pin_label') || 'Device PIN'}{' '}
+          <span className="normal-case font-medium text-gray-400 tracking-normal">(optional)</span>
+        </label>
+
+        {/* PIN Input */}
+        <input
+          type="text"
+          inputMode="numeric"
+          placeholder={DEFAULT_PIN}
+          value={uploadPin}
+          onChange={handlePinChange}
+          maxLength={4}
+          className={`
+            w-full h-12 px-4 rounded-xl border-2 text-center
+            font-bold text-lg tracking-[6px] outline-none
+            transition-colors duration-200 shadow-none bg-white
+            ${uploadPin
+              ? 'border-[#800000] bg-[#800000]/[0.04] text-[#800000] focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15'
+              : 'border-gray-200 text-[#1a1a1a] focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15'
+            }
+          `}
+        />
+        <p className="text-[11px] text-gray-400 text-center mt-1.5">
+          Leave blank to use the default PIN{' '}
+          <span className="font-mono font-bold text-gray-500">{DEFAULT_PIN}</span>
+        </p>
 
         {/* Error */}
         {statusError && (
