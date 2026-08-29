@@ -45,6 +45,11 @@
         "desc": "Ondersteunt echte 4K en 8K voor OLED-schermen."
       }
     ],
+     "disclaimerLabel1": "Inhoud",
+    "disclaimerLabel2": "Beveiliging",
+    "disclaimerLabel3": "Voorwaarden",
+    "disclaimerLabel4": "Ondersteuning",
+    "live_badge": "Live",
     "contactUs": "Neem contact op",
     "system_online": "SYSTEM ONLINE V2.0",
     "type_ultra_fast": "Ultra Snel",

@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-8 -8 116 116"">
+  <defs>
+    <linearGradient id="tg" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0%" stop-color="#c0272d"/>
+      <stop offset="100%" stop-color="#800000"/>
+    </linearGradient>
+  </defs>
+
+  <!--
+    ANIMATED FAVICON — uses SMIL animateTransform (works in Chrome/Edge/Firefox).
+    Each bar scales vertically from its centre in a wave sequence.
+    The play triangle pulses in opacity.
+    No CSS, no JS — pure SVG SMIL so it runs as a favicon.
+  -->
+
+  <!-- ── LEFT BAR 1 — outermost, shortest ── -->
+  <rect x="2" y="32" width="11" height="36" rx="5.5" fill="#c0272d">
+    <animateTransform attributeName="transform" type="scale"
+      values="1 1; 1 0.3; 1 0.8; 1 0.15; 1 1"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.00s"
+      additive="sum"
+      calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+    <!-- translate to pivot from vertical centre -->
+    <animateTransform attributeName="transform" type="translate"
+      values="0 0; 0 25.2; 0 7.2; 0 30.6; 0 0"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.00s"
+      additive="sum"
+      calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+  </rect>
+
+  <!-- ── LEFT BAR 2 ── -->
+  <rect x="12.5" y="23" width="11" height="54" rx="5.5" fill="#991c22">
+    <animateTransform attributeName="transform" type="scale"
+      values="1 1; 1 0.3; 1 0.8; 1 0.15; 1 1"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.13s"
+      additive="sum" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+    <animateTransform attributeName="transform" type="translate"
+      values="0 0; 0 37.8; 0 10.8; 0 45.9; 0 0"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.13s"
+      additive="sum" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+  </rect>
+
+  <!-- ── LEFT BAR 3 ── -->
+  <rect x="23" y="16" width="11" height="68" rx="5.5" fill="#6e1216">
+    <animateTransform attributeName="transform" type="scale"
+      values="1 1; 1 0.3; 1 0.8; 1 0.15; 1 1"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.26s"
+      additive="sum" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+    <animateTransform attributeName="transform" type="translate"
+      values="0 0; 0 47.6; 0 13.6; 0 57.8; 0 0"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.26s"
+      additive="sum" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+  </rect>
+
+  <!-- ── LEFT BAR 4 — innermost, tallest ── -->
+  <rect x="33.5" y="10" width="11" height="80" rx="5.5" fill="#4a0c10">
+    <animateTransform attributeName="transform" type="scale"
+      values="1 1; 1 0.3; 1 0.8; 1 0.15; 1 1"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.39s"
+      additive="sum" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+    <animateTransform attributeName="transform" type="translate"
+      values="0 0; 0 56; 0 16; 0 68; 0 0"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.39s"
+      additive="sum" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+  </rect>
+
+  <!-- ── RIGHT BAR 5 — innermost, tallest ── -->
+  <rect x="57.5" y="10" width="11" height="80" rx="5.5" fill="#4a0c10">
+    <animateTransform attributeName="transform" type="scale"
+      values="1 1; 1 0.3; 1 0.8; 1 0.15; 1 1"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.52s"
+      additive="sum" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+    <animateTransform attributeName="transform" type="translate"
+      values="0 0; 0 56; 0 16; 0 68; 0 0"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.52s"
+      additive="sum" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+  </rect>
+
+  <!-- ── RIGHT BAR 6 ── -->
+  <rect x="68" y="16" width="11" height="68" rx="5.5" fill="#6e1216">
+    <animateTransform attributeName="transform" type="scale"
+      values="1 1; 1 0.3; 1 0.8; 1 0.15; 1 1"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.65s"
+      additive="sum" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+    <animateTransform attributeName="transform" type="translate"
+      values="0 0; 0 47.6; 0 13.6; 0 57.8; 0 0"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.65s"
+      additive="sum" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+  </rect>
+
+  <!-- ── RIGHT BAR 7 ── -->
+  <rect x="78.5" y="23" width="11" height="54" rx="5.5" fill="#991c22">
+    <animateTransform attributeName="transform" type="scale"
+      values="1 1; 1 0.3; 1 0.8; 1 0.15; 1 1"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.78s"
+      additive="sum" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+    <animateTransform attributeName="transform" type="translate"
+      values="0 0; 0 37.8; 0 10.8; 0 45.9; 0 0"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.78s"
+      additive="sum" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+  </rect>
+
+  <!-- ── RIGHT BAR 8 — outermost, shortest ── -->
+  <rect x="89" y="32" width="11" height="36" rx="5.5" fill="#c0272d">
+    <animateTransform attributeName="transform" type="scale"
+      values="1 1; 1 0.3; 1 0.8; 1 0.15; 1 1"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.91s"
+      additive="sum" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+    <animateTransform attributeName="transform" type="translate"
+      values="0 0; 0 25.2; 0 7.2; 0 30.6; 0 0"
+      keyTimes="0; 0.25; 0.55; 0.80; 1"
+      dur="1.1s" repeatCount="indefinite" begin="0.91s"
+      additive="sum" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+  </rect>
+
+  <!-- ── Halo — white gap around triangle ── -->
+  <polygon points="31,13 31,87 95,50" fill="#ffffff"/>
+
+  <!-- ── Play triangle — pulses gently ── -->
+  <polygon points="35,17 35,83 92,50" fill="url(#tg)">
+    <animate attributeName="opacity"
+      values="1; 0.78; 1"
+      dur="2.2s" repeatCount="indefinite" calcMode="spline"
+      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"/>
+  </polygon>
+
+  <!-- ── Inner highlight ── -->
+  <polygon points="41,23 41,50 65,37" fill="rgba(255,255,255,0.18)"/>
+</svg>

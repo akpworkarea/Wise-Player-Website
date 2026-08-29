@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Flame, ShieldCheck, Zap, Monitor, CheckCircle,
-  Smartphone, ArrowRight, Phone, Instagram, Twitter, AlertTriangle
+  Smartphone, ArrowRight, Phone, Instagram, Twitter, AlertTriangle,
+  Tv, FileText, Headphones
 } from 'lucide-react';
-import {Link,useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { validateDevice, checkoutPayment, fetchPublicPlans } from '../auth/apiservice';
 
@@ -14,6 +15,7 @@ const Typewriter = ({ texts }) => {
   const [index, setIndex] = useState(0);
   const [subIndex, setSubIndex] = useState(0);
   const [reverse, setReverse] = useState(false);
+
 
   useEffect(() => {
     if (subIndex === texts[index].length + 1 && !reverse) {
@@ -71,6 +73,22 @@ const WisePlayerHome = () => {
   const [isActiveDevice, setIsActiveDevice] = useState(null);
   const [plans, setPlans] = useState([]);
   const planRef = useRef('ANNUAL');
+
+  const [posterIndex, setPosterIndex] = useState(0);
+
+  const posters = [
+    'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200&auto=format&fit=crop', // cinema
+    'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop', // action still
+
+    'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=1200&auto=format&fit=crop', // sports
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPosterIndex((prev) => (prev + 1) % posters.length);
+    }, 3200);
+    return () => clearInterval(interval);
+  }, []);
 
   const showToast = (msg, type = 'info') => {
     setToast({ msg, type });
@@ -219,9 +237,13 @@ const WisePlayerHome = () => {
                 variants={fadeUp}
                 className="flex flex-col sm:flex-row w-full sm:w-auto gap-3"
               >
-                <button className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl font-bold text-sm sm:text-base text-white bg-[#800000] hover:bg-[#6a0000] active:scale-95 transition-all duration-200 shadow-sm">
+                <a href="https://play.google.com/store/apps/details?id=com.pearl.wisePlayer"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl font-bold text-sm sm:text-base text-white bg-[#800000] hover:bg-[#6a0000] active:scale-95 transition-all duration-200 shadow-sm text-center"
+                >
                   {t('home.headFreeTrial')}
-                </button>
+                </a>
 
                 <button className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl font-bold text-sm sm:text-base border-2 border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white active:scale-95 transition-all duration-200">
                   {t('home.headTutorial')}
@@ -243,27 +265,51 @@ const WisePlayerHome = () => {
                 <div className="bg-[#111] p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-white/10 shadow-2xl">
                   <div className="relative bg-gray-900 rounded-lg sm:rounded-xl overflow-hidden aspect-video flex items-center justify-center">
 
-                    <img
-                      src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?q=80&w=2070&auto=format&fit=crop"
-                      alt="WisePlayer UI"
-                      className="absolute inset-0 w-full h-full object-cover opacity-70"
-                    />
-
-                    <div className="relative z-10 text-center text-white drop-shadow-lg px-3">
-                      <Flame
-                        size={40}
-                        className="mx-auto mb-2 text-[#800000] sm:w-[52px] sm:h-[52px]"
-                        fill="#800000"
+                    {/* Crossfading poster carousel */}
+                    <AnimatePresence mode="wait">
+                      <motion.img
+                        key={posterIndex}
+                        src={posters[posterIndex]}
+                        alt="Live content preview"
+                        initial={{ opacity: 0, scale: 1.04 }}
+                        animate={{ opacity: 0.85, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.98 }}
+                        transition={{ duration: 0.9, ease: 'easeInOut' }}
+                        className="absolute inset-0 w-full h-full object-cover"
                       />
-                      <p className="font-black tracking-[3px] sm:tracking-[4px] text-xs sm:text-base uppercase">
-                        {t('home.brand_name')}
-                      </p>
-                      <p className="text-[11px] sm:text-sm opacity-50 mt-1">
-                        {t('home.ready_to_stream')}
-                      </p>
+                    </AnimatePresence>
+
+                    {/* Dark gradient so UI stays readable */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/40 pointer-events-none" />
+
+                    {/* "Now playing" badge, top-left */}
+                    <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                      <span className="text-[9px] sm:text-[10px] font-bold tracking-widest text-white uppercase">
+                        {t('home.live_badge') /* fallback: "Live" */}
+                      </span>
                     </div>
 
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent pointer-events-none" />
+                    {/* Brand mark, bottom-left, replaces old center logo */}
+                    <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-20 flex items-center gap-2">
+                      <Flame size={20} className="text-[#800000] sm:w-6 sm:h-6" fill="#800000" />
+                      <span className="font-black tracking-[2px] sm:tracking-[3px] text-[11px] sm:text-sm text-white uppercase drop-shadow">
+                        {t('home.brand_name')}
+                      </span>
+                    </div>
+
+                    {/* Progress bar strip, bottom */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-20">
+                      <motion.div
+                        key={`bar-${posterIndex}`}
+                        className="h-full bg-[#800000]"
+                        initial={{ width: '0%' }}
+                        animate={{ width: '100%' }}
+                        transition={{ duration: 3.2, ease: 'linear' }}
+                      />
+                    </div>
+
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent pointer-events-none z-10" />
                   </div>
                 </div>
 
@@ -278,38 +324,48 @@ const WisePlayerHome = () => {
       </section>
 
       {/* ══════════════════════════════════════════
-          DISCLAIMER
-      ══════════════════════════════════════════ */}
-      <section className="py-6 md:py-8 bg-[#f4f4f7]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.h2 {...fadeUp} className="text-center text-xl sm:text-2xl md:text-3xl font-extrabold tracking-wide mb-8">
+    DISCLAIMER
+══════════════════════════════════════════ */}
+      <section className="py-8 md:py-10 bg-[#f4f4f7]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          <motion.h2 {...fadeUp} className="text-center text-xl sm:text-2xl md:text-3xl font-extrabold tracking-wide mb-3">
             {t('home.disclaimerHeading')}
           </motion.h2>
 
-          <motion.div
+          <motion.p
             {...fadeUp}
-            className="bg-white rounded-2xl border border-black/[0.06] shadow-sm p-6 md:p-8"
+            className="text-center text-sm sm:text-base text-gray-500 leading-relaxed max-w-xl mx-auto mb-8 sm:mb-10"
           >
-            <div className="flex flex-col lg:flex-row gap-8">
-              {/* Left text */}
-              <p className="w-full lg:w-5/12 text-sm sm:text-base text-gray-500 leading-relaxed">
-                {t('home.disclaimerText1')}
-              </p>
+            {t('home.disclaimerText1')}
+          </motion.p>
 
-              {/* Right list */}
-              <ul className="w-full lg:w-7/12 space-y-2.5">
-                {[1, 2, 3, 4].map((n) => (
-                  <li
-                    key={n}
-                    className="flex items-start gap-3 px-4 py-3 rounded-xl text-sm text-gray-700 border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-colors duration-150"
-                  >
-                    <span className="text-[#800000] mt-0.5 text-xs shrink-0">➤</span>
-                    <span className="leading-relaxed">{t(`home.disclaimerPoint${n}`)}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </motion.div>
+          <div className="flex flex-wrap justify-around items-start gap-y-8">
+            {[
+              { icon: <Tv size={20} />, label: t('home.disclaimerLabel1') /* fallback: "Content" */, key: 1 },
+              { icon: <ShieldCheck size={20} />, label: t('home.disclaimerLabel2') /* fallback: "Security" */, key: 2 },
+              { icon: <FileText size={20} />, label: t('home.disclaimerLabel3') /* fallback: "Terms" */, key: 3 },
+              { icon: <Headphones size={20} />, label: t('home.disclaimerLabel4') /* fallback: "Support" */, key: 4 },
+            ].map(({ icon, label, key }, i) => (
+              <motion.div
+                key={key}
+                {...fadeUp}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                className="text-center px-4 w-1/2 sm:w-auto"
+              >
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#800000]/[0.08] flex items-center justify-center mx-auto mb-3 text-[#800000]">
+                  {icon}
+                </div>
+                <p className="text-[10.5px] font-bold tracking-wider text-[#800000] uppercase mb-1.5">
+                  {label}
+                </p>
+                <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed max-w-[160px] mx-auto">
+                  {t(`home.disclaimerPoint${key}`)}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+
         </div>
       </section>
 
@@ -487,9 +543,12 @@ const WisePlayerHome = () => {
                   {t('home.still_questions_desc')}
                 </p>
               </div>
-              <button className="shrink-0 px-6 py-3 rounded-xl font-bold text-sm bg-[#800000] text-white hover:bg-[#6a0000] active:scale-95 transition-all duration-200">
+              <Link
+                to="/contact"
+                className="shrink-0 px-6 py-3 rounded-xl font-bold text-sm bg-[#800000] text-white hover:bg-[#6a0000] active:scale-95 transition-all duration-200 text-center"
+              >
                 {t('home.contact_support')}
-              </button>
+              </Link>
             </div>
           </motion.div>
         </div>
@@ -555,7 +614,7 @@ const WisePlayerHome = () => {
                   >
                     {t("home.privacyPolicy")}
                   </Link>
-                  <Link to="/contact" 
+                  <Link to="/contact"
                     className="text-sm text-gray-500 font-semibold hover:text-[#800000] transition-colors">
                     {t('home.contactUs')}
                   </Link>

@@ -21,9 +21,10 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
     { path: '/users',              label: t('device_management'),   icon: Users           },
     userRole === 'RESELLER' && {
       path: '/subreseller',        label: t('sub_reseller'),        icon: Layers          },
-    { path: '/requests',           label: t('activation_requests'), icon: Clock           },
+    // { path: '/requests',           label: t('activation_requests'), icon: Clock           },
     { path: '/transition-history', label: t('transaction_history'), icon: CirclePlus      },
     { path: '/purchase-credit',    label: t('purchase_credit'),     icon: ShoppingCart    },
+    { path: '/playlists',           label: t('playlist_management'),  icon: Layers          },
     { path: '/logout',             label: t('logout'),              icon: LogOut          },
   ].filter(Boolean);
 

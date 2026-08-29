@@ -45,6 +45,11 @@
         "desc": "Soporte real para 4K y 8K."
       }
     ],
+    "disclaimerLabel1": "Contenido",
+    "disclaimerLabel2": "Seguridad",
+    "disclaimerLabel3": "Términos",
+    "disclaimerLabel4": "Soporte",
+    "live_badge": "En vivo",
     "contactUs": "Contáctanos",
     "system_online": "SISTEMA EN LÍNEA V2.0",
     "type_ultra_fast": "Ultra Rápido",
