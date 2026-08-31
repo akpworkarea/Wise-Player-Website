@@ -408,8 +408,8 @@ const Dashboard = () => {
         {/* ── CHARTS — 2 small donut cards side by side, no scroll risk ────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <DonutCard
-            title="Device Status"
-            subtitle="Active vs Inactive"
+           title={t("admin_dashboard.device_status")}
+  subtitle={t("admin_dashboard.active_inactive")}
             data={statusChart.data}
             options={donutOptions}
             legend={statusChart.legend}
@@ -417,8 +417,8 @@ const Dashboard = () => {
             icon={Smartphone}
           />
           <DonutCard
-            title="Subscription Plans"
-            subtitle="Plan distribution"
+             title={t("admin_dashboard.subscription_plans")}
+  subtitle={t("admin_dashboard.plan_distribution")}
             data={planChart.data}
             options={donutOptions}
             legend={planChart.legend}

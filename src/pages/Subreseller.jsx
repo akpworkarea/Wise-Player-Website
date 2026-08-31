@@ -954,14 +954,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                           <CopyButton value={user.username} copiedId={copiedId} onCopy={onCopy}
                             copyLabel={t("admin_dashboard.copy")||"Copy"} copiedLabel={t("admin_dashboard.copied")||"Copied!"} />
                         </div>
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-[11px] text-gray-400 font-medium">ID:</span>
-                          <span className="text-[11px] text-[#800000] font-semibold cursor-default" title={user.id}>
-                            {truncateId(user.id)}
-                          </span>
-                          <CopyButton value={user.id} copiedId={copiedId} onCopy={onCopy}
-                            copyLabel={t("admin_dashboard.copy")||"Copy"} copiedLabel={t("admin_dashboard.copied")||"Copied!"} />
-                        </div>
+                       
                       </td>
                       <td className="px-4 py-3.5 text-center"><StatusBadge active={user.active} /></td>
                       <td className="px-4 py-3.5 text-center text-xs text-gray-500">{formatDate(user.createdAt)}</td>

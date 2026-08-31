@@ -543,7 +543,11 @@
     "copied": "Copié !",
     "plan": "Forfait",
     "no_devices_found": "Aucun appareil trouvé",
-    "no_devices": "Aucun appareil"
+    "no_devices": "Aucun appareil",
+     "device_status": "État de l'appareil",
+  "active_inactive": "Actif vs Inactif",
+  "subscription_plans": "Plans d'abonnement",
+  "plan_distribution": "Répartition des plans"
   },
   "userManagement": {
     "mac_address": "Adresse MAC",

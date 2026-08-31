@@ -208,6 +208,7 @@
   "cancel": "Cancel",
   "overview": "Overview",
   "subreseller_management": "Sub-reseller Management",
+  "search_placeholder": "Search requests...",
   "manage_subreseller": "Manage your sub-reseller and activation requests",
   "create_subreseller": "Create New Sub-Reseller",
   "user_details": "User Details",
@@ -260,6 +261,10 @@
     "copy": "Copy",
     "copied": "Copied!",
     "plan": "Plan",
+     "device_status": "Device Status",
+  "active_inactive": "Active vs Inactive",
+  "subscription_plans": "Subscription Plans",
+  "plan_distribution": "Plan distribution",
     "no_devices_found": "No devices found",
     "no_devices": "No devices"
   },
