@@ -149,7 +149,12 @@ export const generateDeviceKey = async (macAddress) => {
 export const activateDeviceApi = async (deviceId, activationKey) => {
   try {
     const response = await api.post('/api/device/activate', { deviceId, activationKey });
-    return { success: true, data: response.data };
+    const data = response.data;
+    return {
+      success: data?.success !== false,
+      data,
+      message: data?.message,
+    };
   } catch (error) {
     return {
       success: false,

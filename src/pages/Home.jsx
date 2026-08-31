@@ -3,19 +3,31 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Flame, ShieldCheck, Zap, Monitor, CheckCircle,
   Smartphone, ArrowRight, Phone, Instagram, Twitter, AlertTriangle,
-  Tv, FileText, Headphones
+  Tv, FileText, Headphones, Lock, XCircle
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { validateDevice, checkoutPayment, fetchPublicPlans } from '../auth/apiservice';
+import { checkPlanExpired } from '../utils/deviceUtils';
 
+// ─── MAC auto-formatter — same pattern as Activation.jsx / UploadList.jsx ──
+// Strips anything that isn't 0-9/A-F, caps at 12 hex chars, inserts colons
+// every 2 chars. Ensures the MAC sent to validateDevice and checkoutPayment
+// is ALWAYS the same normalized format — this is what was causing "Proceed
+// to Payment" to fail on ACTIVE devices: the raw unformatted input passed
+// validateDevice's loose regex but didn't match what checkout expected.
+const formatMac = (raw) => {
+  const hex = raw.replace(/[^0-9a-fA-F]/g, '').toUpperCase().slice(0, 12);
+  return hex.match(/.{1,2}/g)?.join(':') ?? '';
+};
+
+const isMacComplete = (mac) => /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(mac);
 
 // ─── Typewriter ──────────────────────────────────────────────────────────────
 const Typewriter = ({ texts }) => {
   const [index, setIndex] = useState(0);
   const [subIndex, setSubIndex] = useState(0);
   const [reverse, setReverse] = useState(false);
-
 
   useEffect(() => {
     if (subIndex === texts[index].length + 1 && !reverse) {
@@ -50,10 +62,35 @@ const fadeUp = {
   transition: { duration: 0.55 },
 };
 
+// ─── Status badge config (4-state) ────────────────────────────────────────────
+const STATUS_CONFIG = {
+  ACTIVE: {
+    icon: CheckCircle,
+    wrapClass: 'bg-green-50 text-green-800 border-green-200',
+    labelKey: 'home.status_active',
+  },
+  INACTIVE_NEW: {
+    icon: Zap,
+    wrapClass: 'bg-amber-50 text-amber-800 border-amber-200',
+    labelKey: 'home.status_inactive',
+  },
+  INACTIVE_EXPIRED: {
+    icon: Lock,
+    wrapClass: 'bg-red-50 text-red-700 border-red-200',
+    labelKey: 'home.status_expired',
+  },
+  NOT_FOUND: {
+    icon: XCircle,
+    wrapClass: 'bg-red-50 text-red-700 border-red-200',
+    labelKey: 'home.status_not_found',
+  },
+};
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 const WisePlayerHome = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const getApiMessageKey = (msg = '') => {
     const normalized = msg.toLowerCase();
@@ -71,16 +108,17 @@ const WisePlayerHome = () => {
   const [mac, setMac] = useState('');
   const [statusMsg, setStatusMsg] = useState('');
   const [isActiveDevice, setIsActiveDevice] = useState(null);
+  // null | 'ACTIVE' | 'INACTIVE_NEW' | 'INACTIVE_EXPIRED' | 'NOT_FOUND'
+  const [deviceStatus, setDeviceStatus] = useState(null);
   const [plans, setPlans] = useState([]);
   const planRef = useRef('ANNUAL');
 
   const [posterIndex, setPosterIndex] = useState(0);
 
   const posters = [
-    'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200&auto=format&fit=crop', // cinema
-    'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop', // action still
-
-    'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=1200&auto=format&fit=crop', // sports
+    'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=1200&auto=format&fit=crop',
   ];
 
   useEffect(() => {
@@ -102,30 +140,64 @@ const WisePlayerHome = () => {
         setPlans(data);
       } catch (err) {
         console.error('ERROR:', err);
-
         const apiMsg = err.response?.data?.message;
-
-        showToast(
-          t(getApiMessageKey(apiMsg || 'plans_error')),
-          'error'
-        );
+        showToast(t(getApiMessageKey(apiMsg || 'plans_error')), 'error');
       }
     };
     loadPlans();
   }, []);
 
+  // ── Scroll to pricing when redirected from Activation.jsx renew flow ──────
+  useEffect(() => {
+    const state = location.state;
+    if (state?.scrollTo === 'pricing') {
+      const el = document.getElementById('pricing-section');
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 100);
+      }
+    }
+  }, [location.state]);
+
+  // ── MAC input handler — auto-formats as the user types ────────────────────
+  const handleMacChange = (e) => {
+    setMac(formatMac(e.target.value));
+  };
+
+  // ── 3-branch device status check ───────────────────────────────────────────
   const handleSubmit = async () => {
     if (!mac) { showToast(t('home.enter_mac'), 'warning'); return; }
-    const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$|^([0-9A-Fa-f]{12})$/;
-    if (!macRegex.test(mac)) { showToast(t('home.invalid_mac'), 'warning'); return; }
+    if (!isMacComplete(mac)) { showToast(t('home.invalid_mac'), 'warning'); return; }
+
     try {
       const res = await validateDevice(mac);
-      if (res.success && res.data?.allowed) {
-        setStatusMsg(t('home.status_active'));
-        setIsActiveDevice(true);
-      } else {
-        setStatusMsg(t('home.status_inactive'));
+
+      if (!res.success || !res.data) {
+        setDeviceStatus('NOT_FOUND');
         setIsActiveDevice(false);
+        setStatusMsg(t('home.status_not_found'));
+        return;
+      }
+
+      const status  = res.data?.status ?? '';
+      const allowed = res.data?.allowed ?? false;
+      const plan    = res.data?.subscriptionType ?? '';
+      const expiry  = res.data?.expiresAt ?? res.data?.expiredAt ?? res.data?.expiry ?? '';
+
+      if (status === 'ACTIVE' && allowed) {
+        setDeviceStatus('ACTIVE');
+        setIsActiveDevice(true);
+        setStatusMsg(t('home.status_active'));
+      } else {
+        const expired = checkPlanExpired(plan, expiry, status);
+        if (expired) {
+          setDeviceStatus('INACTIVE_EXPIRED');
+          setIsActiveDevice(false);
+          setStatusMsg(t('home.status_expired'));
+        } else {
+          setDeviceStatus('INACTIVE_NEW');
+          setIsActiveDevice(false);
+          setStatusMsg(t('home.status_inactive'));
+        }
       }
     } catch (err) {
       console.error(err);
@@ -134,11 +206,15 @@ const WisePlayerHome = () => {
     }
   };
 
+  // ── Proceed navigation ─────────────────────────────────────────────────────
+  // ACTIVE and INACTIVE_EXPIRED both go straight to checkout — an expired
+  // device just needs to pay again, no new activation key required. Only a
+  // brand-new, never-activated device needs the /activation detour.
   const handleProceed = async () => {
-    if (isActiveDevice) {
+    if (deviceStatus === 'ACTIVE' || deviceStatus === 'INACTIVE_EXPIRED') {
       try {
         const successUrl = `${window.location.origin}/invoice?paymentStatus=success`;
-        const cancelUrl = `${window.location.origin}/home?paymentStatus=cancel`;
+        const cancelUrl  = `${window.location.origin}/home?paymentStatus=cancel`;
         const res = await checkoutPayment({ deviceId: mac, planName: planRef.current, successUrl, cancelUrl });
         if (res.success && res.data?.checkoutUrl) {
           window.location.href = res.data.checkoutUrl;
@@ -149,35 +225,35 @@ const WisePlayerHome = () => {
         const apiMsg = err.response?.data?.message;
         showToast(t(getApiMessageKey(apiMsg)), 'error');
       }
-    } else {
-      navigate('/activation');
+    } else if (deviceStatus === 'INACTIVE_NEW') {
+      setShowModal(false);
+      navigate('/activation', { state: { mac, isExpired: false } });
     }
+    // NOT_FOUND → no proceed button rendered, nothing to do
   };
 
   const resetModal = () => {
     setStatusMsg('');
     setIsActiveDevice(null);
+    setDeviceStatus(null);
     setMac('');
   };
 
   // ─── Features data ──────────────────────────────────────────────────────────
   const features = [
-    {
-      icon: <Zap size={36} />,
-      title: t('home.features.0.title'),
-      desc: t('home.features.0.desc')
-    },
-    {
-      icon: <ShieldCheck size={36} />,
-      title: t('home.features.1.title'),
-      desc: t('home.features.1.desc')
-    },
-    {
-      icon: <Monitor size={36} />,
-      title: t('home.features.2.title'),
-      desc: t('home.features.2.desc')
-    }
+    { icon: <Zap size={36} />, title: t('home.features.0.title'), desc: t('home.features.0.desc') },
+    { icon: <ShieldCheck size={36} />, title: t('home.features.1.title'), desc: t('home.features.1.desc') },
+    { icon: <Monitor size={36} />, title: t('home.features.2.title'), desc: t('home.features.2.desc') }
   ];
+
+  const currentStatusConfig = deviceStatus ? STATUS_CONFIG[deviceStatus] : null;
+  const StatusIcon = currentStatusConfig?.icon;
+
+   const proceedButtonLabel = () => {
+    if (deviceStatus === 'INACTIVE_EXPIRED') return t('home.renew_plan');
+    if (deviceStatus === 'INACTIVE_NEW') return t('home.activate_now');
+    return '';
+  };
 
   return (
     <div className="bg-[#f4f4f7] text-[#1a1a1a] overflow-x-hidden min-h-screen font-sans">
@@ -189,7 +265,6 @@ const WisePlayerHome = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-12">
 
-            {/* Left */}
             <motion.div
               className="w-full lg:w-[55%] flex flex-col items-center lg:items-start text-center lg:text-left"
               initial="initial"
@@ -197,8 +272,6 @@ const WisePlayerHome = () => {
               viewport={{ once: true }}
               variants={{ whileInView: { transition: { staggerChildren: 0.12 } } }}
             >
-
-              {/* Badge */}
               <motion.div variants={fadeUp} className="mb-4">
                 <span className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-white border border-black/10 text-[11px] sm:text-sm font-bold tracking-widest text-[#1a1a1a] shadow-sm">
                   <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#800000] animate-pulse" />
@@ -206,7 +279,6 @@ const WisePlayerHome = () => {
                 </span>
               </motion.div>
 
-              {/* Heading */}
               <motion.h1
                 variants={fadeUp}
                 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight uppercase mb-4"
@@ -224,7 +296,6 @@ const WisePlayerHome = () => {
                 </span>
               </motion.h1>
 
-              {/* Sub */}
               <motion.p
                 variants={fadeUp}
                 className="text-gray-500 text-sm sm:text-base md:text-lg mb-6 sm:mb-7 max-w-md"
@@ -232,7 +303,6 @@ const WisePlayerHome = () => {
                 {t('home.headExperienceText')}
               </motion.p>
 
-              {/* Buttons */}
               <motion.div
                 variants={fadeUp}
                 className="flex flex-col sm:flex-row w-full sm:w-auto gap-3"
@@ -251,7 +321,6 @@ const WisePlayerHome = () => {
               </motion.div>
             </motion.div>
 
-            {/* Right — TV mockup */}
             <motion.div
               className="w-full lg:w-[45%] flex justify-center"
               initial={{ opacity: 0, scale: 0.92 }}
@@ -260,12 +329,8 @@ const WisePlayerHome = () => {
               transition={{ duration: 0.7, type: 'spring', stiffness: 80 }}
             >
               <div className="w-full max-w-sm sm:max-w-md lg:max-w-full">
-
-                {/* Frame */}
                 <div className="bg-[#111] p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-white/10 shadow-2xl">
                   <div className="relative bg-gray-900 rounded-lg sm:rounded-xl overflow-hidden aspect-video flex items-center justify-center">
-
-                    {/* Crossfading poster carousel */}
                     <AnimatePresence mode="wait">
                       <motion.img
                         key={posterIndex}
@@ -279,18 +344,15 @@ const WisePlayerHome = () => {
                       />
                     </AnimatePresence>
 
-                    {/* Dark gradient so UI stays readable */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/40 pointer-events-none" />
 
-                    {/* "Now playing" badge, top-left */}
                     <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10">
                       <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                       <span className="text-[9px] sm:text-[10px] font-bold tracking-widest text-white uppercase">
-                        {t('home.live_badge') /* fallback: "Live" */}
+                        {t('home.live_badge')}
                       </span>
                     </div>
 
-                    {/* Brand mark, bottom-left, replaces old center logo */}
                     <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-20 flex items-center gap-2">
                       <Flame size={20} className="text-[#800000] sm:w-6 sm:h-6" fill="#800000" />
                       <span className="font-black tracking-[2px] sm:tracking-[3px] text-[11px] sm:text-sm text-white uppercase drop-shadow">
@@ -298,7 +360,6 @@ const WisePlayerHome = () => {
                       </span>
                     </div>
 
-                    {/* Progress bar strip, bottom */}
                     <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-20">
                       <motion.div
                         key={`bar-${posterIndex}`}
@@ -313,7 +374,6 @@ const WisePlayerHome = () => {
                   </div>
                 </div>
 
-                {/* Stand */}
                 <div className="w-20 sm:w-24 h-2 bg-[#111] mx-auto rounded-b-xl" />
                 <div className="w-12 sm:w-16 h-1 bg-[#1a1a1a] mx-auto rounded-full mt-0.5 opacity-30" />
               </div>
@@ -324,11 +384,10 @@ const WisePlayerHome = () => {
       </section>
 
       {/* ══════════════════════════════════════════
-    DISCLAIMER
-══════════════════════════════════════════ */}
+          DISCLAIMER
+      ══════════════════════════════════════════ */}
       <section className="py-8 md:py-10 bg-[#f4f4f7]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
           <motion.h2 {...fadeUp} className="text-center text-xl sm:text-2xl md:text-3xl font-extrabold tracking-wide mb-3">
             {t('home.disclaimerHeading')}
           </motion.h2>
@@ -342,10 +401,10 @@ const WisePlayerHome = () => {
 
           <div className="flex flex-wrap justify-around items-start gap-y-8">
             {[
-              { icon: <Tv size={20} />, label: t('home.disclaimerLabel1') /* fallback: "Content" */, key: 1 },
-              { icon: <ShieldCheck size={20} />, label: t('home.disclaimerLabel2') /* fallback: "Security" */, key: 2 },
-              { icon: <FileText size={20} />, label: t('home.disclaimerLabel3') /* fallback: "Terms" */, key: 3 },
-              { icon: <Headphones size={20} />, label: t('home.disclaimerLabel4') /* fallback: "Support" */, key: 4 },
+              { icon: <Tv size={20} />, label: t('home.disclaimerLabel1'), key: 1 },
+              { icon: <ShieldCheck size={20} />, label: t('home.disclaimerLabel2'), key: 2 },
+              { icon: <FileText size={20} />, label: t('home.disclaimerLabel3'), key: 3 },
+              { icon: <Headphones size={20} />, label: t('home.disclaimerLabel4'), key: 4 },
             ].map(({ icon, label, key }, i) => (
               <motion.div
                 key={key}
@@ -365,7 +424,6 @@ const WisePlayerHome = () => {
               </motion.div>
             ))}
           </div>
-
         </div>
       </section>
 
@@ -374,7 +432,6 @@ const WisePlayerHome = () => {
       ══════════════════════════════════════════ */}
       <section className="py-8 md:py-10 bg-[#f4f4f7]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Heading */}
           <div className="text-center mb-8">
             <p className="text-[#800000] font-bold tracking-[3px] text-xs uppercase mb-2">
               {t('home.featureHeadingParent')}
@@ -384,7 +441,6 @@ const WisePlayerHome = () => {
             </h2>
           </div>
 
-          {/* Cards */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {features.map((item, i) => (
               <motion.div
@@ -417,16 +473,13 @@ const WisePlayerHome = () => {
             whileHover={{ scale: 1.015 }}
             className="relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 p-8 md:p-10 rounded-2xl border border-[#800000]/10 bg-gradient-to-r from-[#fff5f5] via-white to-[#fff0f6] shadow-sm cursor-pointer"
           >
-            {/* Glow blob */}
             <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-[#800000] opacity-[0.06] blur-3xl pointer-events-none" />
 
-            {/* Text */}
             <div className="text-center md:text-left z-10">
               <h2 className="text-xl md:text-2xl font-bold text-[#1a1a1a] mb-1">{t('home.cta_dive_in')}</h2>
               <h4 className="text-lg md:text-xl font-bold text-[#800000]">{t('home.cta_trial_text')}</h4>
             </div>
 
-            {/* Brand mark */}
             <div className="flex items-center gap-3 z-10 shrink-0">
               <Flame size={40} className="text-[#800000]" fill="#800000" />
               <div className="leading-tight">
@@ -441,7 +494,7 @@ const WisePlayerHome = () => {
       {/* ══════════════════════════════════════════
           PRICING
       ══════════════════════════════════════════ */}
-      <section className="py-8 bg-[#eaebee]">
+      <section id="pricing-section" className="py-8 bg-[#eaebee]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-[#800000] font-bold tracking-[3px] text-xs uppercase mb-2">{t('home.plans')}</p>
@@ -464,7 +517,6 @@ const WisePlayerHome = () => {
                     }
                   `}
                 >
-                  {/* Lifetime badge */}
                   {isLifetime && (
                     <span className="self-start mb-3 px-3 py-1 text-xs font-bold rounded-full bg-[#800000] text-white tracking-wider">
                       {t('price_lifetime_badge')}
@@ -531,7 +583,6 @@ const WisePlayerHome = () => {
             ))}
           </div>
 
-          {/* Still have questions */}
           <motion.div
             {...fadeUp}
             className="mt-10 p-7 rounded-2xl border border-black/[0.06] bg-white shadow-sm"
@@ -561,7 +612,6 @@ const WisePlayerHome = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
 
-            {/* Brand */}
             <div>
               <div className="flex items-center gap-2 font-extrabold text-lg tracking-wide mb-4">
                 <Flame size={26} className="text-[#800000]" fill="#800000" />
@@ -572,33 +622,13 @@ const WisePlayerHome = () => {
               </p>
             </div>
 
-            {/* Support */}
             <div>
-              {/* <h6 className="font-bold mb-5 uppercase text-[10px] tracking-[3px] text-gray-400">
-                {t('home.support')}
-              </h6> */}
               <div className="space-y-4">
-                {/* Reseller */}
-                {/* <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                    {t('home.reseller')}
-                  </span>
-                  <a
-                    href="https://wa.me/212676076001"
-                    target="_blank" rel="noreferrer"
-                    className="flex items-center gap-2 text-sm font-bold text-[#1a1a1a] hover:text-[#800000] transition-colors"
-                  >
-                    <Phone size={14} className="text-green-500" />
-                    +212 676-076001
-                  </a>
-                </div> */}
-                {/* Customer */}
                 <div className="flex items-center justify-between pb-3 border-b border-gray-100">
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                     {t('home.customerSupport')}
                   </span>
-                  <a
-                    href="https://wa.me/212777754774"
+                  <a href="https://wa.me/212777754774"
                     target="_blank" rel="noreferrer"
                     className="flex items-center gap-2 text-sm font-bold text-[#1a1a1a] hover:text-[#800000] transition-colors"
                   >
@@ -606,7 +636,6 @@ const WisePlayerHome = () => {
                     +212 777-754774
                   </a>
                 </div>
-                {/* Policies */}
                 <div className="flex gap-5 pt-1">
                   <Link
                     to="/privacy-policy"
@@ -622,7 +651,6 @@ const WisePlayerHome = () => {
               </div>
             </div>
 
-            {/* Social */}
             <div className="lg:text-right">
               <h6 className="font-bold mb-5 uppercase text-[10px] tracking-[3px] text-gray-400">
                 {t('home.socialMedia')}
@@ -632,8 +660,8 @@ const WisePlayerHome = () => {
                   { Icon: Instagram, label: t('home.instagram') },
                   { Icon: Twitter, label: t('home.twitter') },
                 ].map(({ Icon, label }) => (
-                  <a
-                    key={label}
+                  
+                    <a key={label}
                     href="#"
                     aria-label={label}
                     className="w-11 h-11 flex items-center justify-center rounded-xl bg-[#f4f4f7] text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white hover:-translate-y-1 transition-all duration-200"
@@ -646,7 +674,6 @@ const WisePlayerHome = () => {
 
           </div>
 
-          {/* Divider + copyright */}
           <div className="mt-10 pt-6 border-t border-black/[0.06] text-center text-xs font-bold tracking-[2px] text-gray-400 uppercase">
             © 2026 WISEPLAYER — {t('home.beyondTheScreen')}
           </div>
@@ -654,7 +681,7 @@ const WisePlayerHome = () => {
       </footer>
 
       {/* ══════════════════════════════════════════
-          DEVICE ACTIVATION MODAL
+          DEVICE ACTIVATION MODAL — 4-state
       ══════════════════════════════════════════ */}
       <AnimatePresence>
         {showModal && (
@@ -671,11 +698,9 @@ const WisePlayerHome = () => {
               transition={{ type: 'spring', stiffness: 300, damping: 28 }}
               className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
             >
-              {/* Red top bar */}
               <div className="h-1.5 bg-[#800000] w-full" />
 
               <div className="p-8 sm:p-10">
-                {/* Icon + title */}
                 <div className="text-center mb-7">
                   <div className="w-14 h-14 rounded-full bg-[#800000]/10 flex items-center justify-center mx-auto mb-4">
                     <Smartphone size={28} className="text-[#800000]" />
@@ -688,18 +713,19 @@ const WisePlayerHome = () => {
                   </p>
                 </div>
 
-                {/* MAC input */}
+                {/* MAC input — auto-formats to AA:BB:CC:DD:EE:FF as the user types */}
                 <input
                   type="text"
+                  inputMode="text"
                   value={mac}
-                  onChange={(e) => setMac(e.target.value.toUpperCase())}
-                  placeholder={t('home.mac_placeholder')}
+                  onChange={handleMacChange}
+                  placeholder="AA:BB:CC:DD:EE:FF"
+                  maxLength={17}
                   className="w-full px-5 py-4 rounded-xl border-2 border-gray-200 text-center font-bold text-base tracking-[3px] uppercase outline-none transition-colors duration-200 focus:border-[#800000] mb-5"
                 />
 
-                {/* Status result */}
                 <AnimatePresence>
-                  {statusMsg && (
+                  {statusMsg && currentStatusConfig && (
                     <motion.div
                       initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -708,30 +734,25 @@ const WisePlayerHome = () => {
                     >
                       <div className={`
                         flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold border
-                        ${isActiveDevice
-                          ? 'bg-green-50 text-green-800 border-green-200'
-                          : 'bg-red-50 text-red-700 border-red-200'
-                        }
+                        ${currentStatusConfig.wrapClass}
                       `}>
-                        {isActiveDevice
-                          ? <CheckCircle size={18} className="shrink-0" />
-                          : <AlertTriangle size={18} className="shrink-0" />
-                        }
+                        {StatusIcon && <StatusIcon size={18} className="shrink-0" />}
                         {statusMsg}
                       </div>
 
-                      <button
-                        onClick={handleProceed}
-                        className="mt-3 w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#1a1a1a] hover:bg-[#111] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
-                      >
-                        {isActiveDevice ? t('home.proceed_payment') : t('home.activate_now')}
-                        <ArrowRight size={16} />
-                      </button>
+                      {(deviceStatus === 'INACTIVE_EXPIRED' || deviceStatus === 'INACTIVE_NEW') && (
+                        <button
+                          onClick={handleProceed}
+                          className="mt-3 w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#1a1a1a] hover:bg-[#111] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
+                        >
+                          {proceedButtonLabel()}
+                          <ArrowRight size={16} />
+                        </button>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                {/* Action buttons */}
                 <div className="flex gap-3">
                   {!statusMsg && (
                     <button
@@ -780,7 +801,6 @@ const WisePlayerHome = () => {
   );
 };
 
-// ─── FAQ Accordion Item (self-contained, no Bootstrap) ────────────────────────
 const FaqItem = ({ title, answer }) => {
   const [open, setOpen] = useState(false);
   return (

@@ -1,16 +1,79 @@
-import React, { useState } from "react";
-import { Cpu, ShieldCheck, CheckCircle2, Shield, Flame } from "lucide-react";
-import { generateDeviceKey, activateDeviceApi } from "../auth/apiservice";
+import React, { useState, useEffect } from "react";
+import { Cpu, ShieldCheck, CheckCircle2, Shield, Flame, Lock, ArrowRight } from "lucide-react";
+import { generateDeviceKey, activateDeviceApi, validateDevice } from "../auth/apiservice";
+import { checkPlanExpired } from "../utils/deviceUtils";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { AnimatePresence, motion } from "framer-motion";
+import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "../component/Footer";
 
 // ── MAC formatter ─────────────────────────────────────────────
 const formatMac = (val) => val.match(/.{1,2}/g)?.join(":") || val;
 
+// ── RenewPlanCard — shown when device status is confirmed expired ──────
+const RenewPlanCard = ({ mac, pin, onGoToPricing, onActivateDifferent }) => {
+  const { t } = useTranslation();
+  return (
+    <motion.div
+      key="renew"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -12 }}
+      transition={{ duration: 0.25 }}
+      className="p-6 sm:p-8 flex flex-col items-center text-center space-y-4"
+    >
+      <div className="relative">
+        <div className="w-16 h-16 flex items-center justify-center bg-red-50 rounded-full border border-red-200">
+          <Lock size={30} className="text-red-600" />
+        </div>
+      </div>
+
+      <div>
+        <h2 className="text-xl sm:text-2xl font-extrabold text-[#1a1a1a] tracking-tight">
+          {t("activation.planExpiredTitle")}
+        </h2>
+        <p className="text-sm text-gray-500 mt-1.5 max-w-xs mx-auto leading-relaxed">
+          {t("activation.planExpiredDesc")}
+        </p>
+      </div>
+
+      {mac && (
+        <div className="w-full bg-gray-50 border border-black/[0.06] rounded-xl px-4 py-3">
+          <p className="text-xs text-gray-400 mb-1">{t("activation.deviceLabel")}</p>
+          <p className="font-mono text-sm font-bold text-[#1a1a1a] break-all">
+            {formatMac(mac)}
+          </p>
+          {pin && (
+            <p className="text-xs text-gray-400 mt-1.5">
+              {t("activation.pinLabel")}: <span className="font-mono font-bold text-gray-600">{pin}</span>
+            </p>
+          )}
+        </div>
+      )}
+
+      <button
+        onClick={onGoToPricing}
+        className="w-full py-3.5 rounded-xl text-sm font-bold text-white bg-[#800000] hover:bg-[#6a0000] transition-all duration-200 active:scale-[0.98] border-0 flex items-center justify-center gap-2"
+      >
+        {t("activation.viewPlansRenew")}
+        <ArrowRight size={16} />
+      </button>
+
+      <button
+        onClick={onActivateDifferent}
+        className="text-sm font-semibold text-gray-500 hover:text-[#800000] transition-colors duration-150"
+      >
+        {t("activation.activateDifferentDevice")}
+      </button>
+    </motion.div>
+  );
+};
+
 const WisePlayerActivation = () => {
   const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [macAddress, setMacAddress]       = useState("");
   const [isAgreed, setIsAgreed]           = useState(false);
@@ -19,9 +82,51 @@ const WisePlayerActivation = () => {
   const [isKeyLoading, setIsKeyLoading]   = useState(false);
   const [generatedKey, setGeneratedKey]   = useState("");
   const [isSuccess, setIsSuccess]         = useState(false);
+  const [isExpiredMode, setIsExpiredMode] = useState(false);
+  const [routePin, setRoutePin]           = useState(null);
+  // Tracks the "checking real device status before generating a key" step —
+  // separate from isKeyLoading so the button can show a distinct label.
+  const [isCheckingStatus, setIsCheckingStatus] = useState(false);
 
   const isMacValid  = macAddress.length === 12;
   const canActivate = isMacValid && isKeyGenerated && isAgreed;
+
+  const handleGenerateKeyFromMac = async (formattedMac) => {
+    setIsKeyLoading(true);
+    const result = await generateDeviceKey(formattedMac);
+    if (result.success) {
+      setGeneratedKey(result.data.activationKey);
+      setIsKeyGenerated(true);
+      toast.success(t("activation.keyGeneratedSuccess"));
+    } else {
+      toast.error(result.message || t("activation.keyGenerateFailed"));
+    }
+    setIsKeyLoading(false);
+  };
+
+  // ── Read route state on mount: pre-fill MAC + determine branch ─────
+  // If we already know isExpired from the caller (Home/UploadList already
+  // called validateDevice), trust it and skip straight to the right mode.
+  useEffect(() => {
+    const state = location.state;
+    if (!state) return;
+
+    if (state.pin) setRoutePin(state.pin);
+
+    if (state.mac) {
+      const raw = String(state.mac).replace(/[^0-9A-Za-z]/g, '').toUpperCase().slice(0, 12);
+      setMacAddress(raw);
+
+      if (!state.isExpired && raw.length === 12) {
+        handleGenerateKeyFromMac(formatMac(raw));
+      }
+    }
+
+    if (state.isExpired) {
+      setIsExpiredMode(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleMacChange = (e) => {
     let value = e.target.value.toUpperCase().replace(/[^0-9A-Z]/g, "");
@@ -31,18 +136,45 @@ const WisePlayerActivation = () => {
     }
   };
 
+  // ── Generate Key button handler ─────────────────────────────────────
+  // Now checks real device status FIRST via validateDevice, instead of
+  // blindly generating a key and only discovering an expired/used trial
+  // at the final "Activate" step. This prevents the user from filling out
+  // the whole form only to be rejected at the very end, and routes an
+  // already-known-expired device straight to RenewPlanCard.
   const handleGenerateKey = async () => {
     if (!isMacValid) return;
-    setIsKeyLoading(true);
-    const result = await generateDeviceKey(formatMac(macAddress));
-    if (result.success) {
-      setGeneratedKey(result.data.activationKey);
-      setIsKeyGenerated(true);
-      toast.success(t("activation.keyGeneratedSuccess"));
-    } else {
-      toast.error(result.message || t("activation.keyGenerateFailed"));
+    const formatted = formatMac(macAddress);
+    setIsCheckingStatus(true);
+
+    try {
+      const res = await validateDevice(formatted);
+
+      if (res.success && res.data) {
+        const { status, allowed, subscriptionType, expiresAt, expiredAt, expiry } = res.data;
+
+        if (status === 'ACTIVE' && allowed) {
+          toast.success(t("activation.deviceAlreadyActive") || "This device is already active — no need to activate again.");
+          return;
+        }
+
+        if (status === 'INACTIVE') {
+          const planExpiry = expiresAt ?? expiredAt ?? expiry ?? '';
+          const expired = checkPlanExpired(subscriptionType, planExpiry, status);
+          if (expired) {
+            setIsExpiredMode(true);
+            return;
+          }
+        }
+      }
+
+      // Registered-but-never-activated, or unknown/not-found — proceed as before
+      await handleGenerateKeyFromMac(formatted);
+    } catch (err) {
+      toast.error(t("activation.statusCheckFailed") || "Couldn't check device status. Please try again.");
+    } finally {
+      setIsCheckingStatus(false);
     }
-    setIsKeyLoading(false);
   };
 
   const handleActivate = async () => {
@@ -64,7 +196,25 @@ const WisePlayerActivation = () => {
     setIsKeyGenerated(false);
     setIsAgreed(false);
     setGeneratedKey("");
+    setIsExpiredMode(false);
   };
+
+  const handleGoToPricing = () => {
+    navigate('/home', { state: { scrollTo: 'pricing' } });
+  };
+
+  const handleActivateDifferent = () => {
+    setIsExpiredMode(false);
+    setMacAddress("");
+    setIsKeyGenerated(false);
+    setGeneratedKey("");
+  };
+
+  const handleGoToUpload = () => {
+    navigate('/upload-playlist', { state: { mac: formatMac(macAddress), pin: routePin || undefined } });
+  };
+
+  const isGenerateBusy = isKeyLoading || isCheckingStatus;
 
   return (
     <div className="fixed inset-0 bg-[#f4f4f7] flex flex-col items-center justify-center px-4 pt-[85px] pb-[72px]">
@@ -74,8 +224,19 @@ const WisePlayerActivation = () => {
 
         <AnimatePresence mode="wait">
 
-          {/* ── FORM STATE ─────────────────────────────────── */}
-          {!isSuccess ? (
+          {isExpiredMode ? (
+            /* ── RENEW PLAN STATE ──────────────────────────── */
+            <RenewPlanCard
+              key="renew-card"
+              mac={macAddress}
+              pin={routePin}
+              onGoToPricing={handleGoToPricing}
+              onActivateDifferent={handleActivateDifferent}
+            />
+
+          ) : !isSuccess ? (
+
+            /* ── FORM STATE ─────────────────────────────────── */
             <motion.div
               key="form"
               initial={{ opacity: 0, y: 12 }}
@@ -149,10 +310,10 @@ const WisePlayerActivation = () => {
                 />
               </div>
 
-              {/* ── GENERATE KEY BUTTON ───────────────────────── */}
+              {/* ── GENERATE KEY BUTTON — now checks status first ───── */}
               <button
                 onClick={handleGenerateKey}
-                disabled={!isMacValid || isKeyLoading}
+                disabled={!isMacValid || isGenerateBusy}
                 className={`
                   w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 active:scale-[0.98] border-0
                   ${isKeyGenerated
@@ -163,11 +324,13 @@ const WisePlayerActivation = () => {
                   }
                 `}
               >
-                {isKeyLoading
-                  ? t("activation.generating")
-                  : isKeyGenerated
-                    ? t("activation.keyGenerated")
-                    : t("activation.generateKey")}
+                {isCheckingStatus
+                  ? (t("activation.checkingStatus") || "Checking status...")
+                  : isKeyLoading
+                    ? t("activation.generating")
+                    : isKeyGenerated
+                      ? t("activation.keyGenerated")
+                      : t("activation.generateKey")}
               </button>
 
               {/* ── AGREEMENT ────────────────────────────────── */}
@@ -213,7 +376,6 @@ const WisePlayerActivation = () => {
               transition={{ duration: 0.3 }}
               className="p-6 sm:p-8 flex flex-col items-center text-center space-y-4"
             >
-              {/* Pulsing icon */}
               <div className="relative">
                 <div className="absolute inset-0 rounded-full bg-green-200 animate-ping opacity-60" />
                 <div className="relative w-16 h-16 flex items-center justify-center bg-green-50 rounded-full border border-green-200">
@@ -230,7 +392,6 @@ const WisePlayerActivation = () => {
                 </p>
               </div>
 
-              {/* Device MAC */}
               <div className="w-full bg-gray-50 border border-black/[0.06] rounded-xl px-4 py-3">
                 <p className="text-xs text-gray-400 mb-1">{t("activation.activatedDevice")}</p>
                 <p className="font-mono text-sm font-bold text-[#1a1a1a] break-all">
@@ -238,7 +399,6 @@ const WisePlayerActivation = () => {
                 </p>
               </div>
 
-              {/* Badges */}
               <div className="flex flex-wrap justify-center gap-2">
                 <span className="flex items-center gap-1.5 text-xs font-semibold bg-green-100 text-green-700 px-3 py-1.5 rounded-full">
                   <CheckCircle2 size={12} /> {t("activation.lifetime")}
@@ -248,7 +408,15 @@ const WisePlayerActivation = () => {
                 </span>
               </div>
 
-              {/* Action buttons */}
+              {routePin ? (
+                <button
+                  onClick={handleGoToUpload}
+                  className="w-full py-3 rounded-xl text-sm font-bold bg-[#800000] hover:bg-[#6a0000] text-white transition-all duration-200 active:scale-[0.98] border-0"
+                >
+                  {t("activation.continueToPlaylists")}
+                </button>
+              ) : null}
+
               <button
                 onClick={handleReset}
                 className="w-full py-3 rounded-xl text-sm font-bold bg-[#1a1a1a] hover:bg-black text-white transition-all duration-200 active:scale-[0.98] border-0"

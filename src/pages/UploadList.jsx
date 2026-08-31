@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ChevronRight, Flame } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { validateDevice } from '../auth/apiservice';
+import { checkPlanExpired } from '../utils/deviceUtils';
 import { useTranslation } from 'react-i18next';
 import Footer from '../component/Footer';
 
@@ -49,26 +50,41 @@ const WiseplayerUpload = () => {
   const handleConfigure = async () => {
     setIsLoading(true);
     setStatusError('');
-    // If the user never set a device pin, we fall back to the default "0000"
+    // If the user never set a device pin, fall back to the default "0000"
     // — matches the API's own default, so playlists still resolve correctly.
     const pinToUse = uploadPin.trim() ? uploadPin.trim() : DEFAULT_PIN;
+
     try {
       const res = await validateDevice(uploadMac);
       if (!res.success || !res.data) {
         setStatusError('Device is not registered.');
         return;
       }
-      const { status, allowed, message } = res.data;
-      if (!allowed) {
-        setStatusError(message || 'Your Subscription expired. Please renew.');
-      }
-      if (status === 'ACTIVE') {
+
+      const { status, allowed, subscriptionType, expiresAt, expiredAt, expiry } = res.data;
+
+      if (status === 'ACTIVE' && allowed) {
         navigate('/upload-playlist', { state: { mac: uploadMac, pin: pinToUse } });
-      } else if (status === 'INACTIVE') {
-        setStatusError('Device is registered but status is Inactive.');
-      } else {
-        setStatusError('Device is not registered.');
+        return;
       }
+
+      if (status === 'INACTIVE') {
+        const planExpiry = expiresAt ?? expiredAt ?? expiry ?? '';
+        const expired = checkPlanExpired(subscriptionType, planExpiry, status);
+
+        if (expired) {
+          // Plan lapsed — send to Activation's renew flow, carrying pin along
+          // so the user lands back on their playlists after renewing.
+          navigate('/activation', { state: { mac: uploadMac, pin: pinToUse, isExpired: true } });
+        } else {
+          // Registered but never activated — send to Activation's key-entry flow
+          navigate('/activation', { state: { mac: uploadMac, pin: pinToUse, isExpired: false } });
+        }
+        return;
+      }
+
+      // Any other status (or ACTIVE-but-not-allowed edge case)
+      setStatusError('Device is not registered.');
     } catch {
       setStatusError('Connection error. Please try again.');
     } finally {
@@ -87,7 +103,6 @@ const WiseplayerUpload = () => {
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-6">
 
-          {/* Brand logo */}
           <div className="w-14 h-14 rounded-2xl bg-[#800000]/[0.08] flex items-center justify-center mb-3">
             <Flame size={28} fill="#800000" color="#800000" />
           </div>
@@ -99,10 +114,8 @@ const WiseplayerUpload = () => {
             {t("activation.tagline")}
           </p>
 
-          {/* Divider */}
           <div className="w-full h-px bg-black/[0.06] my-3" />
 
-          {/* Page title */}
           <h2 className="text-lg sm:text-xl font-extrabold text-[#1a1a1a] tracking-tight">
             {t('uploadlist.upload_playlist_title')}
           </h2>
@@ -137,7 +150,7 @@ const WiseplayerUpload = () => {
           `}
         />
 
-        {/* PIN label — optional, defaults to 0000 if the device has none set */}
+        {/* PIN label */}
         <label className="block text-xs font-bold text-[#1a1a1a] tracking-wide uppercase text-center mb-2 mt-4">
           {t('uploadlist.device_pin_label') || 'Device PIN'}{' '}
           <span className="normal-case font-medium text-gray-400 tracking-normal">(optional)</span>
