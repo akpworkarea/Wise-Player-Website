@@ -543,8 +543,7 @@ const handleProfileUpdated = (updated) => {
     A sibling spacer div correctly reserves 64px before the
     content area, so child h-full = exactly remaining height. */}
 <div className="shrink-0 h-16" />
-<main className="flex-1 min-h-0 overflow-hidden">
-  {children}
+<main className="flex-1 min-h-0 overflow-y-auto">  {children}
 </main>
           </div>
         </div>

@@ -71,16 +71,16 @@ const FilterPanelContent = ({
   statusFilter, setStatusFilter,
   fromDate, setFromDate, toDate, setToDate,
   minCredits, setMinCredits, maxCredits, setMaxCredits,
-  activeFilterCount, clearAll,
+  activeFilterCount, clearAll, t,
 }) => {
   const STATUS_OPTS = [
-    { value: "", label: "All", dot: "bg-gray-300" },
-    { value: "true", label: "Active", dot: "bg-green-500" },
-    { value: "false", label: "Inactive", dot: "bg-red-500" },
+    { value: "", label: t("sr_all"), dot: "bg-gray-300" },
+    { value: "true", label: t("sr_active"), dot: "bg-green-500" },
+    { value: "false", label: t("sr_inactive"), dot: "bg-red-500" },
   ];
   return (
     <div className="space-y-5">
-      <FilterSection icon={ShieldCheck} label="Status">
+      <FilterSection icon={ShieldCheck} label={t("sr_status")}>
         <div className="flex flex-wrap gap-2">
           {STATUS_OPTS.map((s) => {
             const isActive = statusFilter === s.value;
@@ -96,11 +96,11 @@ const FilterPanelContent = ({
         </div>
       </FilterSection>
 
-      <FilterSection icon={Calendar} label="Registered Date">
+      <FilterSection icon={Calendar} label={t("sr_registered_date")}>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { label: "From", value: fromDate, set: setFromDate, min: undefined },
-            { label: "To", value: toDate, set: setToDate, min: fromDate || undefined },
+            { label: t("sr_from"), value: fromDate, set: setFromDate, min: undefined },
+            { label: t("sr_to"), value: toDate, set: setToDate, min: fromDate || undefined },
           ].map(({ label, value, set, min }) => (
             <div key={label} className="space-y-1">
               <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide block">{label}</label>
@@ -115,16 +115,16 @@ const FilterPanelContent = ({
         {(fromDate || toDate) && (
           <button onClick={() => { setFromDate(""); setToDate(""); }}
             className="text-[10px] text-gray-400 hover:text-[#800000] font-semibold flex items-center gap-1 mt-1 transition">
-            <X size={10} /> Clear dates
+            <X size={10} /> {t("sr_clear_dates")}
           </button>
         )}
       </FilterSection>
 
-      <FilterSection icon={Coins} label="Credits Range">
+      <FilterSection icon={Coins} label={t("sr_credits_range")}>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { label: "Min", value: minCredits, set: setMinCredits, ph: "0" },
-            { label: "Max", value: maxCredits, set: setMaxCredits, ph: "∞" },
+            { label: t("sr_min"), value: minCredits, set: setMinCredits, ph: "0" },
+            { label: t("sr_max"), value: maxCredits, set: setMaxCredits, ph: "∞" },
           ].map(({ label, value, set, ph }) => (
             <div key={label} className="space-y-1">
               <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide block">{label}</label>
@@ -140,7 +140,7 @@ const FilterPanelContent = ({
         {(minCredits || maxCredits) && (
           <button onClick={() => { setMinCredits(""); setMaxCredits(""); }}
             className="text-[10px] text-gray-400 hover:text-[#800000] font-semibold flex items-center gap-1 mt-1 transition">
-            <X size={10} /> Clear credits
+            <X size={10} /> {t("sr_clear_credits")}
           </button>
         )}
       </FilterSection>
@@ -149,7 +149,7 @@ const FilterPanelContent = ({
         <div className="pt-3 border-t border-gray-100">
           <button onClick={clearAll}
             className="w-full py-2 text-xs font-bold text-[#800000] hover:bg-red-50 rounded-xl transition">
-            Clear all filters
+            {t("sr_clear_all_filters")}
           </button>
         </div>
       )}
@@ -176,11 +176,11 @@ const CopyButton = ({ value, copiedId, onCopy, copyLabel, copiedLabel }) => {
 };
 
 // ─── StatusBadge ──────────────────────────────────────────────────────────────
-const StatusBadge = ({ active }) => (
+const StatusBadge = ({ active, activeLabel, inactiveLabel }) => (
   <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold
     ${active ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>
     <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${active ? "bg-green-500" : "bg-red-500"}`} />
-    {active ? "Active" : "Inactive"}
+    {active ? activeLabel : inactiveLabel}
   </span>
 );
 
@@ -223,6 +223,7 @@ const SubCard = ({
   user, copiedId, onCopy, onTransfer, onEdit, onDelete, onPermissions, hasOverride,
   copyLabel, copiedLabel, truncateId,
   transferLabel, editLabel, deleteLabel, permissionsLabel, createdLabel, coinLabel,
+  activeLabel, inactiveLabel, idLabel, usernameLabel,
 }) => (
   <motion.div
     initial={{ opacity: 0, y: 8 }}
@@ -232,10 +233,10 @@ const SubCard = ({
   >
     <div className="flex items-start justify-between gap-3">
       <span className="font-bold text-sm text-gray-800 truncate min-w-0 pr-1">{user.fullName}</span>
-      <span className="shrink-0"><StatusBadge active={user.active} /></span>
+      <span className="shrink-0"><StatusBadge active={user.active} activeLabel={activeLabel} inactiveLabel={inactiveLabel} /></span>
     </div>
     <div className="grid grid-cols-[4.5rem_1fr_auto] items-center gap-x-2 gap-y-2">
-      <span className="text-[11px] font-semibold text-gray-500 leading-none">ID</span>
+      <span className="text-[11px] font-semibold text-gray-500 leading-none">{idLabel}</span>
       <span className="text-[11px] font-semibold text-[#800000] truncate leading-none" title={user.id}>
         {truncateId(user.id, 8, 5)}
       </span>
@@ -243,7 +244,7 @@ const SubCard = ({
         <CopyButton value={user.id} copiedId={copiedId} onCopy={onCopy}
           copyLabel={copyLabel} copiedLabel={copiedLabel} />
       </span>
-      <span className="text-[11px] font-semibold text-gray-500 leading-none">Username</span>
+      <span className="text-[11px] font-semibold text-gray-500 leading-none">{usernameLabel}</span>
       <span className="text-[11px] font-semibold text-blue-600 truncate leading-none">{user.username}</span>
       <span className="justify-self-end">
         <CopyButton value={user.username} copiedId={copiedId} onCopy={onCopy}
@@ -285,15 +286,15 @@ const SubCard = ({
 );
 
 // ─── EmptyState ───────────────────────────────────────────────────────────────
-const EmptyState = ({ hasFilters, noDataLabel, onClear }) => (
+const EmptyState = ({ hasFilters, noDataLabel, onClear, noMatchLabel, clearLabel }) => (
   <div className="flex flex-col items-center gap-2 py-12 text-gray-400">
     <Search size={28} className="opacity-40" />
     <p className="font-semibold text-sm text-center">
-      {hasFilters ? "No sub-resellers match your filters" : noDataLabel}
+      {hasFilters ? noMatchLabel : noDataLabel}
     </p>
     {hasFilters && (
       <button onClick={onClear} className="text-xs text-[#800000] font-bold hover:underline">
-        Clear filters
+        {clearLabel}
       </button>
     )}
   </div>
@@ -494,14 +495,14 @@ const SubresellerDashboard = () => {
         setPermInitialized(true);
       }
     } else {
-      showToast(res.message || "Failed to load sub-resellers", "error");
+      showToast(res.message || t("sr_toast_load_failed"), "error");
     }
   } catch (err) {
     if (seq === fetchSeqRef.current) { console.error(err); setUsers([]); }
   } finally {
     if (seq === fetchSeqRef.current) setLoadingData(false);
   }
-}, [debouncedSearch, statusFilter, fromDate, toDate, debouncedMin, debouncedMax, showToast]);
+}, [debouncedSearch, statusFilter, fromDate, toDate, debouncedMin, debouncedMax, showToast, t]);
 
 useEffect(() => () => fetchAbortRef.current?.abort(), []);
 
@@ -527,11 +528,11 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
     if (!iso) return null;
     const diffMs = Date.now() - new Date(iso).getTime();
     const mins = Math.floor(diffMs / 60000);
-    if (mins < 1) return "just now";
-    if (mins < 60) return `${mins}m ago`;
+    if (mins < 1) return t("sr_just_now");
+    if (mins < 60) return `${mins}${t("sr_m_ago")}`;
     const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h ago`;
-    return `${Math.floor(hrs / 24)}d ago`;
+    if (hrs < 24) return `${hrs}${t("sr_h_ago")}`;
+    return `${Math.floor(hrs / 24)}${t("sr_d_ago")}`;
   };
 
   const isRecentlyChanged = (iso, windowMs = 5 * 60 * 1000) => {
@@ -554,10 +555,10 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
       setOpenModel(false);
       setFormData({ username: "", password: "", fullName: "", email: "" });
       setCurrentPage(1); fetchData(1); await refetchDashboard();
-      showToast("Sub-reseller created successfully", "success");
+      showToast(t("sr_toast_created"), "success");
     } else {
       setError(res.message);
-      showToast(res.message || "Failed to create sub-reseller", "error");
+      showToast(res.message || t("sr_toast_create_failed"), "error");
     }
   };
 
@@ -569,10 +570,10 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
     const res = await updateSubReseller(editUserId, payload);
     if (res.success) {
       setEditModal(false); setError(""); fetchData(currentPage);
-      showToast("Sub-reseller updated successfully", "success");
+      showToast(t("sr_toast_updated"), "success");
     } else {
       setError(res.message);
-      showToast(res.message || "Failed to update sub-reseller", "error");
+      showToast(res.message || t("sr_toast_update_failed"), "error");
     }
   };
 
@@ -603,12 +604,12 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
     const res = await deleteSubReseller(userToDelete.id);
     setDeleting(false);
     if (res.success) {
-      showToast(`"${userToDelete.fullName}" deleted successfully`, "success");
+      showToast(`"${userToDelete.fullName}" ${t("sr_toast_deleted")}`, "success");
       setDeleteModal(false); setUserToDelete(null);
       setUsers((prev) => prev.filter((u) => u.id !== userToDelete.id));
       fetchData(currentPage); await refetchDashboard();
     } else {
-      showToast(res.message || "Failed to delete sub-reseller", "error");
+      showToast(res.message || t("sr_toast_delete_failed"), "error");
     }
   };
 
@@ -618,11 +619,11 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
     const res = await updateBulkPermissions(permissions);
     setPermSaving(false);
     if (res.success) {
-      showToast("Permissions applied to all sub-resellers", "success");
+      showToast(t("sr_toast_perms_applied"), "success");
       setPermModal(false);
       fetchData(currentPage); // resync bulkPermissions + per-user CRUD flags
     } else {
-      showToast(res.message || "Failed to update permissions", "error");
+      showToast(res.message || t("sr_toast_perms_failed"), "error");
     }
   };
 
@@ -657,19 +658,19 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
     const res = await updateIndividualPermission(indivUser.id, indivPermissions);
     setIndivSaving(false);
     if (res.success) {
-      showToast(`Permissions updated for "${indivUser.fullName}"`, "success");
+      showToast(`${t("sr_toast_indiv_perms_updated")} "${indivUser.fullName}"`, "success");
       setIndivModal(false);
       fetchData(currentPage); // resync this user's CRUD flags + updatedAt
     } else {
-      showToast(res.message || "Failed to update permissions", "error");
+      showToast(res.message || t("sr_toast_perms_failed"), "error");
     }
   };
 
   const PERM_CONFIG = [
-    { key: "canRead",   label: "View",   description: "Can view dashboard & data",     icon: Eye      },
-    { key: "canCreate", label: "Create", description: "Can create new records",         icon: UserPlus },
-    { key: "canUpdate", label: "Edit",   description: "Can edit existing records",      icon: Pencil   },
-    { key: "canDelete", label: "Delete", description: "Can permanently delete records", icon: Trash2   },
+    { key: "canRead",   label: t("sr_perm_view"),   description: t("sr_perm_view_desc"),   icon: Eye      },
+    { key: "canCreate", label: t("sr_perm_create"), description: t("sr_perm_create_desc"), icon: UserPlus },
+    { key: "canUpdate", label: t("sr_perm_edit"),   description: t("sr_perm_edit_desc"),   icon: Pencil   },
+    { key: "canDelete", label: t("sr_perm_delete"), description: t("sr_perm_delete_desc"), icon: Trash2   },
   ];
 
   const activeFilterCount = [statusFilter, fromDate, toDate, minCredits, maxCredits].filter(Boolean).length;
@@ -679,7 +680,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
     statusFilter, setStatusFilter,
     fromDate, setFromDate, toDate, setToDate,
     minCredits, setMinCredits, maxCredits, setMaxCredits,
-    activeFilterCount, clearAll: clearFilters,
+    activeFilterCount, clearAll: clearFilters, t,
   };
 
   const cardProps = {
@@ -689,15 +690,26 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
     onDelete: handleDeleteOpen,
     onPermissions: openIndivPerm,
     hasOverride,
-    copyLabel:     t("admin_dashboard.copy")   || "Copy",
-    copiedLabel:   t("admin_dashboard.copied") || "Copied!",
-    transferLabel: t("transfer")               || "Transfer",
-    editLabel:     t("edit")                   || "Edit",
-    deleteLabel:   t("delete")                 || "Delete",
-    permissionsLabel: "Permissions",
-    createdLabel:  t("created")                || "Created",
-    coinLabel:     t("coin")                   || "Coins",
+    copyLabel:        t("admin_dashboard.copy")   || "Copy",
+    copiedLabel:      t("admin_dashboard.copied") || "Copied!",
+    transferLabel:    t("transfer")                || "Transfer",
+    editLabel:        t("edit")                    || "Edit",
+    deleteLabel:       t("delete")                  || "Delete",
+    permissionsLabel: t("permissions")             || "Permissions",
+    createdLabel:     t("created")                 || "Created",
+    coinLabel:        t("coin")                    || "Coins",
+    activeLabel:      t("sr_active"),
+    inactiveLabel:    t("sr_inactive"),
+    idLabel:          t("id_label") || "ID",
+    usernameLabel:    t("sr_username_label"),
     truncateId,
+  };
+
+  const emptyStateProps = {
+    hasFilters,
+    noDataLabel: t("no_data") || "No sub-resellers found",
+    noMatchLabel: t("sr_no_match_filters"),
+    clearLabel: t("sr_clear_filters"),
   };
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -733,8 +745,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                 )}
                 <input
                   type="text"
-                  placeholder={t("search_placeholder") || "Search by name, username or ID…"}
-                  value={search}
+placeholder={t("sr_search_placeholder") || "Search by name, username or ID…"}                  value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full pl-8 pr-7 py-2.5 text-sm text-gray-700 bg-white focus:outline-none placeholder-gray-400"
                 />
@@ -752,7 +763,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowFilter((v) => !v)}
-                title="Filters"
+                title={t("filters") || "Filters"}
                 className={`flex items-center justify-center gap-1.5 w-10 min-[1400px]:w-auto min-[1400px]:px-4 h-10 rounded-xl border text-sm font-semibold transition
                   ${activeFilterCount > 0
                     ? "bg-[#800000] text-white border-[#800000] shadow-md"
@@ -788,7 +799,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
                         <Filter size={14} className="text-[#800000]" />
-                        <span className="text-sm font-bold text-gray-800">Filter Sub-Resellers</span>
+                        <span className="text-sm font-bold text-gray-800">{t("sr_filter_title")}</span>
                       </div>
                       <button onClick={() => setShowFilter(false)}
                         className="text-gray-400 hover:text-gray-600 transition p-1 rounded-lg hover:bg-gray-100">
@@ -805,13 +816,13 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setPermModal(true)}
-              title="Permissions"
+              title={t("permissions") || "Permissions"}
               className="flex items-center justify-center gap-1.5 w-10 min-[1400px]:w-auto min-[1400px]:px-4 h-10 rounded-xl
                          border border-gray-200 bg-white text-gray-700 text-sm font-semibold
                          hover:border-[#800000] hover:text-[#800000] transition shadow-sm shrink-0"
             >
               <ShieldAlert size={15} />
-              <span className="hidden min-[1400px]:inline">Permissions</span>
+              <span className="hidden min-[1400px]:inline">{t("permissions") || "Permissions"}</span>
             </motion.button>
 
             {/* Create */}
@@ -835,7 +846,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
             <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
               className="flex flex-wrap items-center gap-2">
               <span className="text-xs text-gray-500 font-medium">
-                {loadingData ? "Searching…" : `${users.length} result${users.length !== 1 ? "s" : ""}`}
+                {loadingData ? t("sr_searching") : `${users.length} ${users.length !== 1 ? t("sr_results") : t("sr_result")}`}
               </span>
               {debouncedSearch && (
                 <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
@@ -845,28 +856,28 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
               )}
               {statusFilter && (
                 <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
-                  <ShieldCheck size={10} />{statusFilter === "true" ? "Active" : "Inactive"}
+                  <ShieldCheck size={10} />{statusFilter === "true" ? t("sr_active") : t("sr_inactive")}
                   <button onClick={() => setStatusFilter("")}><X size={10} /></button>
                 </span>
               )}
               {(fromDate || toDate) && (
                 <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
                   <Calendar size={10} />
-                  {fromDate && toDate ? `${fromDate} → ${toDate}` : fromDate ? `From ${fromDate}` : `To ${toDate}`}
+                  {fromDate && toDate ? `${fromDate} → ${toDate}` : fromDate ? `${t("sr_from")} ${fromDate}` : `${t("sr_to")} ${toDate}`}
                   <button onClick={() => { setFromDate(""); setToDate(""); }}><X size={10} /></button>
                 </span>
               )}
               {(minCredits || maxCredits) && (
                 <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
                   <Coins size={10} />
-                  {minCredits && maxCredits ? `${minCredits}–${maxCredits} cr` : minCredits ? `Min ${minCredits}` : `Max ${maxCredits}`}
+                  {minCredits && maxCredits ? `${minCredits}–${maxCredits} cr` : minCredits ? `${t("sr_min")} ${minCredits}` : `${t("sr_max")} ${maxCredits}`}
                   <button onClick={() => { setMinCredits(""); setMaxCredits(""); }}><X size={10} /></button>
                 </span>
               )}
               {(activeFilterCount + (debouncedSearch ? 1 : 0)) > 1 && (
                 <button onClick={() => { setSearch(""); clearFilters(); }}
                   className="text-xs text-gray-400 hover:text-[#800000] font-semibold transition">
-                  Clear all
+                  {t("sr_clear_all")}
                 </button>
               )}
             </motion.div>
@@ -895,7 +906,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
               <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 shrink-0">
                 <div className="flex items-center gap-2">
                   <Filter size={15} className="text-[#800000]" />
-                  <span className="text-base font-bold text-gray-800">Filter Sub-Resellers</span>
+                  <span className="text-base font-bold text-gray-800">{t("sr_filter_title")}</span>
                 </div>
                 <button onClick={() => setShowFilter(false)}
                   className="text-gray-400 hover:text-gray-600 p-1.5 rounded-xl hover:bg-gray-100">
@@ -949,14 +960,14 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                       <td className="px-4 py-3.5 text-left">
                         <div className="font-bold text-gray-800 text-sm truncate mb-1">{user.fullName}</div>
                         <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-                          <span className="text-[11px] text-gray-400 font-medium">Username:</span>
+                          <span className="text-[11px] text-gray-400 font-medium">{t("sr_username_label")}</span>
                           <span className="text-[11px] text-blue-600 font-semibold">{user.username}</span>
                           <CopyButton value={user.username} copiedId={copiedId} onCopy={onCopy}
                             copyLabel={t("admin_dashboard.copy")||"Copy"} copiedLabel={t("admin_dashboard.copied")||"Copied!"} />
                         </div>
                        
                       </td>
-                      <td className="px-4 py-3.5 text-center"><StatusBadge active={user.active} /></td>
+                      <td className="px-4 py-3.5 text-center"><StatusBadge active={user.active} activeLabel={t("sr_active")} inactiveLabel={t("sr_inactive")} /></td>
                       <td className="px-4 py-3.5 text-center text-xs text-gray-500">{formatDate(user.createdAt)}</td>
                       <td className="px-4 py-3.5 text-center">
                         <span className="font-black text-[#800000] text-sm">{user.credits ?? 0}</span>
@@ -969,7 +980,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                           </button>
                           <button onClick={() => openIndivPerm(user)}
                             className="relative p-1.5 rounded-lg border border-gray-200 hover:border-[#800000] hover:text-[#800000] hover:bg-red-50 text-gray-500 transition active:scale-95"
-                            title="Permissions">
+                            title={t("permissions") || "Permissions"}>
                             <KeyRound size={13} />
                             {hasOverride(user.id) && (
                               <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500 border border-white" />
@@ -992,7 +1003,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                 ) : (
                   <tr>
                     <td colSpan="5" className="py-12">
-                      <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
+                      <EmptyState {...emptyStateProps} onClear={() => { setSearch(""); clearFilters(); }} />
                     </td>
                   </tr>
                 )}
@@ -1013,7 +1024,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
               </AnimatePresence>
             ) : (
               <div className="col-span-2">
-                <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
+                <EmptyState {...emptyStateProps} onClear={() => { setSearch(""); clearFilters(); }} />
               </div>
             )}
           </div>
@@ -1030,7 +1041,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                 {users.map((user) => <SubCard key={user.id} user={user} {...cardProps} />)}
               </AnimatePresence>
             ) : (
-              <EmptyState hasFilters={hasFilters} noDataLabel={t("no_data") || "No sub-resellers found"} onClear={() => { setSearch(""); clearFilters(); }} />
+              <EmptyState {...emptyStateProps} onClear={() => { setSearch(""); clearFilters(); }} />
             )}
           </div>
         </div>
@@ -1059,7 +1070,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
             </button>
           </div>
           <span className="text-[10px] text-gray-400 font-medium">
-            {totalUsers} {totalUsers === 1 ? "sub-reseller" : "sub-resellers"}
+            {totalUsers} {totalUsers === 1 ? t("sr_sub_reseller_singular") : t("sr_sub_reseller_plural")}
           </span>
         </div>
 
@@ -1085,7 +1096,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                     <h5 className="text-white font-extrabold text-base leading-tight">
                       {t("create_subreseller") || "New Sub-Reseller"}
                     </h5>
-                    <p className="text-white/60 text-xs mt-0.5">Fill in the details below</p>
+                    <p className="text-white/60 text-xs mt-0.5">{t("sr_fill_details")}</p>
                   </div>
                 </div>
               </div>
@@ -1097,25 +1108,25 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                     <span className="font-semibold">{error}</span>
                   </motion.div>
                 )}
-                <FormField label="Full Name" icon={User} required>
-                  <input className={inputCls} placeholder="e.g. John Doe"
+                <FormField label={t("full_name")} icon={User} required>
+                  <input className={inputCls} placeholder={t("sr_full_name_ph")}
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} required />
                 </FormField>
-                <FormField label="Username" icon={AtSign} required>
-                  <input className={inputCls} placeholder="e.g. johndoe123"
+                <FormField label={t("username_label")} icon={AtSign} required>
+                  <input className={inputCls} placeholder={t("sr_username_ph")}
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })} required />
                 </FormField>
-                <FormField label="Email" icon={Mail} required>
-                  <input type="email" className={inputCls} placeholder="e.g. john@example.com"
+                <FormField label={t("sr_email")} icon={Mail} required>
+                  <input type="email" className={inputCls} placeholder={t("sr_email_ph")}
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
                 </FormField>
-                <FormField label="Password" icon={Lock} required>
+                <FormField label={t("sr_password")} icon={Lock} required>
                   <div className="relative">
                     <input type={showPwd ? "text" : "password"} className={`${inputCls} pr-11`}
-                      placeholder="Min. 8 characters"
+                      placeholder={t("sr_password_ph")}
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })} required />
                     <button type="button" tabIndex={-1} onClick={() => setShowPwd((v) => !v)}
@@ -1159,7 +1170,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                   </div>
                   <div>
                     <h5 className="text-white font-extrabold text-base leading-tight">{t("update") || "Edit Sub-Reseller"}</h5>
-                    <p className="text-white/60 text-xs mt-0.5">Update account details</p>
+                    <p className="text-white/60 text-xs mt-0.5">{t("sr_update_account_details")}</p>
                   </div>
                 </div>
               </div>
@@ -1170,14 +1181,14 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                     <span className="font-semibold">{error}</span>
                   </div>
                 )}
-                <FormField label="Full Name" icon={User}>
+                <FormField label={t("full_name")} icon={User}>
                   <input className={inputCls} placeholder={t("full_name")}
                     value={editData.fullName} onChange={(e) => setEditData({ ...editData, fullName: e.target.value })} />
                 </FormField>
-                <FormField label="New Password" icon={Lock}>
+                <FormField label={t("sr_new_password")} icon={Lock}>
                   <div className="relative">
                     <input type={showEditPwd ? "text" : "password"} className={`${inputCls} pr-11`}
-                      placeholder="Leave blank to keep current"
+                      placeholder={t("sr_new_password_ph")}
                       value={editData.password} onChange={(e) => setEditData({ ...editData, password: e.target.value })} />
                     <button type="button" tabIndex={-1} onClick={() => setShowEditPwd((v) => !v)}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#800000] transition">
@@ -1187,7 +1198,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                 </FormField>
                 <button type="submit"
                   className="w-full h-12 bg-[#800000] text-white font-bold rounded-xl hover:bg-[#6a0000] transition active:scale-95 flex items-center justify-center gap-2">
-                  <Pencil size={14} />{t("update") || "Save Changes"}
+                  <Pencil size={14} />{t("sr_save_changes")}
                 </button>
               </form>
             </motion.div>
@@ -1208,18 +1219,18 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                   className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
                   <AlertTriangle size={22} className="text-white" />
                 </motion.div>
-                <h5 className="text-base font-extrabold text-white text-center">Delete Sub-Reseller</h5>
+                <h5 className="text-base font-extrabold text-white text-center">{t("sr_delete_title")}</h5>
               </div>
               <div className="px-6 pt-5 pb-6 flex flex-col items-center gap-5">
                 <p className="text-sm text-gray-600 text-center leading-relaxed">
-                  Are you sure you want to delete{" "}
+                  {t("sr_delete_confirm")}{" "}
                   <span className="font-bold text-[#800000]">{userToDelete.fullName}</span>?
-                  This action cannot be undone.
+                  {" "}{t("sr_delete_warning")}
                 </p>
                 <div className="flex gap-3 w-full">
                   <button onClick={() => { setDeleteModal(false); setUserToDelete(null); }} disabled={deleting}
                     className="flex-1 py-2.5 rounded-xl text-sm font-bold text-gray-600 border border-gray-200 hover:bg-gray-50 transition active:scale-95 disabled:opacity-50">
-                    Cancel
+                    {t("sr_cancel")}
                   </button>
                   <button onClick={handleDeleteConfirm} disabled={deleting}
                     className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition active:scale-95 disabled:opacity-60 flex items-center justify-center gap-2">
@@ -1228,7 +1239,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                       </svg>
-                    ) : <><Trash2 size={14} />Delete</>}
+                    ) : <><Trash2 size={14} />{t("delete") || "Delete"}</>}
                   </button>
                 </div>
               </div>
@@ -1254,8 +1265,8 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                     <Layers size={20} className="text-white" />
                   </div>
                   <div>
-                    <h5 className="text-white font-extrabold text-base leading-tight">Bulk Permissions</h5>
-                    <p className="text-white/60 text-xs mt-0.5">Apply CRUD access to all sub-resellers</p>
+                    <h5 className="text-white font-extrabold text-base leading-tight">{t("sr_bulk_permissions")}</h5>
+                    <p className="text-white/60 text-xs mt-0.5">{t("sr_bulk_permissions_desc")}</p>
                   </div>
                 </div>
               </div>
@@ -1263,8 +1274,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                 <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 px-4 py-3 rounded-xl">
                   <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" />
                   <p className="text-xs text-amber-700 font-medium leading-relaxed">
-                    These settings apply to <span className="font-bold">all sub-resellers</span> under your account at once.
-                    Individual overrides you've set will stay untouched until edited.
+                    {t("sr_bulk_warning")}
                   </p>
                 </div>
 
@@ -1281,12 +1291,12 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                   <button type="button" disabled={!permInitialized}
                     onClick={() => setPermissions({ canCreate: true, canRead: true, canUpdate: true, canDelete: true })}
                     className="flex-1 py-2 text-xs font-bold text-[#800000] border border-[#800000]/30 rounded-xl hover:bg-[#800000]/5 transition disabled:opacity-50">
-                    Enable All
+                    {t("sr_enable_all")}
                   </button>
                   <button type="button" disabled={!permInitialized}
                     onClick={() => setPermissions({ canCreate: false, canRead: false, canUpdate: false, canDelete: false })}
                     className="flex-1 py-2 text-xs font-bold text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition disabled:opacity-50">
-                    Disable All
+                    {t("sr_disable_all")}
                   </button>
                 </div>
 
@@ -1299,14 +1309,14 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                     </svg>
-                  ) : <><ShieldAlert size={15} />Apply Permissions</>}
+                  ) : <><ShieldAlert size={15} />{t("sr_apply_permissions")}</>}
                 </motion.button>
 
                 {/* Sync footer */}
                 <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                   <span className="text-[10px] text-gray-400 font-medium flex items-center gap-1">
                     <History size={11} />
-                    {!permInitialized ? "Syncing…" : permUpdatedAt ? `Updated ${timeAgo(permUpdatedAt)}` : "Not synced yet"}
+                    {!permInitialized ? t("sr_syncing") : permUpdatedAt ? `${t("sr_updated")} ${timeAgo(permUpdatedAt)}` : t("sr_not_synced")}
                   </span>
                   <button onClick={() => fetchData(currentPage)} disabled={loadingData}
                     className="text-[10px] font-bold text-[#800000] flex items-center gap-1 hover:underline disabled:opacity-50">
@@ -1315,7 +1325,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                       className="inline-flex">
                       <RefreshCw size={11} />
                     </motion.span>
-                    Refresh
+                    {t("sr_refresh")}
                   </button>
                 </div>
               </div>
@@ -1343,7 +1353,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                   <div className="min-w-0">
                     <h5 className="text-white font-extrabold text-base leading-tight truncate">{indivUser.fullName}</h5>
                     <p className="text-white/60 text-xs mt-0.5 truncate">
-                      @{indivUser.username} · {indivUser.email || "no email"}
+                      @{indivUser.username} · {indivUser.email || t("sr_no_email")}
                     </p>
                   </div>
                 </div>
@@ -1356,7 +1366,7 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                       transition={{ repeat: Infinity, duration: 1.6 }}
                       className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
                     <span className="text-[11px] font-bold text-amber-700 flex items-center gap-1">
-                      <Sparkles size={11} /> Recently changed
+                      <Sparkles size={11} /> {t("sr_recently_changed")}
                     </span>
                   </div>
                 )}
@@ -1377,13 +1387,13 @@ useEffect(() => () => fetchAbortRef.current?.abort(), []);
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                     </svg>
-                  ) : <><KeyRound size={15} />Save Permissions</>}
+                  ) : <><KeyRound size={15} />{t("sr_save_permissions")}</>}
                 </motion.button>
 
                 <div className="flex items-center justify-center pt-1">
                   <span className="text-[10px] text-gray-400 font-medium flex items-center gap-1">
                     <History size={11} />
-                    {indivUpdatedAt ? `Updated ${timeAgo(indivUpdatedAt)}` : "Using bulk defaults — no individual override yet"}
+                    {indivUpdatedAt ? `${t("sr_updated")} ${timeAgo(indivUpdatedAt)}` : t("sr_using_bulk_defaults")}
                   </span>
                 </div>
               </div>
