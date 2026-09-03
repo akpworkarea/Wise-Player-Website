@@ -1,4 +1,36 @@
-{"playlist_management": "Gestión de Playlists",
+{"reg_feature_secure": "Portal de revendedores seguro",
+"reg_feature_dashboard": "Acceso completo al panel",
+"reg_feature_streaming": "Herramientas de streaming premium",
+"reg_copyright": "© {{year}} WisePlayer — Acceso Premium",
+"reg_username_hint_valid": "a-z 0-9 . _",
+"reg_username_hint_invalid": "Solo a-z 0-9 . _",
+"reg_invalid_email": "Por favor ingresa una dirección de correo válida.",
+"reg_passwords_match": "Las contraseñas coinciden",
+"reg_passwords_no_match": "Las contraseñas no coinciden",
+"reg_creating_account": "Creando cuenta…",
+"reg_email": "Correo electrónico",
+"reg_fullname_ph": "John Doe",
+"reg_username_ph": "john_doe",
+"reg_email_ph": "tu@ejemplo.com",
+  "profile_name_updated": "Nombre actualizado",
+"profile_name_update_failed": "Error al actualizar el nombre",
+"profile_avatar_updated": "Avatar actualizado (vista previa local)",
+"profile_pw_min_length": "La contraseña debe tener al menos 8 caracteres.",
+"profile_pw_mismatch": "Las contraseñas no coinciden.",
+"profile_pw_changed": "Contraseña cambiada con éxito",
+"profile_pw_change_failed": "Error al cambiar la contraseña",
+"profile_click_to_copy": "Haz clic para copiar",
+"profile_copied": "¡Copiado!",
+"profile_online": "En línea",
+"profile_change_password": "Cambiar contraseña",
+"profile_current_password": "Contraseña actual",
+"profile_new_password": "Nueva contraseña",
+"profile_confirm_new_password": "Confirmar nueva",
+"profile_saving": "Guardando…",
+"profile_update_password": "Actualizar contraseña",
+"profile_default_user": "Usuario",
+"profile_default_profile": "Perfil",
+  "playlist_management": "Gestión de Playlists",
   "sr_search_placeholder": "Buscar por nombre, nombre de usuario o ID…",
    "permissions": "Permisos",
    "sr_status": "Estado",
@@ -106,6 +138,7 @@
     "goToHome": "Ir a inicio"
   },
   "home": {
+    "system_online": "SISTEMA EN LÍNEA V2.0",
     "headExperienceText": "Disfruta reproducción premium sin buffering. Optimizado para Smart TVs de alta gama.",
     "features": [
       {
@@ -127,7 +160,7 @@
     "disclaimerLabel4": "Soporte",
     "live_badge": "En vivo",
     "contactUs": "Contáctanos",
-    "system_online": "SISTEMA EN LÍNEA V2.0",
+   
     "type_ultra_fast": "Ultra Rápido",
     "type_crystal_clear": "Alta Claridad",
     "type_wise_player": "Wise Player",
@@ -240,8 +273,14 @@
     "enter_device_mac": "Introduce la dirección MAC de tu dispositivo para continuar",
     "device_id_label": "ID del dispositivo / Dirección MAC",
     "validate_btn": "Validar",
-    "checking_status": "Verificando estado..."
+    "device_pin_label": "PIN del dispositivo",
+    "checking_status": "Verificando estado...","optional": "(opcional)","leave_blank_default_pin": "Déjelo en blanco para usar el PIN predeterminado 0000"
   },
+  "footer": {
+  "privacy_policy": "Política de privacidad",
+  "contact_us": "Contáctenos",
+  "all_rights_reserved": "Todos los derechos reservados."
+},
   "resellerpage": {
     "reseller_badge": "Conviértete en socio",
     "reseller_title": "¿QUIERES CONVERTIRTE EN REVENDEDOR?",
@@ -268,6 +307,10 @@
     "login": "Iniciar sesión"
   },
   "admin_dashboard": {
+    "device_status": "Estado del dispositivo",
+"active_inactive": "Activo vs Inactivo",
+"subscription_plans": "Planes de suscripción",
+"plan_distribution": "Distribución de planes",
     "panel": "Panel",
     "overview": "Resumen",
     "users": "Usuarios",
@@ -281,6 +324,12 @@
     "total_coins": "Monedas totales",
     "device_id": "ID del dispositivo",
     "status": "Estado",
+    "active": "Activo",
+"inactive": "Inactivo",
+"total": "total",
+"role_sub_reseller": "Subdistribuidor",
+"role_reseller": "Revendedor",
+"role_user": "Usuario",
     "subscription": "Suscripción",
     "registered": "Registrado",
     "copy": "Copiar",
@@ -528,6 +577,8 @@
 "badge_enterprise": "Empresa"
   },
   "contact_Page": {
+    "whatsapp_support": "Soporte de WhatsApp",
+"whatsapp_support_desc": "Chatea directamente con nosotros · +212 777-754774",
     "contact_support_center": "CENTRO DE SOPORTE",
     "contact_header_1": "¿Cómo podemos",
     "contact_header_2": "ayudarte?",
@@ -611,5 +662,19 @@
   "reg_already_member": "¿Ya tienes una cuenta?",
   "reg_login_now": "Iniciar sesión ahora",
   "your_balance": "Tu saldo",
-  "transfer_credits": "Transferir créditos"
+  "transfer_credits": "Transferir créditos",
+  "login_secure_reseller": "Portal de revendedor seguro",
+"login_full_dashboard": "Acceso completo al panel",
+"login_premium_tools": "Herramientas de streaming premium",
+"login_username_placeholder": "Nombre de usuario o correo electrónico",
+"login_password_placeholder": "Introduzca la contraseña",
+"verify_email_continue": "Verifica tu correo electrónico para continuar.",
+"valid_email_required": "Introduce una dirección de correo electrónico válida.",
+"recovery_email_failed": "No se pudo enviar el correo de recuperación.",
+"email_address": "Dirección de correo electrónico",
+"email_placeholder": "tu@ejemplo.com",
+"check_inbox": "Revisa tu bandeja de entrada",
+"reset_link_sent_to": "Hemos enviado un enlace para restablecer la contraseña a",
+"reset_link_instruction": "Haz clic en el enlace del correo electrónico para establecer una nueva contraseña. El enlace caducará después de un breve período por tu seguridad.",
+"premium_access": "Acceso premium"
 }

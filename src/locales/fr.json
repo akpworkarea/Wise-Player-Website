@@ -1,4 +1,47 @@
-{"playlist_management": "Gestion des Playlists",
+{"sr_filter_title": "Filtrer les sous-revendeurs",
+"sr_status": "STATUT",
+"sr_all": "Tous",
+"sr_active": "Actif",
+"sr_inactive": "Inactif",
+"sr_registered_date": "DATE D’INSCRIPTION",
+"sr_from": "De",
+"sr_to": "À",
+"sr_credits_range": "PLAGE DE CRÉDITS",
+"sr_min": "Min",
+"sr_max": "Max",
+  "reg_feature_secure": "Portail revendeur sécurisé",
+"reg_feature_dashboard": "Accès complet au tableau de bord",
+"reg_feature_streaming": "Outils de streaming premium",
+"reg_copyright": "© {{year}} WisePlayer — Accès Premium",
+"reg_username_hint_valid": "a-z 0-9 . _",
+"reg_username_hint_invalid": "Uniquement a-z 0-9 . _",
+"reg_invalid_email": "Veuillez entrer une adresse e-mail valide.",
+"reg_passwords_match": "Les mots de passe correspondent",
+"reg_passwords_no_match": "Les mots de passe ne correspondent pas",
+"reg_creating_account": "Création du compte…",
+"reg_email": "Adresse e-mail",
+"reg_fullname_ph": "John Doe",
+"reg_username_ph": "john_doe",
+"reg_email_ph": "vous@exemple.com",
+  "profile_name_updated": "Nom mis à jour",
+"profile_name_update_failed": "Échec de la mise à jour du nom",
+"profile_avatar_updated": "Avatar mis à jour (aperçu local)",
+"profile_pw_min_length": "Le mot de passe doit contenir au moins 8 caractères.",
+"profile_pw_mismatch": "Les mots de passe ne correspondent pas.",
+"profile_pw_changed": "Mot de passe changé avec succès",
+"profile_pw_change_failed": "Échec du changement de mot de passe",
+"profile_click_to_copy": "Cliquez pour copier",
+"profile_copied": "Copié !",
+"profile_online": "En ligne",
+"profile_change_password": "Changer le mot de passe",
+"profile_current_password": "Mot de passe actuel",
+"profile_new_password": "Nouveau mot de passe",
+"profile_confirm_new_password": "Confirmer le nouveau",
+"profile_saving": "Enregistrement…",
+"profile_update_password": "Mettre à jour le mot de passe",
+"profile_default_user": "Utilisateur",
+"profile_default_profile": "Profil",
+  "playlist_management": "Gestion des Playlists",
   "sr_search_placeholder": "Rechercher par nom, nom d'utilisateur ou ID…",
   "nav_home": "Accueil",
   "your_balance": "Votre solde",
@@ -424,6 +467,7 @@
     "goToHome": "Aller à l'accueil"
   },
   "home": {
+    "system_online": "SYSTÈME EN LIGNE V2.0",
     "headExperienceText": "Profitez d’une lecture multimédia premium sans mise en mémoire tampon. Optimisé pour tous les Smart TV haut de gamme.",
     "features": [
       {
@@ -445,7 +489,7 @@
     "disclaimerLabel4": "Assistance",
     "live_badge": "En direct",
      "contactUs": "Contactez-nous",
-    "system_online": "SYSTÈME EN LIGNE V2.0",
+  
     "type_ultra_fast": "Ultra Rapide",
     "type_crystal_clear": "Clarté Cristalline",
     "type_wise_player": "Wise Player",
@@ -545,12 +589,13 @@
       "toggle_menu": "Basculer le menu"
     }
   },
-  "uploadlist": {
+  "uploadlist": {"optional": "(facultatif)","leave_blank_default_pin": "Laissez vide pour utiliser le code PIN par défaut 0000",
     "upload_playlist_title": "Téléchargez votre playlist",
     "enter_device_mac": "Entrez l’adresse MAC de votre appareil pour continuer",
     "device_id_label": "ID de l’appareil / Adresse MAC",
     "validate_btn": "Valider",
-    "checking_status": "Vérification de l’état..."
+    "checking_status": "Vérification de l’état...",
+      "device_pin_label": "PIN de l’appareil"
   },
   "resellerpage": {
     "reseller_badge": "Devenir partenaire",
@@ -580,6 +625,8 @@
     "search_placeholder": "Rechercher par nom, nom d'utilisateur ou ID…"
   },
   "contact_Page": {
+    "whatsapp_support": "Assistance WhatsApp",
+"whatsapp_support_desc": "Discutez directement avec nous · +212 777-754774",
     "contact_support_center": "CENTRE D'ASSISTANCE",
     "contact_header_1": "Comment pouvons-nous",
     "contact_header_2": "vous aider ?",
@@ -608,6 +655,11 @@
     "contact_success_title": "Message Envoyé !",
     "contact_success_msg": "Nous vous répondrons bientôt."
   },
+  "footer": {
+  "privacy_policy": "Politique de confidentialité",
+  "contact_us": "Nous contacter",
+  "all_rights_reserved": "Tous droits réservés."
+},
   "admin_dashboard": {
     "panel": "Panneau",
     "overview": "Aperçu",
@@ -622,6 +674,12 @@
     "total_coins": "Total des pièces",
     "device_id": "ID de l'appareil",
     "status": "Statut",
+    "active": "Actif",
+"inactive": "Inactif",
+"total": "total",
+"role_sub_reseller": "Sous-revendeur",
+"role_reseller": "Revendeur",
+"role_user": "Utilisateur",
     "subscription": "Abonnement",
     "registered": "Enregistré",
     "copy": "Copier",
@@ -769,5 +827,19 @@
   "dont_have_account": "Vous n'avez pas de compte ?",
   "success_redirecting": "Succès ! Redirection...",
   "invalid_credentials": "Identifiants invalides",
-  "reset_link_sent": "Lien de réinitialisation envoyé !"
+  "reset_link_sent": "Lien de réinitialisation envoyé !",
+  "login_secure_reseller": "Portail revendeur sécurisé",
+"login_full_dashboard": "Accès complet au tableau de bord",
+"login_premium_tools": "Outils de streaming premium",
+"login_username_placeholder": "Nom d'utilisateur ou e-mail",
+"login_password_placeholder": "Entrez le mot de passe",
+"verify_email_continue": "Veuillez vérifier votre e-mail pour continuer.",
+"valid_email_required": "Veuillez saisir une adresse e-mail valide.",
+"recovery_email_failed": "Échec de l'envoi de l'e-mail de récupération.",
+"email_address": "Adresse e-mail",
+"email_placeholder": "vous@exemple.com",
+"check_inbox": "Vérifiez votre boîte de réception",
+"reset_link_sent_to": "Nous avons envoyé un lien de réinitialisation du mot de passe à",
+"reset_link_instruction": "Cliquez sur le lien dans l'e-mail pour définir un nouveau mot de passe. Pour votre sécurité, le lien expirera après un court délai.",
+"premium_access": "Accès premium"
 }

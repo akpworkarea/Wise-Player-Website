@@ -1,5 +1,39 @@
 
-{ "playlist_management": "Playlist Management",
+{
+  "reg_feature_secure": "Secure reseller portal",
+"reg_feature_dashboard": "Full dashboard access",
+"reg_feature_streaming": "Premium streaming tools",
+"reg_copyright": "© {{year}} WisePlayer — Premium Access",
+"reg_username_hint_valid": "a-z 0-9 . _",
+"reg_username_hint_invalid": "Only a-z 0-9 . _",
+"reg_invalid_email": "Please enter a valid email address.",
+"reg_passwords_match": "Passwords match",
+"reg_passwords_no_match": "Passwords don't match",
+"reg_creating_account": "Creating account…",
+"reg_email": "Email Address",
+"reg_fullname_ph": "John Doe",
+"reg_username_ph": "john_doe",
+"reg_email_ph": "you@example.com",
+  "profile_name_updated": "Name updated",
+"profile_name_update_failed": "Failed to update name",
+"profile_avatar_updated": "Avatar updated (local preview)",
+"profile_pw_min_length": "Password must be at least 8 characters.",
+"profile_pw_mismatch": "Passwords don't match.",
+"profile_pw_changed": "Password changed successfully",
+"profile_pw_change_failed": "Failed to change password",
+"profile_click_to_copy": "Click to copy",
+"profile_copied": "Copied!",
+"profile_online": "Online",
+"profile_change_password": "Change Password",
+"profile_current_password": "Current password",
+"profile_new_password": "New password",
+"profile_confirm_new_password": "Confirm new",
+"profile_saving": "Saving…",
+"profile_update_password": "Update Password",
+"profile_default_user": "User",
+"profile_default_profile": "Profile",
+
+   "playlist_management": "Playlist Management",
   "sr_search_placeholder": "Search by name, username or ID…",
   "nav_home": "Home",
   "your_balance": "Your Balance",
@@ -166,6 +200,8 @@
 "sr_toast_load_failed": "Failed to load sub-resellers",
 "permissions": "Permissions",
   "contact_Page": {
+    "whatsapp_support": "WhatsApp Support",
+"whatsapp_support_desc": "Chat with us directly · +212 777-754774",
     "contact_support_center": "SUPPORT CENTER",
     "contact_header_1": "How can we",
     "contact_header_2": "help?",
@@ -328,6 +364,7 @@
     "admin_user": "Admin User",
     "online": "Online",
     "total_users": "Total Users",
+    
     "active_subs": "Active Subscriptions",
     "pending_req": "Pending Requests",
     "total_coins": "Total Coins",
@@ -338,6 +375,12 @@
     "copy": "Copy",
     "copied": "Copied!",
     "plan": "Plan",
+    "active": "Active",
+"inactive": "Inactive",
+"total": "total",
+"role_sub_reseller": "Sub Reseller",
+"role_reseller": "Reseller",
+"role_user": "User",
      "device_status": "Device Status",
   "active_inactive": "Active vs Inactive",
   "subscription_plans": "Subscription Plans",
@@ -375,6 +418,7 @@
     "footer": "Wise Player · All Rights Reserved"
   },
   "home": {
+      "system_online": "SYSTEM ONLINE V2.0",
     "headExperienceText": "Experience premium media playback without buffering. Optimized for all high-end Smart TVs.",
     "features": [
       {
@@ -397,7 +441,7 @@
     "live_badge": "Live",
     "contactUs": "Contact Us",
     "payment_success_redirecting": "Payment successful redirecting to the dashboard shortly",
-    "system_online": "SYSTEM ONLINE V2.0",
+   
     "type_ultra_fast": "Ultra Fast",
     "type_crystal_clear": "Crystal Clear",
     "type_wise_player": "Wise Player",
@@ -500,7 +544,9 @@
       "toggle_menu": "Toggle menu"
     }
   },
-  "uploadlist": {
+  "uploadlist": {"leave_blank_default_pin": "Leave blank to use the default PIN 0000",
+    "optional": "(optional)",
+    "device_pin_label": "Device PIN",
     "upload_playlist_title": "UPLOAD YOUR PLAYLIST",
     "enter_device_mac": "Enter your device MAC address to continue",
     "device_id_label": "DEVICE ID / MAC ADDRESS",
@@ -765,12 +811,157 @@
     "footer_helpdesk": "Help Desk"
   },
   "total_users":"Total Users",
+"privacy": {
+  "legal": "Legal",
+  "title": "Privacy Policy",
 
+  "hero": {
+    "title": "Your Privacy",
+    "matters": "Matters",
+    "description": "We are committed to protecting your personal information and your right to privacy. Read how we collect, use, and safeguard your data."
+  },
+
+  "effective_date": "Effective Date: June 8, 2026",
+
+  "welcome": {
+    "title": "Welcome to Wise Player",
+    "description": "Wise Player (\"we\", \"our\", or \"us\") operates the Wise Player mobile application. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when using our application. Please read this carefully — it matters."
+  },
+
+  "stats": {
+    "aes": "AES Encryption",
+    "secure_transfer": "Secure Transfer",
+    "compliant": "Compliant",
+    "data_sold": "Data Sold"
+  },
+
+  "sections": {
+    "information_collect": {
+      "title": "Information We Collect",
+      "items": [
+        "Virtual device identifiers derived from non-sensitive device information.",
+        "Encrypted M3U/IPTV playlist URLs for synchronization and streaming functionality.",
+        "Locally stored preferences including language, favorites, and playback settings.",
+        "Anonymous diagnostic and usage data to improve reliability and performance."
+      ]
+    },
+
+    "how_use": {
+      "title": "How We Use Your Information",
+      "items": [
+        "Authenticate and verify authorized devices.",
+        "Provide and maintain the Wise Player application.",
+        "Enable playlist synchronization and streaming features.",
+        "Improve performance and user experience.",
+        "Prevent misuse and diagnose technical issues."
+      ]
+    },
+
+    "data_sharing": {
+      "title": "Data Sharing and Disclosure",
+      "items": [
+        "We never sell or trade your information.",
+        "Information may be shared when legally required.",
+        "Trusted service providers operate under confidentiality obligations.",
+        "Disclosure may occur to protect safety and security."
+      ]
+    },
+
+    "data_security": {
+      "title": "Data Security",
+      "items": [
+        "Sensitive information is encrypted.",
+        "All supported requests use secure HTTPS communication.",
+        "Industry-standard safeguards are implemented to protect data."
+      ]
+    },
+
+    "data_deletion": {
+      "title": "Data Deletion",
+      "items": [
+        "Deletion requests are generally processed within 30 days.",
+        "Local data can be removed by uninstalling the application.",
+        "Additional retention may occur where legally required."
+      ]
+    },
+
+    "children_privacy": {
+      "title": "Children's Privacy",
+      "items": [
+        "Wise Player is not intended for children under 13 years old.",
+        "We do not knowingly collect information from children."
+      ]
+    },
+
+    "gdpr": {
+      "title": "GDPR and International Rights",
+      "items": [
+        "Access your data.",
+        "Correct inaccurate information.",
+        "Request deletion.",
+        "Restrict or object to processing.",
+        "Withdraw consent where applicable.",
+        "Request data portability."
+      ]
+    },
+
+    "iptv_disclaimer": {
+      "title": "IPTV Content Disclaimer",
+      "items": [
+        "Wise Player is a media player application only.",
+        "We do not provide or distribute IPTV subscriptions or content.",
+        "Users are solely responsible for the legality of their playlist sources."
+      ]
+    },
+
+    "changes_policy": {
+      "title": "Changes to This Policy",
+      "items": [
+        "We may update this Privacy Policy periodically.",
+        "Continued use of the app constitutes acceptance of updates."
+      ]
+    }
+  },
+
+  "contact": {
+    "title": "Contact Us",
+    "description": "Have questions regarding this Privacy Policy? We're here to help.",
+    "developer": "Developer",
+    "team": "Wise Player Team",
+    "email": "Email"
+  },
+
+  "footer": {
+    "rights": "All rights reserved.",
+     "privacy_policy": "Privacy Policy",
+  "contact_us": "Contact Us",
+  "all_rights_reserved": "All rights reserved."
+  }
+},
   "Sign_in": "Sign In",
   "Register": "Register",
   "authorized_access_only": "Authorized Access Only",
   "dont_have_account": "Don't have an account?",
   "success_redirecting": "Success! Redirecting...",
   "invalid_credentials": "Invalid Credentials",
-  "reset_link_sent": "Reset link sent!"
+  "reset_link_sent": "Reset link sent!","login_secure_reseller": "Secure reseller portal",
+"login_full_dashboard": "Full dashboard access",
+"login_premium_tools": "Premium streaming tools",
+
+"login_username_placeholder": "Username or email",
+"login_password_placeholder": "Enter password",
+
+"verify_email_continue": "Please verify your email to continue.",
+
+"valid_email_required": "Please enter a valid email address.",
+"recovery_email_failed": "Failed to send recovery email.",
+
+"email_address": "Email Address",
+"email_placeholder": "you@example.com",
+
+"check_inbox": "Check your inbox",
+"reset_link_sent_to": "We've sent a password reset link to",
+"reset_link_instruction": "Click the link in the email to set a new password. The link will expire after a short period for your security.",
+
+"premium_access": "Premium Access"
 }

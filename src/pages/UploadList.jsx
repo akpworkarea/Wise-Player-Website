@@ -153,7 +153,7 @@ const WiseplayerUpload = () => {
         {/* PIN label */}
         <label className="block text-xs font-bold text-[#1a1a1a] tracking-wide uppercase text-center mb-2 mt-4">
           {t('uploadlist.device_pin_label') || 'Device PIN'}{' '}
-          <span className="normal-case font-medium text-gray-400 tracking-normal">(optional)</span>
+          <span className="normal-case font-medium text-gray-400 tracking-normal">{t('uploadlist.optional')}</span>
         </label>
 
         {/* PIN Input */}
@@ -175,7 +175,7 @@ const WiseplayerUpload = () => {
           `}
         />
         <p className="text-[11px] text-gray-400 text-center mt-1.5">
-          Leave blank to use the default PIN{' '}
+         {t('uploadlist.leave_blank_default_pin')}{' '}
           <span className="font-mono font-bold text-gray-500">{DEFAULT_PIN}</span>
         </p>
 

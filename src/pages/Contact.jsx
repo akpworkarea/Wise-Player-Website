@@ -100,12 +100,12 @@ const ContactUs = () => {
       desc:  t('contact_Page.contact_secure_desc'),
       link:  '/security',
     },
-    {
-      icon: <Phone size={18} className="text-green-500" />,
-      title: 'WhatsApp Support',
-      desc:  'Chat with us directly · +212 777-754774 ',
-      link:  'https://wa.me/212777754774',
-    },
+   {
+  icon: <Phone size={18} className="text-green-500" />,
+  title: t("contact_Page.whatsapp_support"),
+  desc: t("contact_Page.whatsapp_support_desc"),
+  link: "https://wa.me/212777754774",
+},
   ];
 
   return (

@@ -1,4 +1,42 @@
-{"playlist_management": "إدارة قوائم التشغيل",
+{"footer": {
+    "rights": "جميع الحقوق محفوظة.",
+      "privacy_policy": "سياسة الخصوصية",
+  "contact_us": "اتصل بنا",
+  "all_rights_reserved": "جميع الحقوق محفوظة."
+  },
+  "reg_feature_secure": "بوابة موزعين آمنة",
+"reg_feature_dashboard": "وصول كامل للوحة التحكم",
+"reg_feature_streaming": "أدوات بث مميزة",
+"reg_copyright": "© {{year}} Wise Player — وصول مميز",
+"reg_username_hint_valid": "a-z 0-9 . _",
+"reg_username_hint_invalid": "فقط a-z 0-9 . _",
+"reg_invalid_email": "يرجى إدخال عنوان بريد إلكتروني صالح.",
+"reg_passwords_match": "كلمتا المرور متطابقتان",
+"reg_passwords_no_match": "كلمتا المرور غير متطابقتين",
+"reg_creating_account": "جارٍ إنشاء الحساب…",
+"reg_email": "البريد الإلكتروني",
+"reg_fullname_ph": "John Doe",
+"reg_username_ph": "john_doe",
+"reg_email_ph": "you@example.com",
+  "profile_name_updated": "تم تحديث الاسم",
+"profile_name_update_failed": "فشل تحديث الاسم",
+"profile_avatar_updated": "تم تحديث الصورة الرمزية (معاينة محلية)",
+"profile_pw_min_length": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
+"profile_pw_mismatch": "كلمتا المرور غير متطابقتين.",
+"profile_pw_changed": "تم تغيير كلمة المرور بنجاح",
+"profile_pw_change_failed": "فشل تغيير كلمة المرور",
+"profile_click_to_copy": "انقر للنسخ",
+"profile_copied": "تم النسخ!",
+"profile_online": "متصل",
+"profile_change_password": "تغيير كلمة المرور",
+"profile_current_password": "كلمة المرور الحالية",
+"profile_new_password": "كلمة مرور جديدة",
+"profile_confirm_new_password": "تأكيد الجديدة",
+"profile_saving": "جارٍ الحفظ…",
+"profile_update_password": "تحديث كلمة المرور",
+"profile_default_user": "مستخدم",
+"profile_default_profile": "الملف الشخصي",
+"playlist_management": "إدارة قوائم التشغيل",
   "sr_search_placeholder": "البحث بالاسم أو اسم المستخدم أو المعرّف…",
   "permissions": "الأذونات",
    "filters": "الفلاتر",
@@ -33,6 +71,7 @@
     "goToHome": "الذهاب إلى الصفحة الرئيسية"
   },
   "home": {
+    "system_online": "النظام متصل V2.0",
     "headExperienceText": "تشغيل وسائط مميز بدون تقطيع. محسّن لأجهزة Smart TV المتقدمة.",
     "features": [
       {
@@ -54,7 +93,7 @@
     "disclaimerLabel4": "الدعم",
     "live_badge": "مباشر",
      "contactUs": "اتصل بنا",
-    "system_online": "SYSTEM ONLINE V2.0",
+  
     "type_ultra_fast": "سرعة فائقة",
     "type_crystal_clear": "وضوح عالي",
     "type_wise_player": "Wise Player",
@@ -155,11 +194,12 @@
     }
   },
   "uploadlist": {
+    "device_pin_label": "رقم PIN للجهاز",
     "upload_playlist_title": "قم بتحميل قائمة التشغيل الخاصة بك",
     "enter_device_mac": "أدخل عنوان MAC الخاص بجهازك للمتابعة",
     "device_id_label": "معرف الجهاز / عنوان MAC",
     "validate_btn": "تحقق",
-    "checking_status": "جارٍ التحقق من الحالة..."
+    "checking_status": "جارٍ التحقق من الحالة...","optional": "(اختياري)","leave_blank_default_pin": "اتركه فارغًا لاستخدام رمز PIN الافتراضي 0000"
   },
   "resellerpage": {
     "reseller_badge": "كن شريكًا",
@@ -187,6 +227,10 @@
     "login": "تسجيل الدخول"
   },
   "admin_dashboard": {
+    "device_status": "حالة الجهاز",
+"active_inactive": "نشط مقابل غير نشط",
+"subscription_plans": "خطط الاشتراك",
+"plan_distribution": "توزيع الخطط",
     "panel": "لوحة التحكم",
     "overview": "نظرة عامة",
     "users": "المستخدمون",
@@ -206,7 +250,13 @@
     "copied": "تم النسخ!",
     "no_devices_found": "لم يتم العثور على أجهزة",
     "no_devices": "لا توجد أجهزة",
-    "plan": "الخطة"
+    "plan": "الخطة",
+    "active": "نشط",
+"inactive": "غير نشط",
+"total": "الإجمالي",
+"role_sub_reseller": "موزع فرعي",
+"role_reseller": "موزع",
+"role_user": "مستخدم"
   },
   "userManagement": {
      "mac_address": "عنوان MAC",
@@ -521,6 +571,8 @@
 "badge_enterprise": "مؤسسة"
   },
   "contact_Page": {
+    "whatsapp_support": "دعم واتساب",
+"whatsapp_support_desc": "تحدث معنا مباشرة · +212 777-754774",
     "contact_support_center": "مركز الدعم",
     "contact_header_1": "كيف يمكننا",
     "contact_header_2": "المساعدة؟",
@@ -572,6 +624,129 @@
   },
   "payment_success_redirecting": "تم الدفع بنجاح، سيتم تحويلك إلى لوحة التحكم قريبًا",
   "total_users": "إجمالي المستخدمين",
+
+"privacy": {
+  "legal": "قانوني",
+  "title": "سياسة الخصوصية",
+
+  "hero": {
+    "title": "خصوصيتك",
+    "matters": "تهمنا",
+    "description": "نحن ملتزمون بحماية معلوماتك الشخصية وحقك في الخصوصية. تعرف على كيفية جمع بياناتك واستخدامها وحمايتها."
+  },
+
+  "effective_date": "تاريخ السريان: 8 يونيو 2026",
+
+  "welcome": {
+    "title": "مرحبًا بك في Wise Player",
+    "description": "يعمل Wise Player (\"نحن\" أو \"لنا\") على تشغيل تطبيق Wise Player للهواتف المحمولة. توضح سياسة الخصوصية هذه كيفية جمع معلوماتك واستخدامها والإفصاح عنها وحمايتها عند استخدام تطبيقنا. يرجى قراءتها بعناية — فهذا أمر مهم."
+  },
+
+  "stats": {
+    "aes": "تشفير AES",
+    "secure_transfer": "نقل آمن",
+    "compliant": "متوافق",
+    "data_sold": "البيانات المباعة"
+  },
+
+  "sections": {
+    "information_collect": {
+      "title": "المعلومات التي نجمعها",
+      "items": [
+        "معرّفات افتراضية للجهاز مشتقة من معلومات غير حساسة عن الجهاز.",
+        "عناوين URL لقوائم تشغيل M3U/IPTV المشفرة للمزامنة ووظائف البث.",
+        "التفضيلات المخزنة محليًا، بما في ذلك اللغة والمفضلة وإعدادات التشغيل.",
+        "بيانات تشخيص واستخدام مجهولة المصدر لتحسين الموثوقية والأداء."
+      ]
+    },
+
+    "how_use": {
+      "title": "كيفية استخدام معلوماتك",
+      "items": [
+        "المصادقة والتحقق من الأجهزة المصرح بها.",
+        "توفير تطبيق Wise Player والحفاظ عليه.",
+        "تمكين مزامنة قوائم التشغيل وميزات البث.",
+        "تحسين الأداء وتجربة المستخدم.",
+        "منع سوء الاستخدام وتشخيص المشكلات التقنية."
+      ]
+    },
+
+    "data_sharing": {
+      "title": "مشاركة البيانات والإفصاح عنها",
+      "items": [
+        "نحن لا نبيع معلوماتك أو نتاجر بها مطلقًا.",
+        "قد تتم مشاركة المعلومات عندما يكون ذلك مطلوبًا قانونيًا.",
+        "قد يعمل مقدمو الخدمات الموثوقون على معالجة البيانات بموجب التزامات السرية.",
+        "قد يتم الإفصاح عن المعلومات لحماية السلامة والأمان."
+      ]
+    },
+
+    "data_security": {
+      "title": "أمان البيانات",
+      "items": [
+        "يتم تشفير المعلومات الحساسة.",
+        "تستخدم جميع الطلبات المدعومة اتصال HTTPS آمنًا.",
+        "يتم تطبيق إجراءات حماية وفقًا لمعايير الصناعة لحماية البيانات."
+      ]
+    },
+
+    "data_deletion": {
+      "title": "حذف البيانات",
+      "items": [
+        "تتم معالجة طلبات الحذف عادةً خلال 30 يومًا.",
+        "يمكن إزالة البيانات المحلية عن طريق إلغاء تثبيت التطبيق.",
+        "قد يتم الاحتفاظ بالبيانات لفترة إضافية عندما يكون ذلك مطلوبًا قانونيًا."
+      ]
+    },
+
+    "children_privacy": {
+      "title": "خصوصية الأطفال",
+      "items": [
+        "Wise Player غير مخصص للأطفال الذين تقل أعمارهم عن 13 عامًا.",
+        "نحن لا نجمع معلومات من الأطفال عن علم."
+      ]
+    },
+
+    "gdpr": {
+      "title": "اللائحة العامة لحماية البيانات والحقوق الدولية",
+      "items": [
+        "الوصول إلى بياناتك.",
+        "تصحيح المعلومات غير الدقيقة.",
+        "طلب حذف بياناتك.",
+        "تقييد المعالجة أو الاعتراض عليها.",
+        "سحب الموافقة عند الاقتضاء.",
+        "طلب نقل بياناتك."
+      ]
+    },
+
+    "iptv_disclaimer": {
+      "title": "إخلاء المسؤولية عن محتوى IPTV",
+      "items": [
+        "Wise Player هو تطبيق لتشغيل الوسائط فقط.",
+        "نحن لا نقدم أو نوزع اشتراكات أو محتوى IPTV.",
+        "يتحمل المستخدمون وحدهم مسؤولية قانونية مصادر قوائم التشغيل الخاصة بهم."
+      ]
+    },
+
+    "changes_policy": {
+      "title": "التغييرات على هذه السياسة",
+      "items": [
+        "قد نقوم بتحديث سياسة الخصوصية هذه بشكل دوري.",
+        "يشكل الاستمرار في استخدام التطبيق قبولًا للتحديثات."
+      ]
+    }
+  },
+
+  "contact": {
+    "title": "اتصل بنا",
+    "description": "هل لديك أسئلة حول سياسة الخصوصية هذه؟ نحن هنا لمساعدتك.",
+    "developer": "المطور",
+    "team": "فريق Wise Player",
+    "email": "البريد الإلكتروني"
+  }
+},
+
+
   "active_subs": "الاشتراكات النشطة",
   "pending_req": "الطلبات المعلقة",
   "total_coins": "إجمالي العملات",
@@ -603,5 +778,19 @@
   "reg_already_member": "هل لديك حساب بالفعل؟",
   "reg_login_now": "سجّل الدخول الآن",
    "your_balance": "رصيدك",
-   "transfer_credits": "تحويل الرصيد"
+   "transfer_credits": "تحويل الرصيد",
+   "login_secure_reseller": "بوابة موزعين آمنة",
+"login_full_dashboard": "وصول كامل إلى لوحة التحكم",
+"login_premium_tools": "أدوات بث مميزة",
+"login_username_placeholder": "اسم المستخدم أو البريد الإلكتروني",
+"login_password_placeholder": "أدخل كلمة المرور",
+"verify_email_continue": "يرجى التحقق من بريدك الإلكتروني للمتابعة.",
+"valid_email_required": "يرجى إدخال عنوان بريد إلكتروني صالح.",
+"recovery_email_failed": "فشل إرسال بريد استعادة الحساب.",
+"email_address": "عنوان البريد الإلكتروني",
+"email_placeholder": "you@example.com",
+"check_inbox": "تحقق من صندوق الوارد",
+"reset_link_sent_to": "لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى",
+"reset_link_instruction": "انقر على الرابط الموجود في البريد الإلكتروني لتعيين كلمة مرور جديدة. ستنتهي صلاحية الرابط بعد فترة قصيرة لأمانك.",
+"premium_access": "وصول مميز"
 }

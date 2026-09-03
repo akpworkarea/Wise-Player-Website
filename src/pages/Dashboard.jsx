@@ -69,7 +69,7 @@ const StatusPill = ({ status }) => {
       {active ? <Wifi size={11} /> : <WifiOff size={11} />}
       {status}
     </span>
-  ); 
+  );
 };
 
 // ─── SkeletonRow — MODULE LEVEL ───────────────────────────────────────────────
@@ -137,8 +137,7 @@ const DeviceCard = ({ item, copiedId, onCopy, truncateId, copyLabel, copiedLabel
   </motion.div>
 );
 
-// ─── DonutCard — MODULE LEVEL, small meaningful chart in a card ──────────────
-const DonutCard = ({ title, subtitle, data, options, legend, total, icon: Icon }) => (
+const DonutCard = ({ title, subtitle, data, options, legend, total, icon: Icon, t }) => (
   <motion.div
     initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
@@ -157,16 +156,14 @@ const DonutCard = ({ title, subtitle, data, options, legend, total, icon: Icon }
     </div>
 
     <div className="flex items-center gap-4">
-      {/* Fixed-size donut — never causes layout overflow */}
       <div className="relative shrink-0" style={{ width: 100, height: 100 }}>
         <Doughnut data={data} options={options} />
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <span className="text-lg font-black text-gray-900 leading-none">{total}</span>
-          <span className="text-[9px] text-gray-400 font-semibold uppercase tracking-wide">total</span>
+          <span className="text-[9px] text-gray-400 font-semibold uppercase tracking-wide">{t("admin_dashboard.total")}</span>
         </div>
       </div>
 
-      {/* Legend list */}
       <div className="flex-1 min-w-0 space-y-1.5">
         {legend.map((item) => (
           <div key={item.label} className="flex items-center justify-between gap-2 text-xs">
@@ -186,7 +183,7 @@ const DonutCard = ({ title, subtitle, data, options, legend, total, icon: Icon }
 // ═════════════════════════════════════════════════════════════════════════════
 const Dashboard = () => {
   const { t } = useTranslation();
-  
+
   const [activeTab, setActiveTab] = useState("overview");
   const { dashboard, refetchDashboard } = useDashboard();
   const [copiedId, setCopiedId] = useState(null);
@@ -195,13 +192,12 @@ const Dashboard = () => {
   // ── Pull logged-in user details from localStorage (saved on login) ─────────
   const { userRole, user: storedUser } = useAuth();
   const displayName = storedUser.fullName || storedUser.username || "User";
-  const avatarSeed  = encodeURIComponent(storedUser.username || storedUser.fullName || "user");
-  const avatarUrl   = `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${avatarSeed}`;
+  const avatarSeed = encodeURIComponent(storedUser.username || storedUser.fullName || "user");
+  const avatarUrl = `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${avatarSeed}`;
 
-  // ── Role label for the "online" line ─────────────────────────────────────
-  const roleLabel = userRole === "SUB_RESELLER" ? "Sub Reseller"
-                  : userRole === "RESELLER"     ? "Reseller"
-                  : "User";
+  const roleLabel = userRole === "SUB_RESELLER" ? t("admin_dashboard.role_sub_reseller")
+    : userRole === "RESELLER" ? t("admin_dashboard.role_reseller")
+      : t("admin_dashboard.role_user");
 
   const truncateId = (id, start = 8, end = 4) => {
     if (!id) return "—";
@@ -223,8 +219,8 @@ const Dashboard = () => {
   // ── Dynamic trend calculations from real dashboard stats ─────────────────
   // All derived from the same dashboard.stats data already on screen.
   const totalUsers = dashboard?.stats?.totalUsers ?? 0;
-  const activeSub  = dashboard?.stats?.activeSub  ?? 0;
-  const pending    = dashboard?.stats?.pending    ?? 0;
+  const activeSub = dashboard?.stats?.activeSub ?? 0;
+  const pending = dashboard?.stats?.pending ?? 0;
   const creditCoin = dashboard?.stats?.creditCoin ?? 0;
 
   // % of users who are active (shown on Total Users card)
@@ -278,29 +274,29 @@ const Dashboard = () => {
     },
   ];
 
-  // ── Device status split — Active vs Inactive, real data ──────────────────
-  const statusChart = useMemo(() => {
-    const devices = dashboard?.devices ?? [];
-    const active   = devices.filter((d) => d.deviceStatus === "ACTIVE").length;
-    const inactive = devices.length - active;
-    return {
-      total: devices.length,
-      legend: [
-        { label: "Active",   value: active,   color: "#16a34a" },
-        { label: "Inactive", value: inactive, color: "#dc2626" },
-      ],
-      data: {
-        labels: ["Active", "Inactive"],
-        datasets: [{
-          data: [active, inactive],
-          backgroundColor: ["#16a34a", "#dc2626"],
-          borderColor: "#ffffff",
-          borderWidth: 2,
-          hoverOffset: 4,
-        }],
-      },
-    };
-  }, [dashboard]);
+
+const statusChart = useMemo(() => {
+  const devices = dashboard?.devices ?? [];
+  const active   = devices.filter((d) => d.deviceStatus === "ACTIVE").length;
+  const inactive = devices.length - active;
+  return {
+    total: devices.length,
+    legend: [
+      { label: t("admin_dashboard.active"),   value: active,   color: "#16a34a" },
+      { label: t("admin_dashboard.inactive"), value: inactive, color: "#dc2626" },
+    ],
+    data: {
+      labels: [t("admin_dashboard.active"), t("admin_dashboard.inactive")],
+      datasets: [{
+        data: [active, inactive],
+        backgroundColor: ["#16a34a", "#dc2626"],
+        borderColor: "#ffffff",
+        borderWidth: 2,
+        hoverOffset: 4,
+      }],
+    },
+  };
+}, [dashboard, t]);
 
   // ── Subscription plan distribution — real data, dynamic plan names ───────
   const planChart = useMemo(() => {
@@ -356,139 +352,141 @@ const Dashboard = () => {
   };
 
   return (
-   <div className="h-full flex flex-col overflow-hidden bg-[#f4f4f7]">
-     <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 pt-4 pb-4
+    <div className="h-full flex flex-col overflow-hidden bg-[#f4f4f7]">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 pt-4 pb-4
                     [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {/* ── PAGE HEADER ─────────────────────────────────────────────────── */}
-      <div className="flex flex-row items-center justify-between gap-2 mb-5">
-        <h5 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-500 truncate min-w-0">
-          {t("admin_dashboard.panel")} /{" "}
-          <span className="text-[#800000]">{t(`admin_dashboard.${activeTab}`)}</span>
-        </h5>
+        {/* ── PAGE HEADER ─────────────────────────────────────────────────── */}
+        <div className="flex flex-row items-center justify-between gap-2 mb-5">
+          <h5 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-500 truncate min-w-0">
+            {t("admin_dashboard.panel")} /{" "}
+            <span className="text-[#800000]">{t(`admin_dashboard.${activeTab}`)}</span>
+          </h5>
 
-        <div className="flex items-center gap-3">
-          {/* Name + role — visible on all screen sizes, right-aligned */}
-          <div className="text-right">
-            <p className="text-sm font-semibold text-gray-800 leading-tight">{displayName}</p>
-            <p className="text-xs text-green-600 flex items-center gap-1 justify-end mt-0.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />
-              {roleLabel}
-            </p>
+          <div className="flex items-center gap-3">
+            {/* Name + role — visible on all screen sizes, right-aligned */}
+            <div className="text-right">
+              <p className="text-sm font-semibold text-gray-800 leading-tight">{displayName}</p>
+              <p className="text-xs text-green-600 flex items-center gap-1 justify-end mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />
+                {roleLabel}
+              </p>
+            </div>
+
+            {/* DiceBear avatar — fun-emoji style, seed = username so unique per user */}
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="w-10 h-10 rounded-full bg-[#800000]/10 border-2 border-[#800000]/20 overflow-hidden shrink-0 flex items-center justify-center"
+            >
+              <img
+                src={avatarUrl}
+                alt={displayName}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback to initials if DiceBear fails (offline/network issue)
+                  e.target.style.display = "none";
+                  e.target.parentNode.classList.add("bg-[#800000]");
+                  e.target.parentNode.innerHTML = `<span class="text-white text-sm font-black">${displayName[0]?.toUpperCase() ?? "U"}</span>`;
+                }}
+              />
+            </motion.div>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+
+          {/* ── STATS GRID ──────────────────────────────────────────────────── */}
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+            {stats.map((s, i) => <StatCard key={s.title} {...s} delay={i * 0.07} />)}
           </div>
 
-          {/* DiceBear avatar — fun-emoji style, seed = username so unique per user */}
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="w-10 h-10 rounded-full bg-[#800000]/10 border-2 border-[#800000]/20 overflow-hidden shrink-0 flex items-center justify-center"
-          >
-            <img
-              src={avatarUrl}
-              alt={displayName}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                // Fallback to initials if DiceBear fails (offline/network issue)
-                e.target.style.display = "none";
-                e.target.parentNode.classList.add("bg-[#800000]");
-                e.target.parentNode.innerHTML = `<span class="text-white text-sm font-black">${displayName[0]?.toUpperCase() ?? "U"}</span>`;
-              }}
+          {/* ── CHARTS — 2 small donut cards side by side, no scroll risk ────── */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <DonutCard
+              title={t("admin_dashboard.device_status")}
+              subtitle={t("admin_dashboard.active_inactive")}
+              data={statusChart.data}
+              options={donutOptions}
+              legend={statusChart.legend}
+              total={statusChart.total}
+              icon={Smartphone}
+              t={t}
             />
-          </motion.div>
-        </div>
-      </div>
+            <DonutCard
+              title={t("admin_dashboard.subscription_plans")}
+              subtitle={t("admin_dashboard.plan_distribution")}
+              data={planChart.data}
+              options={donutOptions}
+              legend={planChart.legend}
+              total={planChart.total}
+              icon={CheckCircle}
+              t={t}
+            />
+          </div>
 
-      <div className="space-y-6">
-
-        {/* ── STATS GRID ──────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-          {stats.map((s, i) => <StatCard key={s.title} {...s} delay={i * 0.07} />)}
-        </div>
-
-        {/* ── CHARTS — 2 small donut cards side by side, no scroll risk ────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <DonutCard
-           title={t("admin_dashboard.device_status")}
-  subtitle={t("admin_dashboard.active_inactive")}
-            data={statusChart.data}
-            options={donutOptions}
-            legend={statusChart.legend}
-            total={statusChart.total}
-            icon={Smartphone}
-          />
-          <DonutCard
-             title={t("admin_dashboard.subscription_plans")}
-  subtitle={t("admin_dashboard.plan_distribution")}
-            data={planChart.data}
-            options={donutOptions}
-            legend={planChart.legend}
-            total={planChart.total}
-            icon={CheckCircle}
-          />
-        </div>
-
-        {/* ── DEVICE TABLE — desktop+tablet, table-fixed, NO horizontal scroll ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.4 }}
-          className="hidden md:block bg-white rounded-xl shadow border border-gray-200 overflow-hidden"
-        >
-          <table className="w-full text-sm table-fixed">
-            <colgroup>
-              <col style={{ width: "34%" }} />
-              <col style={{ width: "22%" }} />
-              <col style={{ width: "22%" }} />
-              <col style={{ width: "22%" }} />
-            </colgroup>
-            <thead className="bg-gray-100 text-xs uppercase text-gray-600">
-              <tr>
-                <th className="px-4 py-3 text-center">{t("admin_dashboard.device_id")}</th>
-                <th className="px-4 py-3 text-center">{t("admin_dashboard.status")}</th>
-                <th className="px-4 py-3 text-center">{t("admin_dashboard.subscription")}</th>
-                <th className="px-4 py-3 text-center">{t("admin_dashboard.registered")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
-              ) : dashboard?.devices?.length > 0 ? (
-                dashboard.devices.slice(0, 8).map((item, idx) => (
-                  <DeviceRow key={item.deviceId} item={item} idx={idx} {...cardProps} />
-                ))
-              ) : (
+          {/* ── DEVICE TABLE — desktop+tablet, table-fixed, NO horizontal scroll ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+            className="hidden md:block bg-white rounded-xl shadow border border-gray-200 overflow-hidden"
+          >
+            <table className="w-full text-sm table-fixed">
+              <colgroup>
+                <col style={{ width: "34%" }} />
+                <col style={{ width: "22%" }} />
+                <col style={{ width: "22%" }} />
+                <col style={{ width: "22%" }} />
+              </colgroup>
+              <thead className="bg-gray-100 text-xs uppercase text-gray-600">
                 <tr>
-                  <td colSpan="4" className="py-10 text-center text-gray-400 font-semibold">
-                    {t("admin_dashboard.no_devices_found")}
-                  </td>
+                  <th className="px-4 py-3 text-center">{t("admin_dashboard.device_id")}</th>
+                  <th className="px-4 py-3 text-center">{t("admin_dashboard.status")}</th>
+                  <th className="px-4 py-3 text-center">{t("admin_dashboard.subscription")}</th>
+                  <th className="px-4 py-3 text-center">{t("admin_dashboard.registered")}</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </motion.div>
+              </thead>
+              <tbody>
+                {loading ? (
+                  [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
+                ) : dashboard?.devices?.length > 0 ? (
+                  dashboard.devices.slice(0, 8).map((item, idx) => (
+                    <DeviceRow key={item.deviceId} item={item} idx={idx} {...cardProps} />
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="py-10 text-center text-gray-400 font-semibold">
+                      {t("admin_dashboard.no_devices_found")}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </motion.div>
 
-        {/* ── DEVICE CARDS — mobile only ────────────────────────────────────── */}
-        <div className="md:hidden space-y-3">
-          {loading ? (
-            [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
-          ) : dashboard?.devices?.length > 0 ? (
-            dashboard.devices.slice(0, 8).map((item) => (
-              <DeviceCard key={item.deviceId} item={item} {...cardProps} />
-            ))
-          ) : (
-            <p className="text-center text-gray-400 font-semibold py-8">
-              {t("admin_dashboard.no_devices")}
-            </p>
-          )}
+          {/* ── DEVICE CARDS — mobile only ────────────────────────────────────── */}
+          <div className="md:hidden space-y-3">
+            {loading ? (
+              [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
+            ) : dashboard?.devices?.length > 0 ? (
+              dashboard.devices.slice(0, 8).map((item) => (
+                <DeviceCard key={item.deviceId} item={item} {...cardProps} />
+              ))
+            ) : (
+              <p className="text-center text-gray-400 font-semibold py-8">
+                {t("admin_dashboard.no_devices")}
+              </p>
+            )}
+          </div>
+
+          {/* ── TABS ─────────────────────────────────────────────────────────── */}
+          {activeTab === "users" && <UserManagement />}
+          {activeTab === "requests" && <RequestManagement />}
+          {activeTab === "subreseller" && <SubReseller />}
+
         </div>
-
-        {/* ── TABS ─────────────────────────────────────────────────────────── */}
-        {activeTab === "users" && <UserManagement />}
-        {activeTab === "requests" && <RequestManagement />}
-        {activeTab === "subreseller" && <SubReseller />}
-
       </div>
-    </div>
     </div>
   );
 };

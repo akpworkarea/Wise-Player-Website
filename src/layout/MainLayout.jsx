@@ -37,10 +37,10 @@ const hideNavbarRoutes = [
 ];
 
 // ─── ProfileDropdown — Split panel with edit / copy / change-password ─────────
-const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole }) => {
-  const roleLabel = user?.role === 'SUB_RESELLER' ? 'Sub Reseller'
-                : user?.role === 'RESELLER'     ? 'Reseller'
-                : user?.role ?? 'User';
+const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole, t }) => {
+  const roleLabel = user?.role === 'SUB_RESELLER' ? t('admin_dashboard.role_sub_reseller')
+                : user?.role === 'RESELLER'     ? t('admin_dashboard.role_reseller')
+                : user?.role ?? t('admin_dashboard.role_user');
 
   // ── Name edit ─────────────────────────────────────────────────
   const [editingName,  setEditingName]  = useState(false);
@@ -62,9 +62,9 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole 
    if (res.success) {
   const updated = { ...user, fullName: nameValue.trim() };
   onProfileUpdated?.(updated);
-  toast.success('Name updated');
+  toast.success(t('profile_name_updated'));
 } else {
-      toast.error(res.message || 'Failed to update name');
+      toast.error(res.message || t('profile_name_update_failed'));
     }
     setEditingName(false);
   };
@@ -79,7 +79,7 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole 
     const reader = new FileReader();
     reader.onload = (ev) => setAvatarPreview(ev.target.result);
     reader.readAsDataURL(file);
-    toast.success('Avatar updated (local preview)');
+    toast.success(t('profile_avatar_updated'));
   };
 
   // ── Copy email ────────────────────────────────────────────────
@@ -105,17 +105,17 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole 
   const handleChangePassword = async (e) => {
     e.preventDefault();
     setPwError('');
-    if (newPw.length < 8)          { setPwError('Password must be at least 8 characters.'); return; }
-    if (newPw !== confirmPw)        { setPwError("Passwords don't match."); return; }
+    if (newPw.length < 8)          { setPwError(t('profile_pw_min_length')); return; }
+    if (newPw !== confirmPw)        { setPwError(t('profile_pw_mismatch')); return; }
     setSavingPw(true);
     const res = await changePassword(userRole, currentPw, newPw, confirmPw);
     setSavingPw(false);
     if (res.success) {
-      toast.success('Password changed successfully');
+      toast.success(t('profile_pw_changed'));
       setCurrentPw(''); setNewPw(''); setConfirmPw('');
       setShowPwSection(false);
     } else {
-      setPwError(res.message || 'Failed to change password');
+      setPwError(res.message || t('profile_pw_change_failed'));
     }
   };
 
@@ -185,7 +185,7 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole 
               transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
               className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0"
             />
-            <span className="text-[10px] text-green-500 font-semibold">Online</span>
+            <span className="text-[10px] text-green-500 font-semibold">{t('profile_online')}</span>
           </div>
         </div>
 
@@ -217,7 +217,7 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole 
             ) : (
               <div className="flex items-center gap-1.5 group/name">
                 <p className="text-sm font-black text-gray-900 truncate leading-tight min-w-0">
-                  {nameValue || 'User'}
+                  {nameValue || t('profile_default_user')}
                 </p>
                 <button
                   onClick={() => setEditingName(true)}
@@ -238,7 +238,7 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole 
             <button
               onClick={handleCopyEmail}
               className="w-full flex items-center gap-2 min-w-0 group/email text-left"
-              title="Click to copy"
+              title={t('profile_click_to_copy')}
             >
               <div className="w-5 h-5 rounded-md bg-[#800000]/10 flex items-center justify-center shrink-0">
                 <Mail size={11} className="text-[#800000]" />
@@ -255,7 +255,7 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole 
             {emailCopied && (
               <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                 className="text-[10px] text-green-600 font-semibold ml-7">
-                Copied!
+                {t('profile_copied')}
               </motion.p>
             )}
 
@@ -280,7 +280,7 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole 
             <div className="w-6 h-6 rounded-lg bg-[#800000]/10 flex items-center justify-center shrink-0">
               <KeyRound size={12} className="text-[#800000]" />
             </div>
-            <span className="text-xs font-bold text-gray-700">Change Password</span>
+            <span className="text-xs font-bold text-gray-700">{t('profile_change_password')}</span>
           </div>
           <ChevronRight size={13} className={`text-gray-400 transition-transform duration-200 ${showPwSection ? 'rotate-90' : ''}`} />
         </button>
@@ -307,9 +307,9 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole 
 
                 {/* Password inputs */}
                 {[
-                  { label: 'Current password',  value: currentPw,   set: setCurrentPw,   show: showCurrentPw,  setShow: setShowCurrentPw  },
-                  { label: 'New password',       value: newPw,       set: setNewPw,       show: showNewPw,      setShow: setShowNewPw      },
-                  { label: 'Confirm new',        value: confirmPw,   set: setConfirmPw,   show: showConfirmPw,  setShow: setShowConfirmPw  },
+                  { label: t('profile_current_password'), value: currentPw,   set: setCurrentPw,   show: showCurrentPw,  setShow: setShowCurrentPw  },
+                  { label: t('profile_new_password'),      value: newPw,       set: setNewPw,       show: showNewPw,      setShow: setShowNewPw      },
+                  { label: t('profile_confirm_new_password'), value: confirmPw, set: setConfirmPw,   show: showConfirmPw,  setShow: setShowConfirmPw  },
                 ].map(({ label, value, set, show, setShow }) => (
                   <div key={label} className="relative">
                     <input
@@ -330,8 +330,8 @@ const ProfileDropdown = ({ user, avatarUrl, onClose, onProfileUpdated, userRole 
                 <button type="submit" disabled={savingPw}
                   className="w-full py-2 bg-[#800000] text-white text-xs font-bold rounded-xl hover:bg-[#6a0000] transition active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                   {savingPw
-                    ? <><svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>Saving…</>
-                    : <><Lock size={11} />Update Password</>}
+                    ? <><svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>{t('profile_saving')}</>
+                    : <><Lock size={11} />{t('profile_update_password')}</>}
                 </button>
               </form>
             </motion.div>
@@ -514,7 +514,7 @@ const handleProfileUpdated = (updated) => {
                     </div>
                     {/* Name — hidden on mobile */}
                     <span className={`hidden sm:block text-xs font-bold truncate max-w-[80px] transition-colors ${isProfileOpen ? 'text-white' : 'text-[#1a1a1a]'}`}>
-                     {storedUser?.fullName || storedUser?.username || 'Profile'}
+                     {storedUser?.fullName || storedUser?.username || t('profile_default_profile')}
                     </span>
                     <ChevronDown size={12} className={`shrink-0 transition-all duration-200 ${isProfileOpen ? 'rotate-180 text-white' : 'text-gray-400'}`} />
                   </motion.button>
@@ -527,6 +527,7 @@ const handleProfileUpdated = (updated) => {
                         onClose={() => setIsProfileOpen(false)}
                         onProfileUpdated={handleProfileUpdated}
                         userRole={userRole}
+                        t={t}
                       />
                     )}
                   </AnimatePresence>
