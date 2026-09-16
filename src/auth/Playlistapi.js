@@ -1,16 +1,6 @@
 import api from './axiosInstance';
 
-// ─── Playlist APIs ──────────────────────────────────────────────────────────
-// All endpoints are public and scoped by MAC address.
-// Base path: /api/playlist/public/{macAddress}
 
-/**
- * 1. GET all playlists for a MAC address.
- * GET /api/playlist/public/{macAddress}?pin={pin}
- *
- * `pin` is optional — if the device hasn't set one, the API (and this
- * helper) fall back to the default PIN "0000".
- */
 export const getPlaylists = async (macAddress, pin) => {
   try {
     if (!macAddress) return { success: false, message: 'MAC address is missing!' };

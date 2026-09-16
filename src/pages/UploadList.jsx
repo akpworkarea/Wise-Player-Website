@@ -5,7 +5,8 @@ import { validateDevice } from '../auth/apiservice';
 import { checkPlanExpired } from '../utils/deviceUtils';
 import { useTranslation } from 'react-i18next';
 import Footer from '../component/Footer';
-
+import toast from 'react-hot-toast';
+import { getPlaylists } from '../auth/Playlistapi';
 // ── MAC auto-formatter ──────────────────────────────────────────
 const formatMac = (raw) => {
   const hex = raw.replace(/[^0-9a-fA-F]/g, '').toUpperCase().slice(0, 12);
@@ -46,51 +47,52 @@ const WiseplayerUpload = () => {
     if (statusError) setStatusError('');
     setUploadPin(formatPin(e.target.value));
   };
+const handleConfigure = async () => {
+  setIsLoading(true);
+  setStatusError('');
 
-  const handleConfigure = async () => {
-    setIsLoading(true);
-    setStatusError('');
-    // If the user never set a device pin, fall back to the default "0000"
-    // — matches the API's own default, so playlists still resolve correctly.
-    const pinToUse = uploadPin.trim() ? uploadPin.trim() : DEFAULT_PIN;
+  const pinToUse = uploadPin.trim() ? uploadPin.trim() : DEFAULT_PIN;
 
-    try {
-      const res = await validateDevice(uploadMac);
-      if (!res.success || !res.data) {
-        setStatusError('Device is not registered.');
-        return;
-      }
-
-      const { status, allowed, subscriptionType, expiresAt, expiredAt, expiry } = res.data;
-
-      if (status === 'ACTIVE' && allowed) {
-        navigate('/upload-playlist', { state: { mac: uploadMac, pin: pinToUse } });
-        return;
-      }
-
-      if (status === 'INACTIVE') {
-        const planExpiry = expiresAt ?? expiredAt ?? expiry ?? '';
-        const expired = checkPlanExpired(subscriptionType, planExpiry, status);
-
-        if (expired) {
-          // Plan lapsed — send to Activation's renew flow, carrying pin along
-          // so the user lands back on their playlists after renewing.
-          navigate('/activation', { state: { mac: uploadMac, pin: pinToUse, isExpired: true } });
-        } else {
-          // Registered but never activated — send to Activation's key-entry flow
-          navigate('/activation', { state: { mac: uploadMac, pin: pinToUse, isExpired: false } });
-        }
-        return;
-      }
-
-      // Any other status (or ACTIVE-but-not-allowed edge case)
+  try {
+    const res = await validateDevice(uploadMac);
+    if (!res.success || !res.data) {
       setStatusError('Device is not registered.');
-    } catch {
-      setStatusError('Connection error. Please try again.');
-    } finally {
-      setIsLoading(false);
+      return;
     }
-  };
+
+    const { status, allowed, subscriptionType, expiresAt, expiredAt, expiry } = res.data;
+
+    if (status === 'ACTIVE' && allowed) {
+      // ── yaha pe playlist API ko call karo pehle ──
+      const playlistRes = await getPlaylists(uploadMac, pinToUse);
+
+    if (playlistRes.success && playlistRes.data) {
+  navigate('/upload-playlist', { state: { mac: uploadMac, pin: pinToUse } });
+} else {
+  toast.error(playlistRes.message || 'Invalid PIN or no playlist found.');
+}
+      return;
+    }
+
+    if (status === 'INACTIVE') {
+      const planExpiry = expiresAt ?? expiredAt ?? expiry ?? '';
+      const expired = checkPlanExpired(subscriptionType, planExpiry, status);
+
+      if (expired) {
+        navigate('/activation', { state: { mac: uploadMac, pin: pinToUse, isExpired: true } });
+      } else {
+        navigate('/activation', { state: { mac: uploadMac, pin: pinToUse, isExpired: false } });
+      }
+      return;
+    }
+
+    setStatusError('Device is not registered.');
+  } catch {
+    setStatusError('Connection error. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const isValid = isMacComplete(uploadMac) && !isLoading;
 
