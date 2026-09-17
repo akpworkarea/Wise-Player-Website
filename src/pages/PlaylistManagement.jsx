@@ -11,7 +11,7 @@ import { useAuth } from "../context/AuthContext";
 import {
   getPlaylists, createM3uPlaylist, createXtreamPlaylist,
   updatePlaylist, deletePlaylist, assignPlaylist,
-  unassignPlaylist, togglePinPlaylist,
+  unassignPlaylistAPI, togglePinPlaylist,
 } from "../auth/api/playlistApi";
 import { getUserDevices } from "../auth/api/userManagement";
 
@@ -157,7 +157,7 @@ const inputCls = "w-full px-4 py-3 bg-[#f4f4f7] border-2 border-transparent roun
 
 // ─── PlaylistCard — mobile/tablet ───────────────────────────────────────
 const PlaylistCard = ({
-  playlist, copiedId, onCopy, onEdit, onDelete, onAssign, onTogglePin, pinBusyId,
+  playlist, copiedId, onCopy, onEdit, onDelete, onAssign, onUnassign, onTogglePin, pinBusyId,
 }) => (
   <motion.div
     layout
@@ -199,6 +199,13 @@ const PlaylistCard = ({
         className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl border border-red-200 text-red-500 hover:bg-red-600 hover:border-red-600 hover:text-white transition active:scale-95">
         <Trash2 size={15} />
       </button>
+      <button
+        onClick={() => onUnassign(playlist)}
+        title="Unassign"
+        className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl border border-red-200 text-red-600 hover:bg-red-500 hover:border-red-500 hover:text-white transition active:scale-95"
+      >
+        <Link2 size={15} />
+      </button>
     </div>
   </motion.div>
 );
@@ -207,13 +214,13 @@ const PlaylistCard = ({
 const PlaylistManagement = () => {
   const { userRole } = useAuth();
 
-  const [playlists,   setPlaylists]   = useState([]);
-  const [loading,      setLoading]      = useState(true);
-  const [search,        setSearch]        = useState("");
-  const debouncedSearch                   = useDebounce(search, 350);
-  const [typeFilter,   setTypeFilter]   = useState("");
-  const [pinnedOnly,   setPinnedOnly]   = useState(false);
-  const [showFilter,   setShowFilter]   = useState(false);
+  const [playlists, setPlaylists] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 350);
+  const [typeFilter, setTypeFilter] = useState("");
+  const [pinnedOnly, setPinnedOnly] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
 
   const [copiedId, setCopiedId] = useState(null);
   const [pinBusyId, setPinBusyId] = useState(null);
@@ -227,18 +234,18 @@ const PlaylistManagement = () => {
 
   // ── Create modal ────────────────────────────────────────────────────
   const [createModal, setCreateModal] = useState(false);
-  const [createType,  setCreateType]  = useState("M3U");
-  const [creating,    setCreating]    = useState(false);
+  const [createType, setCreateType] = useState("M3U");
+  const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState("");
   // NEW: pin added to both form shapes
-  const [m3uForm,     setM3uForm]     = useState({ name: "", m3uUrl: "", pin: "" });
-  const [xtreamForm,  setXtreamForm]  = useState({ name: "", serverUrl: "", username: "", password: "", pin: "" });
+  const [m3uForm, setM3uForm] = useState({ name: "", m3uUrl: "", pin: "" });
+  const [xtreamForm, setXtreamForm] = useState({ name: "", serverUrl: "", username: "", password: "", pin: "" });
   const [showXtreamPwd, setShowXtreamPwd] = useState(false);
   const [showCreatePin, setShowCreatePin] = useState(false);
 
   // Helper so one PIN field can serve whichever tab is active
-  const activeForm    = createType === "M3U" ? m3uForm : xtreamForm;
-  const setActivePin  = (v) => {
+  const activeForm = createType === "M3U" ? m3uForm : xtreamForm;
+  const setActivePin = (v) => {
     const digits = v.replace(/\D/g, "").slice(0, 4);
     createType === "M3U"
       ? setM3uForm((p) => ({ ...p, pin: digits }))
@@ -248,9 +255,9 @@ const PlaylistManagement = () => {
   // ── Edit modal ───────────────────────────────────────────────────────
   const [editModal, setEditModal] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
-  const [editForm,   setEditForm]   = useState({});
-  const [saving,     setSaving]     = useState(false);
-  const [editError,  setEditError]  = useState("");
+  const [editForm, setEditForm] = useState({});
+  const [saving, setSaving] = useState(false);
+  const [editError, setEditError] = useState("");
   const [showEditPwd, setShowEditPwd] = useState(false);
   const [showEditPin, setShowEditPin] = useState(false);
 
@@ -260,15 +267,18 @@ const PlaylistManagement = () => {
   const [deleting, setDeleting] = useState(false);
 
   // ── Assign modal ─────────────────────────────────────────────────────
-  const [assignModal,  setAssignModal]  = useState(false);
+  const [assignModal, setAssignModal] = useState(false);
   const [assignTarget, setAssignTarget] = useState(null);
+  const [unassignModal, setUnassignModal] = useState(false);
+  const [unassignTarget, setUnassignTarget] = useState(null);
+  const [selectedUnassignDevice, setSelectedUnassignDevice] = useState(null);
   const [deviceSearch, setDeviceSearch] = useState("");
   const debouncedDeviceSearch = useDebounce(deviceSearch, 350);
-  const [devices,       setDevices]       = useState([]);
+  const [devices, setDevices] = useState([]);
   const [devicesLoading, setDevicesLoading] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState(null);
-  const [assigning,      setAssigning]      = useState(false);
-
+  const [assigning, setAssigning] = useState(false);
+  const [unassigning, setUnassigning] = useState(false);
   const filterRef = useRef(null);
   useEffect(() => {
     const h = (e) => { if (filterRef.current && !filterRef.current.contains(e.target)) setShowFilter(false); };
@@ -414,6 +424,26 @@ const PlaylistManagement = () => {
     setAssignModal(true);
   };
 
+  const openUnassign = (playlist) => {
+    setUnassignTarget(playlist);
+    setSelectedUnassignDevice(null);
+    setDeviceSearch("");
+    setDevices([]);
+    setUnassignModal(true);
+  };
+
+  useEffect(() => {
+    if (!unassignModal || !userRole) return;
+    let active = true;
+    setDevicesLoading(true);
+    getUserDevices(userRole, 0, 20, debouncedDeviceSearch).then((res) => {
+      if (!active) return;
+      if (res.success) setDevices(res.data?.content ?? res.data ?? []);
+      setDevicesLoading(false);
+    });
+    return () => { active = false; };
+  }, [unassignModal, userRole, debouncedDeviceSearch]);
+
   const handleAssign = async () => {
     if (!assignTarget || !selectedDevice) return;
     setAssigning(true);
@@ -427,6 +457,30 @@ const PlaylistManagement = () => {
     }
   };
 
+const handleUnassignConfirm = async () => {
+  if (!unassignTarget) return;
+  setUnassigning(true);
+  try {
+    const res = await unassignPlaylistAPI(unassignTarget.id);
+    setUnassigning(false);
+    if (res.success) {
+      showToast(res.message || "Playlist unassigned successfully", "success");
+      setUnassignModal(false);
+      setUnassignTarget(null);
+      setSelectedUnassignDevice(null);
+      fetchPlaylists(); // list refresh, taaki updated assignment status dikhe
+    } else {
+      showToast(res.message || "Failed to unassign playlist", "error");
+    }
+  } catch (err) {
+    setUnassigning(false);
+    showToast(err?.response?.data?.message || "Failed to unassign playlist", "error");
+  }
+};
+
+  const handleUnassign = (playlist) => {
+    openUnassign(playlist);
+  };
   const activeFilterCount = [typeFilter, pinnedOnly].filter(Boolean).length;
 
   return (
@@ -579,6 +633,14 @@ const PlaylistManagement = () => {
                         </button>
                         <button onClick={() => openEdit(p)} title="Edit" className="p-1.5 rounded-lg border border-gray-200 hover:border-[#800000] hover:text-[#800000] hover:bg-red-50 text-gray-500 transition active:scale-95"><Pencil size={13} /></button>
                         <button onClick={() => openDelete(p)} title="Delete" className="p-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-600 hover:border-red-600 hover:text-white transition active:scale-95"><Trash2 size={13} /></button>
+                        <button
+                          onClick={() => handleUnassign(p)}
+                          title="Unassign"
+                          className="px-3 py-1.5 flex items-center gap-1 rounded-lg border border-orange-200 text-red-600 hover:bg-red-900 hover:border-red-900 hover:text-white transition active:scale-95 text-xs font-bold"
+                        >
+                          <Link2 size={12} /> Unassign
+                        </button>
+
                       </div>
                     </td>
                   </tr>
@@ -597,7 +659,7 @@ const PlaylistManagement = () => {
             <AnimatePresence>
               {filtered.map((p) => (
                 <PlaylistCard key={p.id} playlist={p} copiedId={copiedId} onCopy={onCopy}
-                  onEdit={openEdit} onDelete={openDelete} onAssign={openAssign}
+                  onEdit={openEdit} onDelete={openDelete} onAssign={openAssign} onUnassign={handleUnassign}
                   onTogglePin={handleTogglePin} pinBusyId={pinBusyId} />
               ))}
             </AnimatePresence>
@@ -848,6 +910,127 @@ const PlaylistManagement = () => {
         )}
       </AnimatePresence>
 
+      {/* ══ UNASSIGN MODAL ══════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {unassignModal && unassignTarget && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed top-0 right-0 bottom-0 left-0 md:left-[240px] lg:left-[260px] bg-black/60 z-[9999] flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 16 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 16 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden max-h-[85vh] flex flex-col"
+            >
+
+             <div className="bg-[#800000] px-6 pt-6 pb-5 relative shrink-0">
+                <button
+                  onClick={() => {
+                    setUnassignModal(false);
+                    setUnassignTarget(null);
+                    setSelectedUnassignDevice(null);
+                  }}
+                  className="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/20 p-1.5 rounded-full transition"
+                >
+                  <MdClose size={20} />
+                </button>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <Link2 size={20} className="text-white" />
+                  </div>
+
+                  <div className="min-w-0">
+                    <h5 className="text-white font-extrabold text-base leading-tight">
+                      Unassign Playlist
+                    </h5>
+
+                    <p className="text-white/70 text-xs mt-0.5 truncate">
+                      {unassignTarget.name}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="p-6 space-y-3 flex-1 min-h-0 flex flex-col">
+
+                <p className="text-sm text-gray-600 shrink-0">
+                  Select the device from which you want to unassign this playlist.
+                </p>
+
+                <div className="relative shrink-0">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    className="w-full pl-9 pr-3 py-2.5 text-sm bg-[#f4f4f7] border border-gray-200 rounded-xl focus:border-red-900 focus:outline-none transition text-gray-700 font-semibold placeholder-gray-400"
+                    placeholder="Search device by MAC address…"
+                    value={deviceSearch}
+                    onChange={(e) => setDeviceSearch(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex-1 min-h-0 overflow-y-auto space-y-1.5 pr-1">
+                  {devicesLoading ? (
+                    [...Array(4)].map((_, i) => <div key={i} className="h-12 bg-gray-100 rounded-xl animate-pulse" />)
+                  ) : devices.length > 0 ? (
+                    devices.map((d) => {
+                      const id = d.deviceId || d.id;
+                      const mac = d.macAddress || d.mac || id;
+                      const isSelected = (selectedUnassignDevice?.deviceId || selectedUnassignDevice?.id) === id;
+                      return (
+                        <button key={id} onClick={() => setSelectedUnassignDevice(d)}
+                          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-left transition
+                            ${isSelected ? "bg-orange-50 border-red-400" : "bg-white border-gray-200 hover:border-red-300"}`}>
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isSelected ? "bg-red-900 text-white" : "bg-gray-100 text-gray-400"}`}>
+                            <Smartphone size={14} />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-bold text-gray-800 truncate font-mono tracking-wider uppercase">{mac}</p>
+                            {d.subscriptionType && <p className="text-[10px] text-gray-400">{d.subscriptionType}</p>}
+                          </div>
+                          {isSelected && <CheckCircle2 size={16} className="text-red-900 shrink-0" />}
+                        </button>
+                      );
+                    })
+                  ) : (
+                    <p className="text-center text-xs text-gray-400 font-semibold py-8">No devices found</p>
+                  )}
+                </div>
+
+                {/* Buttons */}
+                <div className="flex gap-3 pt-2 shrink-0">
+
+                  <button
+                    onClick={() => {
+                      setUnassignModal(false);
+                      setUnassignTarget(null);
+                      setSelectedUnassignDevice(null);
+                    }}
+                    disabled={unassigning}
+                    className="flex-1 py-3 rounded-xl text-sm font-bold text-gray-600 border border-gray-200 hover:bg-gray-50 transition active:scale-95 disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={handleUnassignConfirm}
+                    disabled={!selectedUnassignDevice || unassigning}
+                    className="flex-1 py-3 rounded-xl text-sm font-bold text-white bg-[#800000] hover:bg-[#6a0000] transition active:scale-95 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {unassigning ? <Loader2 size={16} className="animate-spin" /> : <><Link2 size={15} /> Unassign</>}
+                  </button>
+
+                </div>
+
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ══ ASSIGN MODAL ══════════════════════════════════════════════ */}
       <AnimatePresence>
         {assignModal && assignTarget && (
@@ -871,6 +1054,7 @@ const PlaylistManagement = () => {
                 </div>
               </div>
 
+              {/* Body */}
               <div className="p-6 space-y-3 flex-1 min-h-0 flex flex-col">
                 <div className="relative shrink-0">
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -888,7 +1072,6 @@ const PlaylistManagement = () => {
                   ) : devices.length > 0 ? (
                     devices.map((d) => {
                       const id = d.deviceId || d.id;
-                      // NEW — surface the MAC address instead of the raw internal ID
                       const mac = d.macAddress || d.mac || id;
                       const isSelected = (selectedDevice?.deviceId || selectedDevice?.id) === id;
                       return (
