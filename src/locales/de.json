@@ -27,7 +27,22 @@
     "activationFailed": "Aktivierung fehlgeschlagen",
     "macPlaceholder": "00:00:00:00:00:00",
     "footer": "Wise Player · Alle Rechte vorbehalten",
-    "goToHome": "Zur Startseite"
+    "goToHome": "Zur Startseite",
+    "checkingStatus": "Gerätestatus wird geprüft…",
+    "deviceAlreadyActive": "Dieses Gerät ist bereits aktiv — keine erneute Aktivierung nötig.",
+    "statusCheckFailed": "Gerätestatus konnte nicht geprüft werden. Bitte erneut versuchen.",
+    "planExpiredTitle": "Dein Plan ist abgelaufen",
+    "planExpiredDesc": "Verlängere jetzt, um deine Playlists sofort wiederherzustellen. Du wirst zur sicheren Zahlung weitergeleitet.",
+    "deviceLabel": "Gerät",
+    "pinLabel": "PIN",
+    "planLabel": "Letzter Plan",
+    "payNow": "Jetzt bezahlen & verlängern",
+    "viewPlansRenew": "Alle Tarife ansehen",
+    "activateDifferentDevice": "Anderes Gerät aktivieren",
+    "redirectingToPayment": "Weiterleitung zur sicheren Zahlung…",
+    "paymentFailed": "Zahlung konnte nicht gestartet werden. Bitte erneut versuchen.",
+    "enterValidMacFirst": "Bitte zuerst eine gültige Geräte-ID eingeben.",
+    "continueToPlaylists": "Weiter zu meinen Playlists"
   },
   "home": {
     "headExperienceText": "Premium Medienwiedergabe ohne Buffering. Optimiert für High-End Smart TVs.",
@@ -50,7 +65,7 @@
     "disclaimerLabel3": "Bedingungen",
     "disclaimerLabel4": "Support",
     "live_badge": "Live",
-     "contactUs": "Kontakt",
+    "contactUs": "Kontakt",
     "dashboard": "Dashboard",
     "device_management": "Geräteverwaltung",
     "sub_reseller": "Unterhändler",
@@ -135,8 +150,15 @@
       "invalid_device": "Ungültiges Gerät",
       "payment_failed": "Zahlung fehlgeschlagen",
       "something_wrong": "Fehler aufgetreten",
-      "plans_error": "Pläne konnten nicht geladen werden"
-    }
+      "plans_error": "Pläne konnten nicht geladen werden",
+      "choose_plan": "Bitte wähle einen Tarif, um fortzufahren."
+    },
+    "status_expired": "Status: PLAN ABGELAUFEN",
+    "status_not_found": "Status: NICHT REGISTRIERT",
+    "status_blocked": "Status: BLOCKIERT",
+    "renew_plan": "Plan verlängern",
+    "go_to_playlists": "Zu meinen Playlists",
+    "redirecting_to_payment": "Weiterleitung zur Zahlung…"
   },
   "navbar": {
     "logo": {
@@ -173,7 +195,11 @@
     "enter_device_mac": "Geben Sie die MAC-Adresse Ihres Geräts ein, um fortzufahren",
     "device_id_label": "ID DE L'APPAREIL / ADRESSE MAC",
     "validate_btn": "Bestätigen",
-    "checking_status": "Status wird überprüft..."
+    "checking_status": "Status wird überprüft...",
+    "device_not_registered": "Gerät ist nicht registriert.",
+    "connection_error": "Verbindungsfehler. Bitte erneut versuchen.",
+    "device_pin_label": "Geräte-PIN",
+    "plan_expired_redirecting": "Dein Plan ist abgelaufen — Weiterleitung zur Zahlung…"
   },
   "resellerpage": {
     "reseller_badge": "Partner werden",
@@ -286,7 +312,10 @@
     "cancel": "Abbrechen",
     "yes_confirm": "Ja, bestätigen",
     "mac_address": "MAC-Adresse",
-    "filters": "Filter"
+    "filters": "Filter",
+    "activate_plan": "Tarif aktivieren",
+    "detach": "Trennen",
+    "invalid_mac": "Ungültige Geräte-ID. Erwartetes Format: AA:BB:CC:DD:EE:FF"
   },
   "requests": {
     "request_management": "Anfragenverwaltung",
@@ -314,7 +343,7 @@
     "select_plan": "Plan auswählen",
     "submit": "Absenden",
     "cancel": "Abbrechen",
-     "admin_notes": "Administratornotizen",
+    "admin_notes": "Administratornotizen",
     "mac_address": "MAC-Adresse",
     "filters": "Filter",
     "manage_activation_requests": "Aktivierungsanfragen verwalten",
@@ -353,7 +382,7 @@
     "page": "Seite",
     "of": "von",
     "next": "Weiter",
-     "subtitle": "Ihre Transaktionen anzeigen und verwalten",
+    "subtitle": "Ihre Transaktionen anzeigen und verwalten",
     "search_placeholder": "Transaktionen suchen...",
     "filters": "Filter"
   },
@@ -410,14 +439,14 @@
   "active_subs": "Aktive Abonnements",
   "pending_req": "Ausstehende Anfragen",
   "total_coins": "Gesamtmünzen",
-   "reseller_portal": "Wiederverkäufer-Portal",
+  "reseller_portal": "Wiederverkäufer-Portal",
   "sign_in_title": "Anmelden",
   "sign_in_subtitle": "Geben Sie Ihre Zugangsdaten ein, um auf Ihr Konto zuzugreifen",
   "forgot_password": "Passwort vergessen?",
   "Sign_in": "Anmelden",
   "Register": "Registrieren",
   "back_to_signin": "Zurück zur Anmeldung",
-  "recover_password": "Passwort wiederherstellen",
+  "recover_password": "Passwort zurücksetzen",
   "recover_subtitle": "Geben Sie Ihren Benutzernamen ein, um Wiederherstellungsanweisungen zu erhalten",
   "btn_send_recovery": "Wiederherstellungslink senden",
   "authorized_access_only": "Nur autorisierter Zugriff",
@@ -425,7 +454,7 @@
   "success_redirecting": "Erfolgreich! Weiterleitung...",
   "invalid_credentials": "Ungültige Zugangsdaten",
   "reset_link_sent": "Link zum Zurücksetzen gesendet!",
-   "reg_hello": "Hallo,",
+  "reg_hello": "Hallo,",
   "reg_welcome": "Willkommen",
   "reg_signup_badge": "Wiederverkäufer Registrierung",
   "reg_fullname": "Vollständiger Name",
@@ -438,5 +467,23 @@
   "reg_already_member": "Haben Sie bereits ein Konto?",
   "reg_login_now": "Jetzt anmelden",
   "your_balance": "Ihr Guthaben",
-   "transfer_credits": "Guthaben übertragen"
+  "transfer_credits": "Guthaben übertragen",
+  "paymentStatus": {
+    "successTitle": "Zahlung erfolgreich",
+    "successDesc": "Dein Plan ist wieder aktiv. Du kannst zu deinen Playlists zurück.",
+    "cancelledTitle": "Zahlung abgebrochen",
+    "cancelledDesc": "Es wurde nichts belastet.",
+    "processingTitle": "Zahlung wird bestätigt",
+    "processingDesc": "Einen Moment — wir warten auf die Bestätigung des Zahlungsanbieters.",
+    "invoiceLabel": "Rechnung",
+    "deviceLabel": "Gerät",
+    "continueToPlaylists": "Weiter zu meinen Playlists",
+    "backHome": "Zurück zur Startseite"
+  },
+  "coins": "Guthaben",
+  "delete": "Löschen",
+  "filters": "Filter",
+  "search_placeholder": "Nach Name, Benutzername oder ID suchen",
+  "playlist_management": "Playlist-Verwaltung",
+  "reg_email": "E-Mail-Adresse"
 }
