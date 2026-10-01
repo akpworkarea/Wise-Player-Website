@@ -415,7 +415,22 @@
     "deviceActivated": "Device Activated Successfully",
     "activationFailed": "Activation Failed",
     "macPlaceholder": "00:00:00:00:00:00",
-    "footer": "Wise Player · All Rights Reserved"
+    "footer": "Wise Player · All Rights Reserved",
+    "checkingStatus": "Checking device status…",
+    "deviceAlreadyActive": "This device is already active — no need to activate again.",
+    "statusCheckFailed": "Couldn't check device status. Please try again.",
+    "planExpiredTitle": "Your plan has expired",
+    "planExpiredDesc": "Renew now to restore your playlists instantly. You will be redirected to secure checkout.",
+    "deviceLabel": "Device",
+    "pinLabel": "PIN",
+    "planLabel": "Last plan",
+    "payNow": "Pay now & renew",
+    "viewPlansRenew": "View all plans",
+    "activateDifferentDevice": "Activate a different device",
+    "redirectingToPayment": "Redirecting to secure checkout…",
+    "paymentFailed": "Could not start the payment. Please try again.",
+    "enterValidMacFirst": "Enter a valid device ID first.",
+    "continueToPlaylists": "Continue to my playlists"
   },
   "home": {
       "system_online": "SYSTEM ONLINE V2.0",
@@ -508,8 +523,15 @@
       "invalid_device": "Invalid device",
       "payment_failed": "Payment failed",
       "something_wrong": "Something went wrong",
-      "plans_error": "Unable to load plans"
-    }
+      "plans_error": "Unable to load plans",
+      "choose_plan": "Please pick a plan to continue."
+    },
+    "status_expired": "Status: PLAN EXPIRED",
+    "status_not_found": "Status: NOT REGISTERED",
+    "status_blocked": "Status: BLOCKED",
+    "renew_plan": "Renew plan",
+    "go_to_playlists": "Go to my playlists",
+    "redirecting_to_payment": "Redirecting to payment…"
   },
   "navbar": {
     "logo": {
@@ -551,7 +573,11 @@
     "enter_device_mac": "Enter your device MAC address to continue",
     "device_id_label": "DEVICE ID / MAC ADDRESS",
     "validate_btn": "Validate",
-    "checking_status": "Checking status..."
+    "checking_status": "Checking status...",
+    "device_not_registered": "Device is not registered.",
+    "connection_error": "Connection error. Please try again.",
+    "device_pin_label": "Device PIN",
+    "plan_expired_redirecting": "Your plan has expired — taking you to checkout…"
   },
   "resellerpage": {
     "reseller_badge": "Become a Partner",
@@ -601,19 +627,22 @@
     "page": "Page",
     "of": "of",
     "next": "Next",
-  "mac_address": "MAC Address",
+    "mac_address": "MAC Address",
     "filters": "Filters",
-  "new_device": "New Device",
-  "mac_placeholder": "MAC Address (AA:BB:CC:DD:EE:FF)",
-  "processing": "Processing...",
-  "create": "Create",
-  "confirm_action": "Confirm Action",
-  "are_you_sure": "Are you sure you want to",
-  "disable": "disable",
-  "activate": "activate",
-  "this_user": "this user?",
-  "cancel": "Cancel",
-  "yes_confirm": "Yes, Confirm"
+    "new_device": "New Device",
+    "mac_placeholder": "MAC Address (AA:BB:CC:DD:EE:FF)",
+    "processing": "Processing...",
+    "create": "Create",
+    "confirm_action": "Confirm Action",
+    "are_you_sure": "Are you sure you want to",
+    "disable": "disable",
+    "activate": "activate",
+    "this_user": "this user?",
+    "cancel": "Cancel",
+    "yes_confirm": "Yes, Confirm",
+    "activate_plan": "Activate plan",
+    "detach": "Detach",
+    "invalid_mac": "Invalid device ID. Expected format AA:BB:CC:DD:EE:FF"
   },
   "requests": {
     "request_management": "Request Management",
@@ -810,158 +839,31 @@
     "footer_privacy": "Privacy",
     "footer_helpdesk": "Help Desk"
   },
-  "total_users":"Total Users",
-"privacy": {
-  "legal": "Legal",
-  "title": "Privacy Policy",
-
-  "hero": {
-    "title": "Your Privacy",
-    "matters": "Matters",
-    "description": "We are committed to protecting your personal information and your right to privacy. Read how we collect, use, and safeguard your data."
-  },
-
-  "effective_date": "Effective Date: June 8, 2026",
-
-  "welcome": {
-    "title": "Welcome to Wise Player",
-    "description": "Wise Player (\"we\", \"our\", or \"us\") operates the Wise Player mobile application. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when using our application. Please read this carefully — it matters."
-  },
-
-  "stats": {
-    "aes": "AES Encryption",
-    "secure_transfer": "Secure Transfer",
-    "compliant": "Compliant",
-    "data_sold": "Data Sold"
-  },
-
-  "sections": {
-    "information_collect": {
-      "title": "Information We Collect",
-      "items": [
-        "Virtual device identifiers derived from non-sensitive device information.",
-        "Encrypted M3U/IPTV playlist URLs for synchronization and streaming functionality.",
-        "Locally stored preferences including language, favorites, and playback settings.",
-        "Anonymous diagnostic and usage data to improve reliability and performance."
-      ]
-    },
-
-    "how_use": {
-      "title": "How We Use Your Information",
-      "items": [
-        "Authenticate and verify authorized devices.",
-        "Provide and maintain the Wise Player application.",
-        "Enable playlist synchronization and streaming features.",
-        "Improve performance and user experience.",
-        "Prevent misuse and diagnose technical issues."
-      ]
-    },
-
-    "data_sharing": {
-      "title": "Data Sharing and Disclosure",
-      "items": [
-        "We never sell or trade your information.",
-        "Information may be shared when legally required.",
-        "Trusted service providers operate under confidentiality obligations.",
-        "Disclosure may occur to protect safety and security."
-      ]
-    },
-
-    "data_security": {
-      "title": "Data Security",
-      "items": [
-        "Sensitive information is encrypted.",
-        "All supported requests use secure HTTPS communication.",
-        "Industry-standard safeguards are implemented to protect data."
-      ]
-    },
-
-    "data_deletion": {
-      "title": "Data Deletion",
-      "items": [
-        "Deletion requests are generally processed within 30 days.",
-        "Local data can be removed by uninstalling the application.",
-        "Additional retention may occur where legally required."
-      ]
-    },
-
-    "children_privacy": {
-      "title": "Children's Privacy",
-      "items": [
-        "Wise Player is not intended for children under 13 years old.",
-        "We do not knowingly collect information from children."
-      ]
-    },
-
-    "gdpr": {
-      "title": "GDPR and International Rights",
-      "items": [
-        "Access your data.",
-        "Correct inaccurate information.",
-        "Request deletion.",
-        "Restrict or object to processing.",
-        "Withdraw consent where applicable.",
-        "Request data portability."
-      ]
-    },
-
-    "iptv_disclaimer": {
-      "title": "IPTV Content Disclaimer",
-      "items": [
-        "Wise Player is a media player application only.",
-        "We do not provide or distribute IPTV subscriptions or content.",
-        "Users are solely responsible for the legality of their playlist sources."
-      ]
-    },
-
-    "changes_policy": {
-      "title": "Changes to This Policy",
-      "items": [
-        "We may update this Privacy Policy periodically.",
-        "Continued use of the app constitutes acceptance of updates."
-      ]
-    }
-  },
-
-  "contact": {
-    "title": "Contact Us",
-    "description": "Have questions regarding this Privacy Policy? We're here to help.",
-    "developer": "Developer",
-    "team": "Wise Player Team",
-    "email": "Email"
-  },
-
-  "footer": {
-    "rights": "All rights reserved.",
-     "privacy_policy": "Privacy Policy",
-  "contact_us": "Contact Us",
-  "all_rights_reserved": "All rights reserved."
-  }
-},
+  "total_users": "Total Users",
   "Sign_in": "Sign In",
   "Register": "Register",
   "authorized_access_only": "Authorized Access Only",
   "dont_have_account": "Don't have an account?",
   "success_redirecting": "Success! Redirecting...",
   "invalid_credentials": "Invalid Credentials",
-  "reset_link_sent": "Reset link sent!","login_secure_reseller": "Secure reseller portal",
-"login_full_dashboard": "Full dashboard access",
-"login_premium_tools": "Premium streaming tools",
-
-"login_username_placeholder": "Username or email",
-"login_password_placeholder": "Enter password",
-
-"verify_email_continue": "Please verify your email to continue.",
-
-"valid_email_required": "Please enter a valid email address.",
-"recovery_email_failed": "Failed to send recovery email.",
-
-"email_address": "Email Address",
-"email_placeholder": "you@example.com",
-
-"check_inbox": "Check your inbox",
-"reset_link_sent_to": "We've sent a password reset link to",
-"reset_link_instruction": "Click the link in the email to set a new password. The link will expire after a short period for your security.",
-
-"premium_access": "Premium Access"
+  "reset_link_sent": "Reset link sent!",
+  "paymentStatus": {
+    "successTitle": "Payment successful",
+    "successDesc": "Your plan is active again. You can head back to your playlists now.",
+    "cancelledTitle": "Payment cancelled",
+    "cancelledDesc": "No charge was made. You can resume whenever you are ready.",
+    "processingTitle": "Confirming your payment",
+    "processingDesc": "Hold tight — we are waiting for confirmation from the payment provider.",
+    "invoiceLabel": "Invoice",
+    "deviceLabel": "Device",
+    "continueToPlaylists": "Continue to my playlists",
+    "backHome": "Back to home"
+  },
+  "coins": "Coins",
+  "delete": "Delete",
+  "filters": "Filters",
+  "search_placeholder": "Search by name, username or ID.",
+  "playlist_management": "Playlist Management",
+  "recover_password": "Recover password",
+  "reg_email": "Email address"
 }

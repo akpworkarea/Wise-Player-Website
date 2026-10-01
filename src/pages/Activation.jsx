@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Cpu, ShieldCheck, CheckCircle2, Shield, Flame, Lock, ArrowRight } from "lucide-react";
+import { ShieldCheck, CheckCircle2, Shield, Flame, Lock, ArrowRight, CreditCard } from "lucide-react";
 import { generateDeviceKey, activateDeviceApi, validateDevice } from "../auth/apiservice";
-import { checkPlanExpired } from "../utils/deviceUtils";
+import { resolveDeviceAccess, DEVICE_ACCESS } from "../utils/deviceUtils";
+import { startCheckout, resolveRenewPlanName, getPublicPlans } from "../utils/checkoutFlow";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { AnimatePresence, motion } from "framer-motion";
@@ -12,7 +13,10 @@ import Footer from "../component/Footer";
 const formatMac = (val) => val.match(/.{1,2}/g)?.join(":") || val;
 
 // ── RenewPlanCard — shown when device status is confirmed expired ──────
-const RenewPlanCard = ({ mac, pin, onGoToPricing, onActivateDifferent }) => {
+// Primary action is now a DIRECT checkout, not a link back to the pricing
+// table: an expired device has to reach the payment gateway from wherever
+// it discovered it was expired.
+const RenewPlanCard = ({ mac, pin, plan, isPaying, onPayNow, onGoToPricing, onActivateDifferent }) => {
   const { t } = useTranslation();
   return (
     <motion.div
@@ -49,15 +53,45 @@ const RenewPlanCard = ({ mac, pin, onGoToPricing, onActivateDifferent }) => {
               {t("activation.pinLabel")}: <span className="font-mono font-bold text-gray-600">{pin}</span>
             </p>
           )}
+          {plan && (
+            <p className="text-xs text-gray-400 mt-1.5">
+              {t("activation.planLabel")}: <span className="font-bold text-gray-600">{plan}</span>
+            </p>
+          )}
         </div>
       )}
 
       <button
+        onClick={onPayNow}
+        disabled={isPaying}
+        className={`
+          w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-200
+          active:scale-[0.98] border-0 flex items-center justify-center gap-2
+          ${isPaying ? "bg-gray-300 cursor-not-allowed" : "bg-[#800000] hover:bg-[#6a0000]"}
+        `}
+      >
+        {isPaying ? (
+          <>
+            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+            {t("activation.redirectingToPayment")}
+          </>
+        ) : (
+          <>
+            <CreditCard size={16} />
+            {t("activation.payNow")}
+            <ArrowRight size={16} />
+          </>
+        )}
+      </button>
+
+      <button
         onClick={onGoToPricing}
-        className="w-full py-3.5 rounded-xl text-sm font-bold text-white bg-[#800000] hover:bg-[#6a0000] transition-all duration-200 active:scale-[0.98] border-0 flex items-center justify-center gap-2"
+        className="w-full py-3 rounded-xl text-sm font-bold text-[#800000] border-2 border-[#800000] hover:bg-[#800000] hover:text-white transition-all duration-200 active:scale-[0.98]"
       >
         {t("activation.viewPlansRenew")}
-        <ArrowRight size={16} />
       </button>
 
       <button
@@ -84,6 +118,9 @@ const WisePlayerActivation = () => {
   const [isSuccess, setIsSuccess]         = useState(false);
   const [isExpiredMode, setIsExpiredMode] = useState(false);
   const [routePin, setRoutePin]           = useState(null);
+  // Plan to re-charge on renewal, learned from the device's last subscription.
+  const [renewPlan, setRenewPlan]         = useState(null);
+  const [isPaying, setIsPaying]           = useState(false);
   // Tracks the "checking real device status before generating a key" step —
   // separate from isKeyLoading so the button can show a distinct label.
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
@@ -122,6 +159,8 @@ const WisePlayerActivation = () => {
       }
     }
 
+    if (state.plan) setRenewPlan(state.plan);
+
     if (state.isExpired) {
       setIsExpiredMode(true);
     }
@@ -151,27 +190,26 @@ const WisePlayerActivation = () => {
       const res = await validateDevice(formatted);
 
       if (res.success && res.data) {
-        const { status, allowed, subscriptionType, expiresAt, expiredAt, expiry } = res.data;
+        const access = resolveDeviceAccess(res.data);
 
-        if (status === 'ACTIVE' && allowed) {
-          toast.success(t("activation.deviceAlreadyActive") || "This device is already active — no need to activate again.");
+        if (access.code === DEVICE_ACCESS.ACTIVE) {
+          toast.success(t("activation.deviceAlreadyActive"));
           return;
         }
 
-        if (status === 'INACTIVE') {
-          const planExpiry = expiresAt ?? expiredAt ?? expiry ?? '';
-          const expired = checkPlanExpired(subscriptionType, planExpiry, status);
-          if (expired) {
-            setIsExpiredMode(true);
-            return;
-          }
+        if (access.code === DEVICE_ACCESS.EXPIRED) {
+          // Carry the lapsed plan forward so the renew card can charge the
+          // right amount without making the user re-enter anything.
+          setRenewPlan((prev) => prev || access.plan || null);
+          setIsExpiredMode(true);
+          return;
         }
       }
 
       // Registered-but-never-activated, or unknown/not-found — proceed as before
       await handleGenerateKeyFromMac(formatted);
-    } catch (err) {
-      toast.error(t("activation.statusCheckFailed") || "Couldn't check device status. Please try again.");
+    } catch {
+      toast.error(t("activation.statusCheckFailed"));
     } finally {
       setIsCheckingStatus(false);
     }
@@ -199,8 +237,46 @@ const WisePlayerActivation = () => {
     setIsExpiredMode(false);
   };
 
+  // ── Renew: go straight to the payment gateway ──────────────────────
+  const handlePayNow = async () => {
+    if (isPaying) return;
+    setIsPaying(true);
+
+    try {
+      const deviceId = formatMac(macAddress);
+      if (deviceId.length < 17) {
+        toast.error(t("activation.enterValidMacFirst"));
+        return;
+      }
+
+      let planName = renewPlan;
+      if (!planName) {
+        try {
+          planName = resolveRenewPlanName('', await getPublicPlans());
+        } catch {
+          planName = null;
+        }
+      }
+
+      const result = await startCheckout({ deviceId, planName });
+
+      if (result.ok) return; // browser is navigating to PayPal
+
+      if (result.error === 'needs_plan_choice') {
+        navigate('/home', { state: { scrollTo: 'pricing', mac: macAddress, pin: routePin || undefined } });
+        return;
+      }
+
+      toast.error(t("activation.paymentFailed"));
+    } catch {
+      toast.error(t("activation.paymentFailed"));
+    } finally {
+      setIsPaying(false);
+    }
+  };
+
   const handleGoToPricing = () => {
-    navigate('/home', { state: { scrollTo: 'pricing' } });
+    navigate('/home', { state: { scrollTo: 'pricing', mac: macAddress, pin: routePin || undefined } });
   };
 
   const handleActivateDifferent = () => {
@@ -208,6 +284,7 @@ const WisePlayerActivation = () => {
     setMacAddress("");
     setIsKeyGenerated(false);
     setGeneratedKey("");
+    setRenewPlan(null);
   };
 
   const handleGoToUpload = () => {
@@ -230,6 +307,9 @@ const WisePlayerActivation = () => {
               key="renew-card"
               mac={macAddress}
               pin={routePin}
+              plan={renewPlan}
+              isPaying={isPaying}
+              onPayNow={handlePayNow}
               onGoToPricing={handleGoToPricing}
               onActivateDifferent={handleActivateDifferent}
             />
@@ -325,7 +405,7 @@ const WisePlayerActivation = () => {
                 `}
               >
                 {isCheckingStatus
-                  ? (t("activation.checkingStatus") || "Checking status...")
+                  ? t("activation.checkingStatus")
                   : isKeyLoading
                     ? t("activation.generating")
                     : isKeyGenerated

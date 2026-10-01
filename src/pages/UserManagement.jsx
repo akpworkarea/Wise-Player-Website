@@ -3,9 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   UserPlus, Power, X, Search, Filter, ChevronDown,
   SlidersHorizontal, Calendar, Tag, ShieldCheck, Zap,
-  CheckCircle2, XCircle, Info,
+  CheckCircle2, XCircle, Info, Unlink,
 } from "lucide-react";
-import { getUserDevices, createDevice, disableDevice, getPlans, activateDevicePlan } from "../auth/api/userManagement";
+import { getUserDevices, createDevice, disableDevice, getPlans, activateDevicePlan, detachDevice } from "../auth/api/userManagement";
 import { formatDate } from "../auth/utilfunction";
 import { useAuth } from "../context/AuthContext";
 import { useDashboard } from "../context/dashboardContext";
@@ -118,9 +118,9 @@ const SkeletonCard = () => (
 );
 
 const DeviceCard = ({
-  item, copiedId, onCopy, onToggle, onActivate,
+  item, copiedId, onCopy, onToggle, onActivate, onDetach,
   copyLabel, copiedLabel, truncateId,
-  planLabel, expiresLabel, registeredLabel, toggleLabel, activateLabel,
+  planLabel, expiresLabel, registeredLabel, toggleLabel, activateLabel, detachLabel,
 }) => (
   <motion.div
     initial={{ opacity: 0, y: 8 }}
@@ -172,6 +172,11 @@ const DeviceCard = ({
             : "border-gray-300 text-gray-600 hover:bg-gray-100"
         }`}>
         {toggleLabel}
+      </button>
+      <button onClick={() => onDetach(item)} title={detachLabel}
+        className="px-3 py-2.5 rounded-xl border border-gray-300 text-gray-500
+                   hover:bg-red-50 hover:border-red-400 hover:text-red-600 transition active:scale-95">
+        <Unlink size={14} />
       </button>
     </div>
   </motion.div>
@@ -331,6 +336,14 @@ function UserManagement() {
   const [activateLoading, setActivateLoading] = useState(false);
   const [activateError,   setActivateError]   = useState("");
 
+  // ── Detach Device modal ──────────────────────────────────────────────────
+  // Detaching is destructive/irreversible (unlinks the device from the
+  // account entirely, unlike toggling ACTIVE/INACTIVE), so it gets its own
+  // confirmation modal separate from the status-toggle one.
+  const [detachModal,     setDetachModal]     = useState(false);
+  const [deviceToDetach,  setDeviceToDetach]  = useState(null);
+  const [detachLoading,   setDetachLoading]   = useState(false);
+
   // Brand toasts
   const [toasts, setToasts] = useState([]);
   const showToast = useCallback((msg, type = "success") => {
@@ -466,6 +479,37 @@ function UserManagement() {
     setActivateLoading(false);
   };
 
+  // ── Detach Device — works for both RESELLER and SUB_RESELLER; detachDevice()
+  //    picks the right endpoint internally based on userRole, same pattern as
+  //    the other device APIs. On success the device is removed from the list
+  //    and the stat tiles are updated locally (no need to refetch the page). ──
+  const openDetach = (item) => {
+    setDeviceToDetach(item);
+    setDetachModal(true);
+  };
+
+  const handleDetachConfirm = async () => {
+    if (!deviceToDetach) return;
+    const deviceId = deviceToDetach.deviceId;
+    setDetachLoading(true);
+    const res = await detachDevice(userRole, deviceId);
+    if (res?.success) {
+      setDevices((prev) => {
+        const updated = prev.filter((item) => item.deviceId !== deviceId);
+        setActiveUser(updated.filter((u) => u.deviceStatus === "ACTIVE").length);
+        return updated;
+      });
+      setTotalUser((prev) => Math.max(0, prev - 1));
+      showToast("Device detached successfully", "success");
+      refetchDashboard();
+    } else {
+      showToast(res?.message || "Failed to detach device", "error");
+    }
+    setDetachLoading(false);
+    setDetachModal(false);
+    setDeviceToDetach(null);
+  };
+
   const activeFilterCount = [statusFilter, subFilter, registeredFrom, registeredTo, expiresFrom, expiresTo].filter(Boolean).length;
   const hasFilters        = !!(debouncedSearch || activeFilterCount);
   const showPagination    = totalPages > 1;
@@ -478,7 +522,7 @@ function UserManagement() {
   };
 
   const cardProps = {
-    copiedId, onCopy: copyToClipboard, onToggle: handleToggle, onActivate: openActivate,
+    copiedId, onCopy: copyToClipboard, onToggle: handleToggle, onActivate: openActivate, onDetach: openDetach,
     copyLabel:       t("userManagement.copy")          || "Copy",
     copiedLabel:     t("userManagement.copied")        || "Copied!",
     truncateId,
@@ -487,6 +531,7 @@ function UserManagement() {
     registeredLabel: t("userManagement.registered")    || "Registered",
     toggleLabel:     t("userManagement.toggle_status") || "Toggle Status",
     activateLabel:   t("userManagement.activate_plan") || "Activate Plan",
+    detachLabel:     t("userManagement.detach")        || "Detach",
   };
 
   const inputCls = "w-full px-4 py-3 bg-[#f4f4f7] border border-gray-200 rounded-xl focus:border-[#800000] focus:outline-none transition text-sm font-semibold text-gray-800";
@@ -794,6 +839,12 @@ function UserManagement() {
                             title={item.deviceStatus === "ACTIVE" ? t("userManagement.disable") : t("userManagement.activate")}>
                             <Power size={13} />
                           </button>
+                          <button onClick={() => openDetach(item)}
+                            title={t("userManagement.detach") || "Detach"}
+                            className="p-2 rounded-lg border border-gray-300 text-gray-500
+                                       hover:bg-red-50 hover:border-red-400 hover:text-red-600 transition active:scale-95">
+                            <Unlink size={13} />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -1040,6 +1091,57 @@ function UserManagement() {
                     className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-[#800000]
                                hover:bg-[#6a0000] transition active:scale-95">
                     {t("userManagement.yes_confirm") || "Confirm"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ══ CONFIRM DETACH MODAL ════════════════════════════════════════════
+          Detach is destructive (unlinks the device entirely) so it gets its
+          own red-flavoured confirmation, separate from the status toggle.
+      ════════════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {detachModal && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4">
+            <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+              <div className="bg-[#800000] px-6 pt-6 pb-5 flex flex-col items-center gap-3">
+                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                  className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                  <Unlink size={20} className="text-white" />
+                </motion.div>
+                <h5 className="text-base font-extrabold text-white text-center">
+                  Detach Device
+                </h5>
+              </div>
+              <div className="px-6 pt-5 pb-6 flex flex-col items-center gap-5">
+                <p className="text-sm text-gray-600 text-center leading-relaxed">
+                  This will permanently unlink{" "}
+                  <span className="font-bold text-gray-800">
+                    {deviceToDetach?.macAddress || truncateId(deviceToDetach?.deviceId, 10, 6)}
+                  </span>{" "}
+                  from your account. This action cannot be undone. Are you sure you want to continue?
+                </p>
+                <div className="flex gap-3 w-full">
+                  <button onClick={() => { setDetachModal(false); setDeviceToDetach(null); }}
+                    disabled={detachLoading}
+                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-gray-600 border border-gray-200
+                               hover:bg-gray-50 transition active:scale-95 disabled:opacity-50">
+                    Cancel
+                  </button>
+                  <button onClick={handleDetachConfirm} disabled={detachLoading}
+                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-[#800000] hover:bg-[#6a0000] transition active:scale-95 disabled:opacity-60 flex items-center justify-center gap-2">
+                    {detachLoading ? (
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                      </svg>
+                    ) : "Detach"}
                   </button>
                 </div>
               </div>

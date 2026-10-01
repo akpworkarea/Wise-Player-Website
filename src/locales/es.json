@@ -135,7 +135,22 @@
     "activationFailed": "Error de activación",
     "macPlaceholder": "00:00:00:00:00:00",
     "footer": "Wise Player · Todos los derechos reservados",
-    "goToHome": "Ir a inicio"
+    "goToHome": "Ir a inicio",
+    "checkingStatus": "Comprobando el estado del dispositivo…",
+    "deviceAlreadyActive": "Este dispositivo ya está activo — no necesitas activarlo de nuevo.",
+    "statusCheckFailed": "No se pudo comprobar el estado del dispositivo. Inténtalo de nuevo.",
+    "planExpiredTitle": "Tu plan ha caducado",
+    "planExpiredDesc": "Renueva ahora para recuperar tus listas de reproducción al instante. Serás redirigido al pago seguro.",
+    "deviceLabel": "Dispositivo",
+    "pinLabel": "PIN",
+    "planLabel": "Último plan",
+    "payNow": "Pagar y renovar",
+    "viewPlansRenew": "Ver todos los planes",
+    "activateDifferentDevice": "Activar otro dispositivo",
+    "redirectingToPayment": "Redirigiendo al pago seguro…",
+    "paymentFailed": "No se pudo iniciar el pago. Inténtalo de nuevo.",
+    "enterValidMacFirst": "Introduce primero un ID de dispositivo válido.",
+    "continueToPlaylists": "Continuar a mis listas de reproducción"
   },
   "home": {
     "system_online": "SISTEMA EN LÍNEA V2.0",
@@ -235,8 +250,15 @@
       "invalid_device": "Inválido",
       "payment_failed": "Pago fallido",
       "something_wrong": "Error",
-      "plans_error": "Error cargando planes"
-    }
+      "plans_error": "Error cargando planes",
+      "choose_plan": "Elige un plan para continuar."
+    },
+    "status_expired": "Estado: PLAN CADUCADO",
+    "status_not_found": "Estado: NO REGISTRADO",
+    "status_blocked": "Estado: BLOQUEADO",
+    "renew_plan": "Renovar plan",
+    "go_to_playlists": "Ir a mis listas de reproducción",
+    "redirecting_to_payment": "Redirigiendo al pago…"
   },
   "navbar": {
     "logo": {
@@ -273,8 +295,11 @@
     "enter_device_mac": "Introduce la dirección MAC de tu dispositivo para continuar",
     "device_id_label": "ID del dispositivo / Dirección MAC",
     "validate_btn": "Validar",
+    "checking_status": "Verificando estado...",
+    "device_not_registered": "El dispositivo no está registrado.",
+    "connection_error": "Error de conexión. Inténtalo de nuevo.",
     "device_pin_label": "PIN del dispositivo",
-    "checking_status": "Verificando estado...","optional": "(opcional)","leave_blank_default_pin": "Déjelo en blanco para usar el PIN predeterminado 0000"
+    "plan_expired_redirecting": "Tu plan ha caducado — llevándote al pago…"
   },
   "footer": {
   "privacy_policy": "Política de privacidad",
@@ -373,7 +398,10 @@
     "cancel": "Cancelar",
     "yes_confirm": "Sí, confirmar",
     "mac_address": "Dirección MAC",
-    "filters": "Filtros"
+    "filters": "Filtros",
+    "activate_plan": "Activar plan",
+    "detach": "Desvincular",
+    "invalid_mac": "ID de dispositivo no válido. Formato esperado: AA:BB:CC:DD:EE:FF"
   },
   "playlistMgmt": {
   "title": "Gestión de Playlists",
@@ -497,7 +525,7 @@
     "select_plan": "Seleccionar Plan",
     "submit": "Enviar",
     "cancel": "Cancelar",
-     "admin_notes": "Notas del administrador",
+    "admin_notes": "Notas del administrador",
     "mac_address": "Dirección MAC",
     "filters": "Filtros",
     "manage_activation_requests": "Gestionar solicitudes de activación",
@@ -515,7 +543,7 @@
     "page": "Página",
     "of": "de",
     "next": "Siguiente",
-     "subtitle": "Ver y administrar tus transacciones",
+    "subtitle": "Ver y administrar tus transacciones",
     "search_placeholder": "Buscar transacciones...",
     "filters": "Filtros",
     "type_all": "Todos los tipos",
@@ -633,7 +661,6 @@
   "active_subs": "Suscripciones Activas",
   "pending_req": "Solicitudes Pendientes",
   "total_coins": "Total de Monedas",
-
   "reseller_portal": "Portal de Revendedores",
   "sign_in_title": "Iniciar sesión",
   "sign_in_subtitle": "Ingrese sus credenciales para acceder a su cuenta",
@@ -641,7 +668,7 @@
   "Sign_in": "Iniciar sesión",
   "Register": "Registrarse",
   "back_to_signin": "Volver al inicio de sesión",
-  "recover_password": "Recuperar contraseña",
+  "recover_password": "Recuperar contrasña",
   "recover_subtitle": "Ingrese su nombre de usuario para recibir instrucciones de recuperación",
   "btn_send_recovery": "Enviar enlace de recuperación",
   "authorized_access_only": "Solo acceso autorizado",
@@ -649,7 +676,7 @@
   "success_redirecting": "¡Éxito! Redirigiendo...",
   "invalid_credentials": "Credenciales inválidas",
   "reset_link_sent": "¡Enlace de restablecimiento enviado!",
-   "reg_hello": "Hola,",
+  "reg_hello": "Hola,",
   "reg_welcome": "Bienvenido",
   "reg_signup_badge": "Registro de Revendedor",
   "reg_fullname": "Nombre completo",
@@ -663,18 +690,22 @@
   "reg_login_now": "Iniciar sesión ahora",
   "your_balance": "Tu saldo",
   "transfer_credits": "Transferir créditos",
-  "login_secure_reseller": "Portal de revendedor seguro",
-"login_full_dashboard": "Acceso completo al panel",
-"login_premium_tools": "Herramientas de streaming premium",
-"login_username_placeholder": "Nombre de usuario o correo electrónico",
-"login_password_placeholder": "Introduzca la contraseña",
-"verify_email_continue": "Verifica tu correo electrónico para continuar.",
-"valid_email_required": "Introduce una dirección de correo electrónico válida.",
-"recovery_email_failed": "No se pudo enviar el correo de recuperación.",
-"email_address": "Dirección de correo electrónico",
-"email_placeholder": "tu@ejemplo.com",
-"check_inbox": "Revisa tu bandeja de entrada",
-"reset_link_sent_to": "Hemos enviado un enlace para restablecer la contraseña a",
-"reset_link_instruction": "Haz clic en el enlace del correo electrónico para establecer una nueva contraseña. El enlace caducará después de un breve período por tu seguridad.",
-"premium_access": "Acceso premium"
+  "paymentStatus": {
+    "successTitle": "Pago realizado",
+    "successDesc": "Tu plan vuelve a estar activo. Ya puedes volver a tus listas de reproducción.",
+    "cancelledTitle": "Pago cancelado",
+    "cancelledDesc": "No se ha realizado ningún cargo.",
+    "processingTitle": "Confirmando tu pago",
+    "processingDesc": "Un momento — estamos esperando la confirmación del proveedor de pago.",
+    "invoiceLabel": "Factura",
+    "deviceLabel": "Dispositivo",
+    "continueToPlaylists": "Continuar a mis listas de reproducción",
+    "backHome": "Volver al inicio"
+  },
+  "coins": "Monedas",
+  "delete": "Eliminar",
+  "filters": "Filtros",
+  "search_placeholder": "Buscar por nombre, usuario o ID.",
+  "playlist_management": "Gestión de listas de reproducción",
+  "reg_email": "Correo electrónico"
 }

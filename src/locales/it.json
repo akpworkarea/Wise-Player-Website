@@ -72,7 +72,22 @@
     "activationFailed": "Attivazione fallita",
     "macPlaceholder": "00:00:00:00:00:00",
     "footer": "Wise Player · Tutti i diritti riservati",
-    "goToHome": "Vai alla home"
+    "goToHome": "Vai alla home",
+    "checkingStatus": "Controllo dello stato del dispositivo…",
+    "deviceAlreadyActive": "Questo dispositivo è già attivo — non serve riattivarlo.",
+    "statusCheckFailed": "Impossibile controllare lo stato del dispositivo. Riprova.",
+    "planExpiredTitle": "Il tuo piano è scaduto",
+    "planExpiredDesc": "Rinnova ora per ripristinare subito le tue playlist. Verrai reindirizzato al pagamento sicuro.",
+    "deviceLabel": "Dispositivo",
+    "pinLabel": "PIN",
+    "planLabel": "Ultimo piano",
+    "payNow": "Paga e rinnova",
+    "viewPlansRenew": "Vedi tutti i piani",
+    "activateDifferentDevice": "Attiva un altro dispositivo",
+    "redirectingToPayment": "Reindirizzamento al pagamento sicuro…",
+    "paymentFailed": "Impossibile avviare il pagamento. Riprova.",
+    "enterValidMacFirst": "Inserisci prima un ID dispositivo valido.",
+    "continueToPlaylists": "Continua alle mie playlist"
   },
   "home": {
     "system_online": "SISTEMA ONLINE V2.0",
@@ -172,8 +187,15 @@
       "invalid_device": "Dispositivo non valido",
       "payment_failed": "Pagamento fallito",
       "something_wrong": "Errore",
-      "plans_error": "Impossibile caricare piani"
-    }
+      "plans_error": "Impossibile caricare piani",
+      "choose_plan": "Scegli un piano per continuare."
+    },
+    "status_expired": "Stato: PIANO SCADUTO",
+    "status_not_found": "Stato: NON REGISTRATO",
+    "status_blocked": "Stato: BLOCCATO",
+    "renew_plan": "Rinnova piano",
+    "go_to_playlists": "Vai alle mie playlist",
+    "redirecting_to_payment": "Reindirizzamento al pagamento…"
   },
   "navbar": {
     "logo": {
@@ -211,7 +233,10 @@
     "device_id_label": "ID dispositivo / Indirizzo MAC",
     "validate_btn": "Convalida",
     "checking_status": "Controllo dello stato...",
-    "device_pin_label": "PIN del dispositivo","optional": "(opzionale)","leave_blank_default_pin": "Lascia vuoto per utilizzare il PIN predefinito 0000"
+    "device_not_registered": "Dispositivo non registrato.",
+    "connection_error": "Errore di connessione. Riprova.",
+    "device_pin_label": "PIN del dispositivo",
+    "plan_expired_redirecting": "Il tuo piano è scaduto — ti portiamo al pagamento…"
   },
   "footer": {
   "privacy_policy": "Informativa sulla privacy",
@@ -276,7 +301,7 @@
     "no_devices": "Nessun dispositivo"
   },
   "userManagement": {
-     "mac_address": "Indirizzo MAC",
+    "mac_address": "Indirizzo MAC",
     "filters": "Filtri",
     "device_management": "Gestione Dispositivi",
     "manage_members": "Gestisci membri e abbonamenti",
@@ -310,7 +335,10 @@
     "activate": "attivare",
     "this_user": "questo utente?",
     "cancel": "Annulla",
-    "yes_confirm": "Sì, conferma"
+    "yes_confirm": "Sì, conferma",
+    "activate_plan": "Attiva piano",
+    "detach": "Scollega",
+    "invalid_mac": "ID dispositivo non valido. Formato previsto: AA:BB:CC:DD:EE:FF"
   },
   "subreseller_management": "Gestione Subrivenditori",
   "manage_subreseller": "Gestisci subrivenditori e account",
@@ -440,7 +468,7 @@
     "page": "Pagina",
     "of": "di",
     "next": "Successivo",
-     "subtitle": "Visualizza e gestisci le tue transazioni",
+    "subtitle": "Visualizza e gestisci le tue transazioni",
     "search_placeholder": "Cerca transazioni...",
     "filters": "Filtri",
     "type_all": "Tutti i tipi",
@@ -575,7 +603,7 @@
   "success_redirecting": "Successo! Reindirizzamento...",
   "invalid_credentials": "Credenziali non valide",
   "reset_link_sent": "Link di reimpostazione inviato!",
-   "reg_hello": "Ciao,",
+  "reg_hello": "Ciao,",
   "reg_welcome": "Benvenuto",
   "reg_signup_badge": "Registrazione Rivenditore",
   "reg_fullname": "Nome completo",
@@ -587,20 +615,24 @@
   "reg_create_btn": "Crea account",
   "reg_already_member": "Hai già un account?",
   "reg_login_now": "Accedi ora",
-   "transfer_credits": "Trasferire crediti",
-   "your_balance": "Il tuo saldo",
-   "login_secure_reseller": "Portale rivenditore sicuro",
-"login_full_dashboard": "Accesso completo alla dashboard",
-"login_premium_tools": "Strumenti di streaming premium",
-"login_username_placeholder": "Nome utente o e-mail",
-"login_password_placeholder": "Inserisci la password",
-"verify_email_continue": "Verifica la tua e-mail per continuare.",
-"valid_email_required": "Inserisci un indirizzo e-mail valido.",
-"recovery_email_failed": "Impossibile inviare l'e-mail di recupero.",
-"email_address": "Indirizzo e-mail",
-"email_placeholder": "tu@esempio.com",
-"check_inbox": "Controlla la tua casella di posta",
-"reset_link_sent_to": "Abbiamo inviato un link per reimpostare la password a",
-"reset_link_instruction": "Fai clic sul link nell'e-mail per impostare una nuova password. Per motivi di sicurezza, il link scadrà dopo un breve periodo.",
-"premium_access": "Accesso premium"
+  "transfer_credits": "Trasferire crediti",
+  "your_balance": "Il tuo saldo",
+  "paymentStatus": {
+    "successTitle": "Pagamento riuscito",
+    "successDesc": "Il tuo piano è attivo di nuovo. Puoi tornare alle tue playlist.",
+    "cancelledTitle": "Pagamento annullato",
+    "cancelledDesc": "Nessun addebito effettuato.",
+    "processingTitle": "Conferma del pagamento",
+    "processingDesc": "Attendi — stiamo aspettando la conferma del provider di pagamento.",
+    "invoiceLabel": "Fattura",
+    "deviceLabel": "Dispositivo",
+    "continueToPlaylists": "Continua alle mie playlist",
+    "backHome": "Torna alla home"
+  },
+  "coins": "Crediti",
+  "delete": "Elimina",
+  "filters": "Filtri",
+  "search_placeholder": "Cerca per nome, username o ID",
+  "playlist_management": "Gestione playlist",
+  "reg_email": "Indirizzo e-mail"
 }
