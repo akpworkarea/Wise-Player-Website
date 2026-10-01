@@ -10,17 +10,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// ─── Type config ──────────────────────────────────────────────────────────────
-const TYPE_OPTIONS = [
-  { value: "",                  label: "All Types",    dot: "bg-gray-300"   },
-  { value: "PURCHASE",          label: "Purchase",     dot: "bg-green-500"  },
-  { value: "DEDUCTION",         label: "Deduction",    dot: "bg-orange-500" },
-  { value: "REFUND",            label: "Refund",       dot: "bg-blue-500"   },
-  { value: "TRANSFER_IN",       label: "Transfer In",  dot: "bg-teal-500"   },
-  { value: "TRANSFER_OUT",      label: "Transfer Out", dot: "bg-purple-500" },
-  { value: "MANUAL_ADJUSTMENT", label: "Manual Adj.",  dot: "bg-gray-400"   },
-];
-
+// ─── Type style config (colors only, labels come from t()) ───────────────────
 const TYPE_STYLE = {
   PURCHASE:          { pill: "bg-green-100  text-green-700",  dot: "bg-green-500"  },
   DEDUCTION:         { pill: "bg-orange-100 text-orange-600", dot: "bg-orange-500" },
@@ -63,83 +53,96 @@ const FilterPanelContent = ({
   amountMax,  setAmountMax,
   activeFilterCount,
   clearAll,
-}) => (
-  <div className="space-y-5">
-    <FilterSection icon={Tag} label="Transaction Type">
-      <div className="flex flex-wrap gap-2">
-        {TYPE_OPTIONS.map((opt) => {
-          const isActive = typeFilter === opt.value;
-          return (
-            <button key={opt.value || "all"} onClick={() => setTypeFilter(opt.value)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition active:scale-95
-                ${isActive ? "bg-[#800000] text-white border-[#800000]" : "bg-gray-50 text-gray-600 border-gray-200 hover:border-[#800000] hover:text-[#800000]"}`}>
-              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActive ? "bg-white" : opt.dot}`} />
-              {opt.label}
-            </button>
-          );
-        })}
-      </div>
-    </FilterSection>
+  t,
+}) => {
+  const TYPE_OPTIONS = [
+    { value: "",                  label: t("transaction.type_all"),          dot: "bg-gray-300"   },
+    { value: "PURCHASE",          label: t("transaction.type_purchase"),     dot: "bg-green-500"  },
+    { value: "DEDUCTION",         label: t("transaction.type_deduction"),    dot: "bg-orange-500" },
+    { value: "REFUND",            label: t("transaction.type_refund"),       dot: "bg-blue-500"   },
+    { value: "TRANSFER_IN",       label: t("transaction.type_transfer_in"),  dot: "bg-teal-500"   },
+    { value: "TRANSFER_OUT",      label: t("transaction.type_transfer_out"), dot: "bg-purple-500" },
+    { value: "MANUAL_ADJUSTMENT", label: t("transaction.type_manual_adj"),   dot: "bg-gray-400"   },
+  ];
 
-    <FilterSection icon={Calendar} label="Date Range">
-      <div className="grid grid-cols-2 gap-3">
-        {[
-          { label: "From", value: dateFrom, set: setDateFrom, min: undefined },
-          { label: "To",   value: dateTo,   set: setDateTo,   min: dateFrom || undefined },
-        ].map(({ label, value, set, min }) => (
-          <div key={label} className="space-y-1">
-            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide block">{label}</label>
-            <input type="date" value={value} min={min}
-              onChange={(e) => set(e.target.value)}
-              onMouseDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-              className="w-full px-3 py-2.5 text-xs bg-[#f4f4f7] border border-gray-200 rounded-xl focus:border-[#800000] focus:outline-none transition text-gray-700 font-semibold cursor-pointer" />
-          </div>
-        ))}
-      </div>
-      {(dateFrom || dateTo) && (
-        <button onClick={() => { setDateFrom(""); setDateTo(""); }}
-          className="text-[10px] text-gray-400 hover:text-[#800000] font-semibold flex items-center gap-1 mt-1 transition">
-          <X size={10} /> Clear dates
-        </button>
+  return (
+    <div className="space-y-5">
+      <FilterSection icon={Tag} label={t("transaction.filter_type_label")}>
+        <div className="flex flex-wrap gap-2">
+          {TYPE_OPTIONS.map((opt) => {
+            const isActive = typeFilter === opt.value;
+            return (
+              <button key={opt.value || "all"} onClick={() => setTypeFilter(opt.value)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition active:scale-95
+                  ${isActive ? "bg-[#800000] text-white border-[#800000]" : "bg-gray-50 text-gray-600 border-gray-200 hover:border-[#800000] hover:text-[#800000]"}`}>
+                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActive ? "bg-white" : opt.dot}`} />
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+      </FilterSection>
+
+      <FilterSection icon={Calendar} label={t("transaction.date_range")}>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { label: t("transaction.from"), value: dateFrom, set: setDateFrom, min: undefined },
+            { label: t("transaction.to"),   value: dateTo,   set: setDateTo,   min: dateFrom || undefined },
+          ].map(({ label, value, set, min }) => (
+            <div key={label} className="space-y-1">
+              <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide block">{label}</label>
+              <input type="date" value={value} min={min}
+                onChange={(e) => set(e.target.value)}
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                className="w-full px-3 py-2.5 text-xs bg-[#f4f4f7] border border-gray-200 rounded-xl focus:border-[#800000] focus:outline-none transition text-gray-700 font-semibold cursor-pointer" />
+            </div>
+          ))}
+        </div>
+        {(dateFrom || dateTo) && (
+          <button onClick={() => { setDateFrom(""); setDateTo(""); }}
+            className="text-[10px] text-gray-400 hover:text-[#800000] font-semibold flex items-center gap-1 mt-1 transition">
+            <X size={10} /> {t("transaction.clear_dates")}
+          </button>
+        )}
+      </FilterSection>
+
+      <FilterSection icon={Euro} label={t("transaction.amount_range")}>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { label: t("transaction.min"), value: amountMin, set: setAmountMin, ph: "0.00", min: "0" },
+            { label: t("transaction.max"), value: amountMax, set: setAmountMax, ph: "∞",    min: amountMin || "0" },
+          ].map(({ label, value, set, ph, min }) => (
+            <div key={label} className="space-y-1">
+              <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide block">{label}</label>
+              <input type="number" placeholder={ph} value={value} min={min} step="0.01"
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                onChange={(e) => set(e.target.value)}
+                className="w-full px-3 py-2.5 text-xs bg-[#f4f4f7] border border-gray-200 rounded-xl focus:border-[#800000] focus:outline-none transition text-gray-700 font-semibold
+                           [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+            </div>
+          ))}
+        </div>
+        {(amountMin || amountMax) && (
+          <button onClick={() => { setAmountMin(""); setAmountMax(""); }}
+            className="text-[10px] text-gray-400 hover:text-[#800000] font-semibold flex items-center gap-1 mt-1 transition">
+            <X size={10} /> {t("transaction.clear_amount")}
+          </button>
+        )}
+      </FilterSection>
+
+      {activeFilterCount > 0 && (
+        <div className="pt-3 border-t border-gray-100">
+          <button onClick={clearAll}
+            className="w-full py-2 text-xs font-bold text-[#800000] hover:bg-red-50 rounded-xl transition">
+            {t("transaction.clear_all_filters")}
+          </button>
+        </div>
       )}
-    </FilterSection>
-
-    <FilterSection icon={Euro} label="Amount Range (€)">
-      <div className="grid grid-cols-2 gap-3">
-        {[
-          { label: "Min", value: amountMin, set: setAmountMin, ph: "0.00",   min: "0" },
-          { label: "Max", value: amountMax, set: setAmountMax, ph: "∞",      min: amountMin || "0" },
-        ].map(({ label, value, set, ph, min }) => (
-          <div key={label} className="space-y-1">
-            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide block">{label}</label>
-            <input type="number" placeholder={ph} value={value} min={min} step="0.01"
-              onMouseDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-              onChange={(e) => set(e.target.value)}
-              className="w-full px-3 py-2.5 text-xs bg-[#f4f4f7] border border-gray-200 rounded-xl focus:border-[#800000] focus:outline-none transition text-gray-700 font-semibold
-                         [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
-          </div>
-        ))}
-      </div>
-      {(amountMin || amountMax) && (
-        <button onClick={() => { setAmountMin(""); setAmountMax(""); }}
-          className="text-[10px] text-gray-400 hover:text-[#800000] font-semibold flex items-center gap-1 mt-1 transition">
-          <X size={10} /> Clear amount
-        </button>
-      )}
-    </FilterSection>
-
-    {activeFilterCount > 0 && (
-      <div className="pt-3 border-t border-gray-100">
-        <button onClick={clearAll}
-          className="w-full py-2 text-xs font-bold text-[#800000] hover:bg-red-50 rounded-xl transition">
-          Clear all filters
-        </button>
-      </div>
-    )}
-  </div>
-);
+    </div>
+  );
+};
 
 // ─── TxCopyButton — MODULE LEVEL (no flicker) ─────────────────────────────────
 const TxCopyButton = ({ id, copiedId, onCopy, copyLabel, copiedLabel }) => {
@@ -189,7 +192,7 @@ const TxSkeletonRow = () => (
 );
 
 // ─── TxCard — MODULE LEVEL (tablet + mobile, no flicker) ─────────────────────
-const TxCard = ({ item, copiedId, onCopy, copyLabel, copiedLabel, clearAll, hasFilters, noDataLabel }) => {
+const TxCard = ({ item, copiedId, onCopy, copyLabel, copiedLabel }) => {
   const ts = typeStyle(item.type);
   return (
     <motion.div
@@ -227,15 +230,15 @@ const TxCard = ({ item, copiedId, onCopy, copyLabel, copiedLabel, clearAll, hasF
 };
 
 // ─── TxEmpty — MODULE LEVEL ───────────────────────────────────────────────────
-const TxEmpty = ({ hasFilters, noDataLabel, onClear }) => (
+const TxEmpty = ({ hasFilters, noDataLabel, onClear, noMatchLabel, clearLabel }) => (
   <div className="flex flex-col items-center gap-2 py-14 text-gray-400">
     <Receipt size={32} className="opacity-30" />
     <p className="font-semibold text-sm text-center">
-      {hasFilters ? "No transactions match your filters" : noDataLabel}
+      {hasFilters ? noMatchLabel : noDataLabel}
     </p>
     {hasFilters && (
       <button onClick={onClear} className="text-xs text-[#800000] font-bold hover:underline">
-        Clear filters
+        {clearLabel}
       </button>
     )}
   </div>
@@ -312,12 +315,22 @@ function TransitionHistory() {
   const activeFilterCount = [typeFilter, dateFrom, dateTo, amountMin, amountMax].filter(Boolean).length;
   const hasFilters        = !!(debouncedSearch || activeFilterCount);
   const showPagination    = totalPages > 1;
-  const typeLabel         = TYPE_OPTIONS.find((o) => o.value === typeFilter)?.label || "All Types";
-  const noDataLabel       = t("transaction.no_data_found") || "No transactions found";
+
+  const TYPE_LABELS = {
+    "":                    t("transaction.type_all"),
+    PURCHASE:              t("transaction.type_purchase"),
+    DEDUCTION:             t("transaction.type_deduction"),
+    REFUND:                t("transaction.type_refund"),
+    TRANSFER_IN:           t("transaction.type_transfer_in"),
+    TRANSFER_OUT:          t("transaction.type_transfer_out"),
+    MANUAL_ADJUSTMENT:     t("transaction.type_manual_adj"),
+  };
+  const typeLabel = TYPE_LABELS[typeFilter] ?? t("transaction.type_all");
+  const noDataLabel = t("transaction.no_data_found") || "No transactions found";
 
   const filterProps = {
     typeFilter, setTypeFilter, dateFrom, setDateFrom, dateTo, setDateTo,
-    amountMin, setAmountMin, amountMax, setAmountMax, activeFilterCount, clearAll,
+    amountMin, setAmountMin, amountMax, setAmountMax, activeFilterCount, clearAll, t,
   };
 
   // Stable props for TxCard — passed down, not closed over
@@ -325,6 +338,13 @@ function TransitionHistory() {
     copiedId, onCopy: copyFn,
     copyLabel:   t("admin_dashboard.copy")   || "Copy",
     copiedLabel: t("admin_dashboard.copied") || "Copied!",
+  };
+
+  const emptyProps = {
+    hasFilters,
+    noDataLabel,
+    noMatchLabel: t("transaction.no_match_filters"),
+    clearLabel: t("transaction.clear_filters"),
   };
 
   return (
@@ -396,7 +416,7 @@ function TransitionHistory() {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <Filter size={14} className="text-[#800000]" />
-                      <span className="text-sm font-bold text-gray-800">Filter Transactions</span>
+                      <span className="text-sm font-bold text-gray-800">{t("transaction.filter_transactions_title")}</span>
                     </div>
                     <button onClick={() => setShowFilter(false)}
                       className="text-gray-400 hover:text-gray-600 transition p-1 rounded-lg hover:bg-gray-100">
@@ -432,7 +452,7 @@ function TransitionHistory() {
               <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 shrink-0">
                 <div className="flex items-center gap-2">
                   <Filter size={15} className="text-[#800000]" />
-                  <span className="text-base font-bold text-gray-800">Filter Transactions</span>
+                  <span className="text-base font-bold text-gray-800">{t("transaction.filter_transactions_title")}</span>
                 </div>
                 <button onClick={() => setShowFilter(false)}
                   className="text-gray-400 hover:text-gray-600 p-1.5 rounded-xl hover:bg-gray-100">
@@ -453,11 +473,11 @@ function TransitionHistory() {
           <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
             className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-gray-500 font-medium">
-              {loading ? "Searching…" : `${data.length} result${data.length !== 1 ? "s" : ""}`}
+              {loading ? t("transaction.searching") : `${data.length} ${data.length !== 1 ? t("transaction.results") : t("transaction.result")}`}
             </span>
             {debouncedSearch && (
               <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full font-mono">
-                <Search size={10} className="shrink-0 font-sans" />ID: {debouncedSearch}
+                <Search size={10} className="shrink-0 font-sans" />{t("transaction.id_prefix")} {debouncedSearch}
                 <button onClick={() => setSearch("")}><X size={10} /></button>
               </span>
             )}
@@ -470,20 +490,20 @@ function TransitionHistory() {
             {(dateFrom || dateTo) && (
               <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
                 <Calendar size={10} />
-                {dateFrom && dateTo ? `${dateFrom} → ${dateTo}` : dateFrom ? `From ${dateFrom}` : `To ${dateTo}`}
+                {dateFrom && dateTo ? `${dateFrom} → ${dateTo}` : dateFrom ? `${t("transaction.from")} ${dateFrom}` : `${t("transaction.to")} ${dateTo}`}
                 <button onClick={() => { setDateFrom(""); setDateTo(""); }}><X size={10} /></button>
               </span>
             )}
             {(amountMin || amountMax) && (
               <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 text-[#800000] text-xs font-bold px-3 py-1 rounded-full">
                 <Euro size={10} />
-                {amountMin && amountMax ? `€${amountMin} – €${amountMax}` : amountMin ? `Min €${amountMin}` : `Max €${amountMax}`}
+                {amountMin && amountMax ? `€${amountMin} – €${amountMax}` : amountMin ? `${t("transaction.min")} €${amountMin}` : `${t("transaction.max")} €${amountMax}`}
                 <button onClick={() => { setAmountMin(""); setAmountMax(""); }}><X size={10} /></button>
               </span>
             )}
             {(activeFilterCount + (debouncedSearch ? 1 : 0)) > 1 && (
               <button onClick={clearAll} className="text-xs text-gray-400 hover:text-[#800000] font-semibold transition">
-                Clear all
+                {t("transaction.clear_all")}
               </button>
             )}
           </motion.div>
@@ -497,7 +517,7 @@ function TransitionHistory() {
         ) : data.length > 0 ? (
           data.map((item) => <TxCard key={item.id} item={item} {...cardProps} />)
         ) : (
-          <TxEmpty hasFilters={hasFilters} noDataLabel={noDataLabel} onClear={clearAll} />
+          <TxEmpty {...emptyProps} onClear={clearAll} />
         )}
       </div>
 
@@ -509,7 +529,7 @@ function TransitionHistory() {
           data.map((item) => <TxCard key={item.id} item={item} {...cardProps} />)
         ) : (
           <div className="col-span-2">
-            <TxEmpty hasFilters={hasFilters} noDataLabel={noDataLabel} onClear={clearAll} />
+            <TxEmpty {...emptyProps} onClear={clearAll} />
           </div>
         )}
       </div>
@@ -585,7 +605,7 @@ function TransitionHistory() {
             ) : (
               <tr>
                 <td colSpan="5" className="py-14">
-                  <TxEmpty hasFilters={hasFilters} noDataLabel={noDataLabel} onClear={clearAll} />
+                  <TxEmpty {...emptyProps} onClear={clearAll} />
                 </td>
               </tr>
             )}

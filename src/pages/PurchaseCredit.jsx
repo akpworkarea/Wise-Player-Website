@@ -61,7 +61,7 @@ const CoinCalculator = ({ onBulkOffer }) => {
   const handleBuy = async () => {
     const coinCount = Number(coins);
     if (coinCount < 10) {
-      alert("Coins should be at least 10");
+       alert(t("purchaseCredit.min_coins_error"));
       return;
     }
     let res;
@@ -77,7 +77,7 @@ const CoinCalculator = ({ onBulkOffer }) => {
     if (res?.data?.checkoutUrl) {
       window.location.href = res.data.checkoutUrl;
     } else if (res?.success === false) {
-      alert(res.message || "Failed to initiate payment");
+      alert(res.message || t("purchaseCredit.purchase_failed_default"));
     }
   };
 
@@ -114,9 +114,9 @@ const CoinCalculator = ({ onBulkOffer }) => {
       {activeTier && (
         <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-red-50 border border-red-100 rounded-lg">
           <span className="w-2 h-2 rounded-full bg-[#800000] shrink-0" />
-          <p className="text-xs text-[#800000] font-semibold">
-            Rate: {activeTier.rate} per coin
-          </p>
+      <p className="text-xs text-[#800000] font-semibold">
+  {t("purchaseCredit.rate_label")} {activeTier.rate} {t("purchaseCredit.per_coin")}
+</p>
         </div>
       )}
 
@@ -156,15 +156,15 @@ export default function PurchaseCredit() {
   const { t } = useTranslation();
   const [bulkOffer, setBulkOffer] = useState(null);
 
-  const tiers = [
-    { range: "10",           price: "2.50 EUR", badge: "Standard",   badgeClass: "bg-gray-100 text-gray-500"         },
-    { range: "11 - 49",      price: "2.20 EUR", badge: "Starter",    badgeClass: "bg-blue-50 text-blue-600"          },
-    { range: "50 - 99",      price: "2.00 EUR", badge: "Pro",        badgeClass: "bg-indigo-50 text-indigo-600"      },
-    { range: "100 - 199",    price: "1.75 EUR", badge: "Elite",      badgeClass: "bg-amber-50 text-amber-600"        },
-    { range: "200 - 499",    price: "1.50 EUR", badge: "Wholesale",  badgeClass: "bg-orange-50 text-orange-600"      },
-    { range: "500 - 999",    price: "1.25 EUR", badge: "Mega",       badgeClass: "bg-red-50 text-red-600"            },
-    { range: "1000+",        price: "1.00 EUR", badge: "Enterprise", badgeClass: "bg-red-100 text-[#800000]"         },
-  ];
+ const tiers = [
+  { range: "10",        price: "2.50 EUR", badge: t("purchaseCredit.badge_standard"),   badgeClass: "bg-gray-100 text-gray-500"    },
+  { range: "11 - 49",   price: "2.20 EUR", badge: t("purchaseCredit.badge_starter"),    badgeClass: "bg-blue-50 text-blue-600"     },
+  { range: "50 - 99",   price: "2.00 EUR", badge: t("purchaseCredit.badge_pro"),        badgeClass: "bg-indigo-50 text-indigo-600" },
+  { range: "100 - 199", price: "1.75 EUR", badge: t("purchaseCredit.badge_elite"),      badgeClass: "bg-amber-50 text-amber-600"   },
+  { range: "200 - 499", price: "1.50 EUR", badge: t("purchaseCredit.badge_wholesale"),  badgeClass: "bg-orange-50 text-orange-600" },
+  { range: "500 - 999", price: "1.25 EUR", badge: t("purchaseCredit.badge_mega"),       badgeClass: "bg-red-50 text-red-600"       },
+  { range: "1000+",     price: "1.00 EUR", badge: t("purchaseCredit.badge_enterprise"), badgeClass: "bg-red-100 text-[#800000]"    },
+];
 
   const customerPlans = [
     { label: t("purchaseCredit.one_code_annual"), price: "5.99 EUR"  },
@@ -172,7 +172,7 @@ export default function PurchaseCredit() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f4f4f7] w-full p-4 sm:p-6 space-y-6">
+   <div className="min-h-screen bg-[#f4f4f7] w-full p-4 sm:p-6 space-y-6 overflow-y-auto">
 
       {/* ── BULK OFFER MODAL ── */}
       <AnimatePresence>
