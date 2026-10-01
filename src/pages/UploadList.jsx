@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ChevronRight, Flame } from 'lucide-react';
+import { ChevronRight, Flame, Lock } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { validateDevice } from '../auth/apiservice';
+import { resolveDeviceAccess, DEVICE_ACCESS } from '../utils/deviceUtils';
+import { startCheckout, resolveRenewPlanName, getPublicPlans } from '../utils/checkoutFlow';
 import { useTranslation } from 'react-i18next';
 import Footer from '../component/Footer';
 
@@ -13,48 +15,101 @@ const formatMac = (raw) => {
 
 const isMacComplete = (mac) => /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(mac);
 
+// ── PIN formatter — digits only, capped at 4 ─────────────────────
+const formatPin = (raw) => raw.replace(/\D/g, '').slice(0, 4);
+
+const DEFAULT_PIN = '0000';
+
 const WiseplayerUpload = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const [uploadMac, setUploadMac] = useState('');
+  const [uploadPin, setUploadPin] = useState('');
   const [statusError, setStatusError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  // Set when the device is INACTIVE with a lapsed plan — the user is being sent
+  // straight to PayPal, so the card needs to say so instead of looking broken.
+  const [renewNotice, setRenewNotice] = useState('');
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
     const mac = query.get('mac');
+    const pin = query.get('pin');
     if (mac) setUploadMac(formatMac(mac));
+    if (pin) setUploadPin(formatPin(pin));
   }, [location]);
 
   const handleMacChange = (e) => {
     if (statusError) setStatusError('');
+    setRenewNotice('');
     setUploadMac(formatMac(e.target.value));
+  };
+
+  const handlePinChange = (e) => {
+    if (statusError) setStatusError('');
+    setRenewNotice('');
+    setUploadPin(formatPin(e.target.value));
   };
 
   const handleConfigure = async () => {
     setIsLoading(true);
     setStatusError('');
+    setRenewNotice('');
+    // If the user never set a device pin, fall back to the default "0000"
+    // — matches the API's own default, so playlists still resolve correctly.
+    const pinToUse = uploadPin.trim() ? uploadPin.trim() : DEFAULT_PIN;
+
     try {
       const res = await validateDevice(uploadMac);
       if (!res.success || !res.data) {
-        setStatusError('Device is not registered.');
+        setStatusError(t('uploadlist.device_not_registered'));
         return;
       }
-      const { status, allowed, message } = res.data;
-      if (!allowed) {
-        setStatusError(message || 'Your Subscription expired. Please renew.');
+
+      const access = resolveDeviceAccess(res.data);
+
+      if (access.code === DEVICE_ACCESS.ACTIVE) {
+        navigate('/upload-playlist', { state: { mac: uploadMac, pin: pinToUse } });
+        return;
       }
-      if (status === 'ACTIVE') {
-        navigate('/upload-playlist', { state: { mac: uploadMac } });
-      } else if (status === 'INACTIVE') {
-        setStatusError('Device is registered but status is Inactive.');
-      } else {
-        setStatusError('Device is not registered.');
+
+      if (access.code === DEVICE_ACCESS.EXPIRED) {
+        // A lapsed plan ALWAYS goes to the payment gateway. It used to be
+        // bounced to /activation, whose renew card only linked back to the
+        // pricing table — so an expired device could never reach PayPal from
+        // here without re-entering its MAC twice.
+        setRenewNotice(t('uploadlist.plan_expired_redirecting'));
+
+        let planName = null;
+        try {
+          planName = resolveRenewPlanName(access.plan, await getPublicPlans());
+        } catch {
+          planName = null;
+        }
+
+        if (planName) {
+          const result = await startCheckout({ deviceId: uploadMac, planName });
+          if (result.ok) return; // browser is navigating to PayPal
+        }
+
+        // Could not charge blind (no plan catalog / checkout failed). Fall back
+        // to the pricing table with the MAC carried over, so the buyer only has
+        // to pick a plan.
+        navigate('/home', { state: { scrollTo: 'pricing', mac: uploadMac, pin: pinToUse } });
+        return;
       }
+
+      if (access.code === DEVICE_ACCESS.NEEDS_ACTIVATION) {
+        // Registered but never activated — free key, no card required.
+        navigate('/activation', { state: { mac: uploadMac, pin: pinToUse, isExpired: false } });
+        return;
+      }
+
+      setStatusError(t('uploadlist.device_not_registered'));
     } catch {
-      setStatusError('Connection error. Please try again.');
+      setStatusError(t('uploadlist.connection_error'));
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +126,6 @@ const WiseplayerUpload = () => {
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-6">
 
-          {/* Brand logo */}
           <div className="w-14 h-14 rounded-2xl bg-[#800000]/[0.08] flex items-center justify-center mb-3">
             <Flame size={28} fill="#800000" color="#800000" />
           </div>
@@ -83,10 +137,8 @@ const WiseplayerUpload = () => {
             {t("activation.tagline")}
           </p>
 
-          {/* Divider */}
           <div className="w-full h-px bg-black/[0.06] my-3" />
 
-          {/* Page title */}
           <h2 className="text-lg sm:text-xl font-extrabold text-[#1a1a1a] tracking-tight">
             {t('uploadlist.upload_playlist_title')}
           </h2>
@@ -100,7 +152,7 @@ const WiseplayerUpload = () => {
           {t('uploadlist.device_id_label')}
         </label>
 
-        {/* Input */}
+        {/* MAC Input */}
         <input
           type="text"
           inputMode="text"
@@ -121,11 +173,48 @@ const WiseplayerUpload = () => {
           `}
         />
 
+        {/* PIN label */}
+        <label className="block text-xs font-bold text-[#1a1a1a] tracking-wide uppercase text-center mb-2 mt-4">
+          {t('uploadlist.device_pin_label') || 'Device PIN'}{' '}
+          <span className="normal-case font-medium text-gray-400 tracking-normal">(optional)</span>
+        </label>
+
+        {/* PIN Input */}
+        <input
+          type="text"
+          inputMode="numeric"
+          placeholder={DEFAULT_PIN}
+          value={uploadPin}
+          onChange={handlePinChange}
+          maxLength={4}
+          className={`
+            w-full h-12 px-4 rounded-xl border-2 text-center
+            font-bold text-lg tracking-[6px] outline-none
+            transition-colors duration-200 shadow-none bg-white
+            ${uploadPin
+              ? 'border-[#800000] bg-[#800000]/[0.04] text-[#800000] focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15'
+              : 'border-gray-200 text-[#1a1a1a] focus:border-[#800000] focus:ring-2 focus:ring-[#800000]/15'
+            }
+          `}
+        />
+        <p className="text-[11px] text-gray-400 text-center mt-1.5">
+          Leave blank to use the default PIN{' '}
+          <span className="font-mono font-bold text-gray-500">{DEFAULT_PIN}</span>
+        </p>
+
         {/* Error */}
         {statusError && (
           <p className="text-sm font-semibold text-red-600 text-center mt-2.5">
             {statusError}
           </p>
+        )}
+
+        {/* Expired — being handed off to the payment gateway */}
+        {renewNotice && (
+          <div className="flex items-center justify-center gap-2 mt-2.5 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-semibold">
+            <Lock size={15} className="shrink-0" />
+            {renewNotice}
+          </div>
         )}
 
         {/* Button */}

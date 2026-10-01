@@ -290,7 +290,22 @@
     "deviceActivated": "Device Activated Successfully",
     "activationFailed": "Activation Failed",
     "macPlaceholder": "00:00:00:00:00:00",
-    "footer": "Wise Player · All Rights Reserved"
+    "footer": "Wise Player · All Rights Reserved",
+    "checkingStatus": "Checking device status…",
+    "deviceAlreadyActive": "This device is already active — no need to activate again.",
+    "statusCheckFailed": "Couldn't check device status. Please try again.",
+    "planExpiredTitle": "Your plan has expired",
+    "planExpiredDesc": "Renew now to restore your playlists instantly. You will be redirected to secure checkout.",
+    "deviceLabel": "Device",
+    "pinLabel": "PIN",
+    "planLabel": "Last plan",
+    "payNow": "Pay now & renew",
+    "viewPlansRenew": "View all plans",
+    "activateDifferentDevice": "Activate a different device",
+    "redirectingToPayment": "Redirecting to secure checkout…",
+    "paymentFailed": "Could not start the payment. Please try again.",
+    "enterValidMacFirst": "Enter a valid device ID first.",
+    "continueToPlaylists": "Continue to my playlists"
   },
   "home": {
     "headExperienceText": "Experience premium media playback without buffering. Optimized for all high-end Smart TVs.",
@@ -382,8 +397,15 @@
       "invalid_device": "Invalid device",
       "payment_failed": "Payment failed",
       "something_wrong": "Something went wrong",
-      "plans_error": "Unable to load plans"
-    }
+      "plans_error": "Unable to load plans",
+      "choose_plan": "Please pick a plan to continue."
+    },
+    "status_expired": "Status: PLAN EXPIRED",
+    "status_not_found": "Status: NOT REGISTERED",
+    "status_blocked": "Status: BLOCKED",
+    "renew_plan": "Renew plan",
+    "go_to_playlists": "Go to my playlists",
+    "redirecting_to_payment": "Redirecting to payment…"
   },
   "navbar": {
     "logo": {
@@ -423,7 +445,11 @@
     "enter_device_mac": "Enter your device MAC address to continue",
     "device_id_label": "DEVICE ID / MAC ADDRESS",
     "validate_btn": "Validate",
-    "checking_status": "Checking status..."
+    "checking_status": "Checking status...",
+    "device_not_registered": "Device is not registered.",
+    "connection_error": "Connection error. Please try again.",
+    "device_pin_label": "Device PIN",
+    "plan_expired_redirecting": "Your plan has expired — taking you to checkout…"
   },
   "resellerpage": {
     "reseller_badge": "Become a Partner",
@@ -473,19 +499,22 @@
     "page": "Page",
     "of": "of",
     "next": "Next",
-  "mac_address": "MAC Address",
+    "mac_address": "MAC Address",
     "filters": "Filters",
-  "new_device": "New Device",
-  "mac_placeholder": "MAC Address (AA:BB:CC:DD:EE:FF)",
-  "processing": "Processing...",
-  "create": "Create",
-  "confirm_action": "Confirm Action",
-  "are_you_sure": "Are you sure you want to",
-  "disable": "disable",
-  "activate": "activate",
-  "this_user": "this user?",
-  "cancel": "Cancel",
-  "yes_confirm": "Yes, Confirm"
+    "new_device": "New Device",
+    "mac_placeholder": "MAC Address (AA:BB:CC:DD:EE:FF)",
+    "processing": "Processing...",
+    "create": "Create",
+    "confirm_action": "Confirm Action",
+    "are_you_sure": "Are you sure you want to",
+    "disable": "disable",
+    "activate": "activate",
+    "this_user": "this user?",
+    "cancel": "Cancel",
+    "yes_confirm": "Yes, Confirm",
+    "activate_plan": "Activate plan",
+    "detach": "Detach",
+    "invalid_mac": "Invalid device ID. Expected format AA:BB:CC:DD:EE:FF"
   },
   "requests": {
     "request_management": "Request Management",
@@ -577,13 +606,31 @@
     "footer_privacy": "Privacy",
     "footer_helpdesk": "Help Desk"
   },
-  "total_users":"Total Users",
-
+  "total_users": "Total Users",
   "Sign_in": "Sign In",
   "Register": "Register",
   "authorized_access_only": "Authorized Access Only",
   "dont_have_account": "Don't have an account?",
   "success_redirecting": "Success! Redirecting...",
   "invalid_credentials": "Invalid Credentials",
-  "reset_link_sent": "Reset link sent!"
+  "reset_link_sent": "Reset link sent!",
+  "paymentStatus": {
+    "successTitle": "Payment successful",
+    "successDesc": "Your plan is active again. You can head back to your playlists now.",
+    "cancelledTitle": "Payment cancelled",
+    "cancelledDesc": "No charge was made. You can resume whenever you are ready.",
+    "processingTitle": "Confirming your payment",
+    "processingDesc": "Hold tight — we are waiting for confirmation from the payment provider.",
+    "invoiceLabel": "Invoice",
+    "deviceLabel": "Device",
+    "continueToPlaylists": "Continue to my playlists",
+    "backHome": "Back to home"
+  },
+  "coins": "Coins",
+  "delete": "Delete",
+  "filters": "Filters",
+  "search_placeholder": "Search by name, username or ID.",
+  "playlist_management": "Playlist Management",
+  "recover_password": "Recover password",
+  "reg_email": "Email address"
 }

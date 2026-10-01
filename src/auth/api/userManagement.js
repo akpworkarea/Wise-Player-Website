@@ -104,6 +104,27 @@ export const disableDevice = async (role, deviceId) => {
   }
 };
 
+// ── DELETE detach a device ─────────────────────────────────────────────────────
+/**
+ * Detaches (unlinks) a device from the reseller/sub-reseller account.
+ * @param {string} role     - "RESELLER" | "SUB_RESELLER"
+ * @param {string} deviceId
+ */
+export const detachDevice = async (role, deviceId) => {
+  try {
+    const base = role === "SUB_RESELLER"
+      ? "/api/sub-reseller/users"
+      : "/api/reseller/users";
+    const response = await api.delete(`${base}/${deviceId}/detach`);
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Failed to detach device",
+    };
+  }
+};
+
 // ── GET subscription plans ────────────────────────────────────────────────────
 /**
  * Uses the public plans endpoint. Role is accepted for forward-compatibility

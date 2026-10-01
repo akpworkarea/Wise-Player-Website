@@ -6,12 +6,18 @@ import api from './axiosInstance';
 
 /**
  * 1. GET all playlists for a MAC address.
- * GET /api/playlist/public/{macAddress}
+ * GET /api/playlist/public/{macAddress}?pin={pin}
+ *
+ * `pin` is optional — if the device hasn't set one, the API (and this
+ * helper) fall back to the default PIN "0000".
  */
-export const getPlaylists = async (macAddress) => {
+export const getPlaylists = async (macAddress, pin) => {
   try {
     if (!macAddress) return { success: false, message: 'MAC address is missing!' };
-    const response = await api.get(`/api/playlist/public/${macAddress}`);
+    const safePin = pin && String(pin).trim() ? String(pin).trim() : '0000';
+    const response = await api.get(`/api/playlist/public/${macAddress}`, {
+      params: { pin: safePin },
+    });
     return { success: true, data: response.data.data };
   } catch (error) {
     return {
