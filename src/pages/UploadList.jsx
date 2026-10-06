@@ -6,7 +6,8 @@ import { resolveDeviceAccess, DEVICE_ACCESS } from '../utils/deviceUtils';
 import { startCheckout, resolveRenewPlanName, getPublicPlans } from '../utils/checkoutFlow';
 import { useTranslation } from 'react-i18next';
 import Footer from '../component/Footer';
-
+import toast from 'react-hot-toast';
+import { getPlaylists } from '../auth/Playlistapi';
 // ── MAC auto-formatter ──────────────────────────────────────────
 const formatMac = (raw) => {
   const hex = raw.replace(/[^0-9a-fA-F]/g, '').toUpperCase().slice(0, 12);
@@ -52,68 +53,52 @@ const WiseplayerUpload = () => {
     setRenewNotice('');
     setUploadPin(formatPin(e.target.value));
   };
+const handleConfigure = async () => {
+  setIsLoading(true);
+  setStatusError('');
 
-  const handleConfigure = async () => {
-    setIsLoading(true);
-    setStatusError('');
-    setRenewNotice('');
-    // If the user never set a device pin, fall back to the default "0000"
-    // — matches the API's own default, so playlists still resolve correctly.
-    const pinToUse = uploadPin.trim() ? uploadPin.trim() : DEFAULT_PIN;
+  const pinToUse = uploadPin.trim() ? uploadPin.trim() : DEFAULT_PIN;
 
-    try {
-      const res = await validateDevice(uploadMac);
-      if (!res.success || !res.data) {
-        setStatusError(t('uploadlist.device_not_registered'));
-        return;
-      }
-
-      const access = resolveDeviceAccess(res.data);
-
-      if (access.code === DEVICE_ACCESS.ACTIVE) {
-        navigate('/upload-playlist', { state: { mac: uploadMac, pin: pinToUse } });
-        return;
-      }
-
-      if (access.code === DEVICE_ACCESS.EXPIRED) {
-        // A lapsed plan ALWAYS goes to the payment gateway. It used to be
-        // bounced to /activation, whose renew card only linked back to the
-        // pricing table — so an expired device could never reach PayPal from
-        // here without re-entering its MAC twice.
-        setRenewNotice(t('uploadlist.plan_expired_redirecting'));
-
-        let planName = null;
-        try {
-          planName = resolveRenewPlanName(access.plan, await getPublicPlans());
-        } catch {
-          planName = null;
-        }
-
-        if (planName) {
-          const result = await startCheckout({ deviceId: uploadMac, planName });
-          if (result.ok) return; // browser is navigating to PayPal
-        }
-
-        // Could not charge blind (no plan catalog / checkout failed). Fall back
-        // to the pricing table with the MAC carried over, so the buyer only has
-        // to pick a plan.
-        navigate('/home', { state: { scrollTo: 'pricing', mac: uploadMac, pin: pinToUse } });
-        return;
-      }
-
-      if (access.code === DEVICE_ACCESS.NEEDS_ACTIVATION) {
-        // Registered but never activated — free key, no card required.
-        navigate('/activation', { state: { mac: uploadMac, pin: pinToUse, isExpired: false } });
-        return;
-      }
-
-      setStatusError(t('uploadlist.device_not_registered'));
-    } catch {
-      setStatusError(t('uploadlist.connection_error'));
-    } finally {
-      setIsLoading(false);
+  try {
+    const res = await validateDevice(uploadMac);
+    if (!res.success || !res.data) {
+      setStatusError('Device is not registered.');
+      return;
     }
-  };
+
+    const { status, allowed, subscriptionType, expiresAt, expiredAt, expiry } = res.data;
+
+    if (status === 'ACTIVE' && allowed) {
+      // ── yaha pe playlist API ko call karo pehle ──
+      const playlistRes = await getPlaylists(uploadMac, pinToUse);
+
+    if (playlistRes.success && playlistRes.data) {
+  navigate('/upload-playlist', { state: { mac: uploadMac, pin: pinToUse } });
+} else {
+  toast.error(playlistRes.message || 'Invalid PIN or no playlist found.');
+}
+      return;
+    }
+
+    if (status === 'INACTIVE') {
+      const planExpiry = expiresAt ?? expiredAt ?? expiry ?? '';
+      const expired = checkPlanExpired(subscriptionType, planExpiry, status);
+
+      if (expired) {
+        navigate('/activation', { state: { mac: uploadMac, pin: pinToUse, isExpired: true } });
+      } else {
+        navigate('/activation', { state: { mac: uploadMac, pin: pinToUse, isExpired: false } });
+      }
+      return;
+    }
+
+    setStatusError('Device is not registered.');
+  } catch {
+    setStatusError('Connection error. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const isValid = isMacComplete(uploadMac) && !isLoading;
 

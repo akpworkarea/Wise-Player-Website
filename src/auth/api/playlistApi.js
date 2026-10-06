@@ -87,6 +87,25 @@ export const unassignPlaylist = async (role, id) => {
   }
 };
 
+
+export const unassignPlaylistAPI = async (resellerPlaylistId) => 
+  {
+  const token = localStorage.getItem("token");
+
+  const response = await api.delete(
+    `/api/reseller/playlists/${resellerPlaylistId}/assign`,
+    
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+
 // ── PATCH toggle pin ───────────────────────────────────────────────────────
 export const togglePinPlaylist = async (role, id) => {
   try {
