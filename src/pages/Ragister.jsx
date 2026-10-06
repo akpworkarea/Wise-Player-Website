@@ -20,12 +20,6 @@ const availableLanguages = [
   { code: 'ar', name: 'العربية',    flag: '🇸🇦', image: 'https://flagcdn.com/w40/sa.png' },
 ];
 
-const brandFeatures = [
-  { icon: Shield,       text: 'Secure reseller portal'  },
-  { icon: CheckCircle2, text: 'Full dashboard access'   },
-  { icon: Flame,        text: 'Premium streaming tools' },
-];
-
 const getValidations = (password, username) => ({
   hasSpecial:     /[!@#$%^&*(),.?":{}|<>]/.test(password),
   hasNumber:      /\d/.test(password),
@@ -122,6 +116,12 @@ const Register = () => {
 
   const v = getValidations(password, username);
 
+  const brandFeatures = [
+    { icon: Shield,       text: t('reg_feature_secure')    },
+    { icon: CheckCircle2, text: t('reg_feature_dashboard')  },
+    { icon: Flame,        text: t('reg_feature_streaming') },
+  ];
+
   const passwordPills = [
     { label: '8+',  done: v.isLengthValid },
     { label: 'A-Z', done: v.hasUpper      },
@@ -141,7 +141,7 @@ const Register = () => {
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address.'); return;
+      setError(t('reg_invalid_email')); return;
     }
     if (password !== confirmPassword) {
       setError(t('reg_err_mismatch')); return;
@@ -206,7 +206,7 @@ const Register = () => {
         </div>
         <div className="relative z-10 w-full border-t border-white/[0.06] pt-5 text-center">
           <p className="text-[10px] text-gray-600 tracking-[2px] uppercase">
-            © {new Date().getFullYear()} WisePlayer — Premium Access
+            {t('reg_copyright', { year: new Date().getFullYear() })}
           </p>
         </div>
         <div className="absolute bottom-0 right-0 w-0 h-0 border-solid border-b-[70px] border-r-[70px] border-b-[#f4f4f7] border-r-transparent border-t-transparent border-l-transparent" />
@@ -253,17 +253,17 @@ const Register = () => {
                 {/* Full name + Username */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <InputField label={t('reg_fullname')} value={fullName}
-                    onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" icon={User} />
+                    onChange={(e) => setFullName(e.target.value)} placeholder={t('reg_fullname_ph')} icon={User} />
                   <div>
                     <InputField label={t('reg_username')} value={username}
-                      onChange={(e) => setUsername(e.target.value)} placeholder="john_doe" icon={User} maxLength={30} />
+                      onChange={(e) => setUsername(e.target.value)} placeholder={t('reg_username_ph')} icon={User} maxLength={30} />
                     <AnimatePresence>
                       {username && (
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }} className="overflow-hidden">
                           <div className="flex items-center justify-between mt-1.5 px-1">
                             <span className={`text-[10px] font-semibold flex items-center gap-1 ${v.usernameChars ? 'text-green-600' : 'text-red-500'}`}>
-                              {v.usernameChars ? <><CheckCircle2 size={10} /> a-z 0-9 . _</> : <><Circle size={10} /> Only a-z 0-9 . _</>}
+                              {v.usernameChars ? <><CheckCircle2 size={10} /> {t('reg_username_hint_valid')}</> : <><Circle size={10} /> {t('reg_username_hint_invalid')}</>}
                             </span>
                             <span className={`text-[10px] font-bold ${username.length >= 28 ? 'text-red-500' : 'text-gray-400'}`}>
                               {username.length}/30
@@ -277,11 +277,11 @@ const Register = () => {
 
                 {/* Email — full width, OTP will be sent here */}
                 <InputField
-                  label={t('reg_email') || 'Email Address'}
+                  label={t('reg_email')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder={t('reg_email_ph')}
                   icon={Mail}
                 />
 
@@ -330,8 +330,8 @@ const Register = () => {
                     <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                       className={`text-xs font-semibold flex items-center gap-1.5 -mt-1 ${password === confirmPassword ? 'text-green-600' : 'text-red-500'}`}>
                       {password === confirmPassword
-                        ? <><CheckCircle2 size={11} /> Passwords match</>
-                        : <><Circle size={11} /> Passwords don't match</>}
+                        ? <><CheckCircle2 size={11} /> {t('reg_passwords_match')}</>
+                        : <><Circle size={11} /> {t('reg_passwords_no_match')}</>}
                     </motion.p>
                   )}
                 </AnimatePresence>
@@ -377,7 +377,7 @@ const Register = () => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                       </svg>
-                      <span>Creating account…</span>
+                      <span>{t('reg_creating_account')}</span>
                     </>
                   ) : (
                     <>{t('reg_create_btn')}<ArrowRight size={16} /></>
@@ -398,7 +398,7 @@ const Register = () => {
 
         <div className="border-t border-black/[0.06] bg-white py-3.5 flex items-center justify-center gap-2 shrink-0">
           <Shield size={14} className="text-green-500" />
-          <span className="text-xs font-semibold text-gray-500">Authorized Access Only</span>
+          <span className="text-xs font-semibold text-gray-500">{t('authorized_access_only')}</span>
         </div>
       </div>
     </div>

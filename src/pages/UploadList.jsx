@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ChevronRight, Flame } from 'lucide-react';
+import { ChevronRight, Flame, Lock } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { validateDevice } from '../auth/apiservice';
-import { checkPlanExpired } from '../utils/deviceUtils';
+import { resolveDeviceAccess, DEVICE_ACCESS } from '../utils/deviceUtils';
+import { startCheckout, resolveRenewPlanName, getPublicPlans } from '../utils/checkoutFlow';
 import { useTranslation } from 'react-i18next';
 import Footer from '../component/Footer';
 import toast from 'react-hot-toast';
@@ -29,6 +30,9 @@ const WiseplayerUpload = () => {
   const [uploadPin, setUploadPin] = useState('');
   const [statusError, setStatusError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  // Set when the device is INACTIVE with a lapsed plan — the user is being sent
+  // straight to PayPal, so the card needs to say so instead of looking broken.
+  const [renewNotice, setRenewNotice] = useState('');
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
@@ -40,11 +44,13 @@ const WiseplayerUpload = () => {
 
   const handleMacChange = (e) => {
     if (statusError) setStatusError('');
+    setRenewNotice('');
     setUploadMac(formatMac(e.target.value));
   };
 
   const handlePinChange = (e) => {
     if (statusError) setStatusError('');
+    setRenewNotice('');
     setUploadPin(formatPin(e.target.value));
   };
 const handleConfigure = async () => {
@@ -155,7 +161,7 @@ const handleConfigure = async () => {
         {/* PIN label */}
         <label className="block text-xs font-bold text-[#1a1a1a] tracking-wide uppercase text-center mb-2 mt-4">
           {t('uploadlist.device_pin_label') || 'Device PIN'}{' '}
-          <span className="normal-case font-medium text-gray-400 tracking-normal">(optional)</span>
+          <span className="normal-case font-medium text-gray-400 tracking-normal">{t('uploadlist.optional')}</span>
         </label>
 
         {/* PIN Input */}
@@ -177,7 +183,7 @@ const handleConfigure = async () => {
           `}
         />
         <p className="text-[11px] text-gray-400 text-center mt-1.5">
-          Leave blank to use the default PIN{' '}
+         {t('uploadlist.leave_blank_default_pin')}{' '}
           <span className="font-mono font-bold text-gray-500">{DEFAULT_PIN}</span>
         </p>
 
@@ -186,6 +192,14 @@ const handleConfigure = async () => {
           <p className="text-sm font-semibold text-red-600 text-center mt-2.5">
             {statusError}
           </p>
+        )}
+
+        {/* Expired — being handed off to the payment gateway */}
+        {renewNotice && (
+          <div className="flex items-center justify-center gap-2 mt-2.5 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-semibold">
+            <Lock size={15} className="shrink-0" />
+            {renewNotice}
+          </div>
         )}
 
         {/* Button */}

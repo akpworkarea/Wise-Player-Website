@@ -1,4 +1,45 @@
-{
+{"footer": {
+    "rights": "جميع الحقوق محفوظة.",
+      "privacy_policy": "سياسة الخصوصية",
+  "contact_us": "اتصل بنا",
+  "all_rights_reserved": "جميع الحقوق محفوظة."
+  },
+  "reg_feature_secure": "بوابة موزعين آمنة",
+"reg_feature_dashboard": "وصول كامل للوحة التحكم",
+"reg_feature_streaming": "أدوات بث مميزة",
+"reg_copyright": "© {{year}} Wise Player — وصول مميز",
+"reg_username_hint_valid": "a-z 0-9 . _",
+"reg_username_hint_invalid": "فقط a-z 0-9 . _",
+"reg_invalid_email": "يرجى إدخال عنوان بريد إلكتروني صالح.",
+"reg_passwords_match": "كلمتا المرور متطابقتان",
+"reg_passwords_no_match": "كلمتا المرور غير متطابقتين",
+"reg_creating_account": "جارٍ إنشاء الحساب…",
+"reg_email": "البريد الإلكتروني",
+"reg_fullname_ph": "John Doe",
+"reg_username_ph": "john_doe",
+"reg_email_ph": "you@example.com",
+  "profile_name_updated": "تم تحديث الاسم",
+"profile_name_update_failed": "فشل تحديث الاسم",
+"profile_avatar_updated": "تم تحديث الصورة الرمزية (معاينة محلية)",
+"profile_pw_min_length": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
+"profile_pw_mismatch": "كلمتا المرور غير متطابقتين.",
+"profile_pw_changed": "تم تغيير كلمة المرور بنجاح",
+"profile_pw_change_failed": "فشل تغيير كلمة المرور",
+"profile_click_to_copy": "انقر للنسخ",
+"profile_copied": "تم النسخ!",
+"profile_online": "متصل",
+"profile_change_password": "تغيير كلمة المرور",
+"profile_current_password": "كلمة المرور الحالية",
+"profile_new_password": "كلمة مرور جديدة",
+"profile_confirm_new_password": "تأكيد الجديدة",
+"profile_saving": "جارٍ الحفظ…",
+"profile_update_password": "تحديث كلمة المرور",
+"profile_default_user": "مستخدم",
+"profile_default_profile": "الملف الشخصي",
+"playlist_management": "إدارة قوائم التشغيل",
+  "sr_search_placeholder": "البحث بالاسم أو اسم المستخدم أو المعرّف…",
+  "permissions": "الأذونات",
+   "filters": "الفلاتر",
   "activation": {
     "appName": "حكيم ",
     "appName2": "لاعب",
@@ -27,9 +68,25 @@
     "activationFailed": "فشل التفعيل",
     "macPlaceholder": "00:00:00:00:00:00",
     "footer": "حكيم لاعب · جميع الحقوق محفوظة",
-    "goToHome": "الذهاب إلى الصفحة الرئيسية"
+    "goToHome": "الذهاب إلى الصفحة الرئيسية",
+    "checkingStatus": "جارٍ التحقق من حالة الجهاز…",
+    "deviceAlreadyActive": "هذا الجهاز نشط بالفعل — لا حاجة لتفيطه مرة أخرى.",
+    "statusCheckFailed": "تعذر على تحقيق حالة الجهاز. حاول مرة أخرى.",
+    "planExpiredTitle": "انتهت الخطة",
+    "planExpiredDesc": "جدد الاشتراك الآن لإسعادة q2قوائم التشغيل فوراً. سيتم تحويلك إلى الدفع الآمن.",
+    "deviceLabel": "الجهاز",
+    "pinLabel": "PIN",
+    "planLabel": "الخطة الأخيرة",
+    "payNow": "ادفع وتجديد الاشتراك",
+    "viewPlansRenew": "عرض كل الخطط",
+    "activateDifferentDevice": "تفيط جهاز آخر",
+    "redirectingToPayment": "جارن إلى الدفع الآمن…",
+    "paymentFailed": "تعذر على بدء الدفع. حاول مرة أخرى.",
+    "enterValidMacFirst": "أدخل معرّف الجهاز صالح أولاً.",
+    "continueToPlaylists": "متابعة إلى q2قوائم التشغيل"
   },
   "home": {
+    "system_online": "النظام متصل V2.0",
     "headExperienceText": "تشغيل وسائط مميز بدون تقطيع. محسّن لأجهزة Smart TV المتقدمة.",
     "features": [
       {
@@ -51,7 +108,7 @@
     "disclaimerLabel4": "الدعم",
     "live_badge": "مباشر",
      "contactUs": "اتصل بنا",
-    "system_online": "SYSTEM ONLINE V2.0",
+  
     "type_ultra_fast": "سرعة فائقة",
     "type_crystal_clear": "وضوح عالي",
     "type_wise_player": "Wise Player",
@@ -118,8 +175,15 @@
       "invalid_device": "غير صالح",
       "payment_failed": "فشل الدفع",
       "something_wrong": "خطأ",
-      "plans_error": "فشل تحميل الخطط"
-    }
+      "plans_error": "فشل تحميل الخطط",
+      "choose_plan": "اختر خطة للمواسنة."
+    },
+    "status_expired": "الحالة: انتهت الخطة",
+    "status_not_found": "الحالة: غير مسجّل",
+    "status_blocked": "الحالة: محظوب",
+    "renew_plan": "تجديد الخطة",
+    "go_to_playlists": "الذهاب إلى q2قوائم التشغيل",
+    "redirecting_to_payment": "جارن إلى الدفع…"
   },
   "navbar": {
     "logo": {
@@ -152,11 +216,12 @@
     }
   },
   "uploadlist": {
+    "device_pin_label": "رقم PIN للجهاز",
     "upload_playlist_title": "قم بتحميل قائمة التشغيل الخاصة بك",
     "enter_device_mac": "أدخل عنوان MAC الخاص بجهازك للمتابعة",
     "device_id_label": "معرف الجهاز / عنوان MAC",
     "validate_btn": "تحقق",
-    "checking_status": "جارٍ التحقق من الحالة..."
+    "checking_status": "جارٍ التحقق من الحالة...","optional": "(اختياري)","leave_blank_default_pin": "اتركه فارغًا لاستخدام رمز PIN الافتراضي 0000"
   },
   "resellerpage": {
     "reseller_badge": "كن شريكًا",
@@ -184,6 +249,10 @@
     "login": "تسجيل الدخول"
   },
   "admin_dashboard": {
+    "device_status": "حالة الجهاز",
+"active_inactive": "نشط مقابل غير نشط",
+"subscription_plans": "خطط الاشتراك",
+"plan_distribution": "توزيع الخطط",
     "panel": "لوحة التحكم",
     "overview": "نظرة عامة",
     "users": "المستخدمون",
@@ -203,10 +272,16 @@
     "copied": "تم النسخ!",
     "no_devices_found": "لم يتم العثور على أجهزة",
     "no_devices": "لا توجد أجهزة",
-    "plan": "الخطة"
+    "plan": "الخطة",
+    "active": "نشط",
+"inactive": "غير نشط",
+"total": "الإجمالي",
+"role_sub_reseller": "موزع فرعي",
+"role_reseller": "موزع",
+"role_user": "مستخدم"
   },
   "userManagement": {
-     "mac_address": "عنوان MAC",
+    "mac_address": "عنوان MAC",
     "filters": "الفلاتر",
     "device_management": "إدارة الأجهزة",
     "manage_members": "إدارة الأعضاء والاشتراكات",
@@ -240,7 +315,10 @@
     "activate": "تفعيل",
     "this_user": "هذا المستخدم؟",
     "cancel": "إلغاء",
-    "yes_confirm": "نعم، تأكيد"
+    "yes_confirm": "نعم، تأكيد",
+    "activate_plan": "تشغيل الخطة",
+    "detach": "فك الربط",
+    "invalid_mac": "معرّف الجهاز غير صالح. الصيغة المتوقّعة: AA:BB:CC:DD:EE:FF"
   },
   "dashboard": "لوحة التحكم",
   "device_management": "إدارة الأجهزة",
@@ -269,6 +347,80 @@
   "submit": "إرسال",
   "update": "تحديث",
   "cancel": "إلغاء",
+  "sr_status": "الحالة",
+"sr_all": "الكل",
+"sr_active": "نشط",
+"sr_inactive": "غير نشط",
+"sr_registered_date": "تاريخ التسجيل",
+"sr_from": "من",
+"sr_to": "إلى",
+"sr_clear_dates": "مسح التواريخ",
+"sr_credits_range": "نطاق الرصيد",
+"sr_min": "الحد الأدنى",
+"sr_max": "الحد الأقصى",
+"sr_clear_credits": "مسح الرصيد",
+"sr_clear_all_filters": "مسح جميع الفلاتر",
+"sr_no_match_filters": "لا يوجد موزعون فرعيون يطابقون الفلاتر الخاصة بك",
+"sr_clear_filters": "مسح الفلاتر",
+"sr_perm_view": "عرض",
+"sr_perm_view_desc": "يمكنه عرض لوحة التحكم والبيانات",
+"sr_perm_create": "إنشاء",
+"sr_perm_create_desc": "يمكنه إنشاء سجلات جديدة",
+"sr_perm_edit": "تعديل",
+"sr_perm_edit_desc": "يمكنه تعديل السجلات الحالية",
+"sr_perm_delete": "حذف",
+"sr_perm_delete_desc": "يمكنه حذف السجلات نهائيًا",
+"sr_filter_title": "تصفية الموزعين الفرعيين",
+"sr_searching": "جارٍ البحث…",
+"sr_result": "نتيجة",
+"sr_results": "نتائج",
+"sr_clear_all": "مسح الكل",
+"sr_username_label": "اسم المستخدم:",
+"sr_fill_details": "املأ التفاصيل أدناه",
+"sr_full_name_ph": "مثال: John Doe",
+"sr_username_ph": "مثال: johndoe123",
+"sr_email_ph": "مثال: john@example.com",
+"sr_password_ph": "8 أحرف على الأقل",
+"sr_email": "البريد الإلكتروني",
+"sr_password": "كلمة المرور",
+"sr_update_account_details": "تحديث تفاصيل الحساب",
+"sr_new_password": "كلمة مرور جديدة",
+"sr_new_password_ph": "اتركه فارغًا للاحتفاظ بالحالي",
+"sr_save_changes": "حفظ التغييرات",
+"sr_delete_title": "حذف الموزع الفرعي",
+"sr_delete_confirm": "هل أنت متأكد أنك تريد حذف",
+"sr_delete_warning": "لا يمكن التراجع عن هذا الإجراء.",
+"sr_cancel": "إلغاء",
+"sr_bulk_permissions": "الأذونات الجماعية",
+"sr_bulk_permissions_desc": "تطبيق صلاحيات CRUD على جميع الموزعين الفرعيين",
+"sr_bulk_warning": "تنطبق هذه الإعدادات على جميع الموزعين الفرعيين ضمن حسابك مرة واحدة. ستبقى الاستثناءات الفردية دون تغيير حتى يتم تعديلها.",
+"sr_enable_all": "تفعيل الكل",
+"sr_disable_all": "تعطيل الكل",
+"sr_apply_permissions": "تطبيق الأذونات",
+"sr_syncing": "جارٍ المزامنة…",
+"sr_updated": "تم التحديث",
+"sr_not_synced": "لم تتم المزامنة بعد",
+"sr_refresh": "تحديث",
+"sr_no_email": "لا يوجد بريد إلكتروني",
+"sr_recently_changed": "تم التغيير مؤخرًا",
+"sr_save_permissions": "حفظ الأذونات",
+"sr_using_bulk_defaults": "يستخدم الإعدادات الافتراضية الجماعية — لا يوجد استثناء فردي",
+"sr_just_now": "الآن",
+"sr_m_ago": "د مضت",
+"sr_h_ago": "س مضت",
+"sr_d_ago": "ي مضى",
+"sr_sub_reseller_singular": "موزع فرعي",
+"sr_sub_reseller_plural": "موزعون فرعيون",
+"sr_toast_created": "تم إنشاء الموزع الفرعي بنجاح",
+"sr_toast_create_failed": "فشل إنشاء الموزع الفرعي",
+"sr_toast_updated": "تم تحديث الموزع الفرعي بنجاح",
+"sr_toast_update_failed": "فشل تحديث الموزع الفرعي",
+"sr_toast_deleted": "تم الحذف بنجاح",
+"sr_toast_delete_failed": "فشل حذف الموزع الفرعي",
+"sr_toast_perms_applied": "تم تطبيق الأذونات على جميع الموزعين الفرعيين",
+"sr_toast_perms_failed": "فشل تحديث الأذونات",
+"sr_toast_indiv_perms_updated": "تم تحديث الأذونات لـ",
+"sr_toast_load_failed": "فشل تحميل الموزعين الفرعيين",
   "requests": {
     "request_management": "إدارة الطلبات",
     "new_request": "طلب جديد",
@@ -295,12 +447,81 @@
     "select_plan": "اختر الخطة",
     "submit": "إرسال",
     "cancel": "إلغاء",
-     "admin_notes": "ملاحظات المسؤول",
+    "admin_notes": "ملاحظات المسؤول",
     "mac_address": "عنوان MAC",
     "filters": "الفلاتر",
     "manage_activation_requests": "إدارة طلبات التفعيل",
     "search_placeholder": "البحث في الطلبات..."
   },
+  "playlistMgmt": {
+  "title": "إدارة قوائم التشغيل",
+  "subtitle": "إدارة قوائم M3U وXtream وتعيينها للأجهزة",
+  "search_placeholder": "البحث في قوائم التشغيل…",
+  "filters": "الفلاتر",
+  "new_playlist": "قائمة تشغيل جديدة",
+  "col_name": "الاسم",
+  "col_type": "النوع",
+  "col_source": "المصدر",
+  "col_pin": "التثبيت",
+  "col_actions": "الإجراءات",
+  "pin_protected": "محمي برمز PIN",
+  "unpin_playlist": "إلغاء تثبيت القائمة",
+  "pin_playlist": "تثبيت القائمة",
+  "copy_url": "نسخ الرابط",
+  "assign": "تعيين",
+  "edit": "تعديل",
+  "delete": "حذف",
+  "no_match_filters": "لا توجد قوائم تشغيل تطابق الفلاتر الخاصة بك",
+  "no_playlists_yet": "لا توجد قوائم تشغيل بعد",
+  "clear_filters": "مسح الفلاتر",
+  "create_first": "أنشئ أول قائمة تشغيل لك",
+  "type_all": "الكل",
+  "type_m3u": "M3U",
+  "type_xtream": "Xtream",
+  "pinned_only": "المثبتة فقط",
+  "create_title": "قائمة تشغيل جديدة",
+  "create_subtitle": "أضف رابط M3U أو حساب Xtream",
+  "playlist_name": "اسم قائمة التشغيل",
+  "m3u_name_ph": "مثال: قائمة M3U الخاصة بي",
+  "m3u_url": "رابط M3U",
+  "m3u_url_ph": "http://example.com/playlist.m3u",
+  "xtream_name_ph": "مثال: قائمة Xtream الخاصة بي",
+  "server_url": "رابط الخادم",
+  "server_url_ph": "http://xtream-server.com",
+  "username": "اسم المستخدم",
+  "username_ph": "xtream_user",
+  "password": "كلمة المرور",
+  "password_ph": "xtream_pass",
+  "security_pin": "رمز PIN الأمني (4 أرقام)",
+  "security_pin_hint": "يُستخدم لحماية بيانات اعتماد قائمة التشغيل هذه.",
+  "pin_required_error": "يجب أن يتكون رمز PIN الأمني من 4 أرقام بالضبط",
+  "create_playlist_btn": "إنشاء قائمة التشغيل",
+  "edit_title": "تعديل قائمة التشغيل",
+  "new_password": "كلمة مرور جديدة",
+  "leave_blank": "اتركه فارغًا للاحتفاظ بالحالي",
+  "new_pin": "رمز PIN أمني جديد",
+  "save_changes": "حفظ التغييرات",
+  "delete_title": "حذف قائمة التشغيل",
+  "delete_confirm": "هل أنت متأكد أنك تريد حذف",
+  "delete_warning": "لا يمكن التراجع عن هذا الإجراء.",
+  "cancel": "إلغاء",
+  "assign_title": "تعيين قائمة التشغيل",
+  "search_device_ph": "البحث عن جهاز بعنوان MAC…",
+  "no_devices_found": "لم يتم العثور على أجهزة",
+  "assign_to_device": "تعيين للجهاز",
+  "toast_load_failed": "فشل تحميل قوائم التشغيل",
+  "toast_unpinned": "تم إلغاء تثبيت قائمة التشغيل",
+  "toast_pinned": "تم تثبيت قائمة التشغيل",
+  "toast_pin_failed": "فشل تحديث التثبيت",
+  "toast_created": "تم إنشاء قائمة التشغيل بنجاح",
+  "toast_create_failed": "فشل إنشاء قائمة التشغيل",
+  "toast_updated": "تم تحديث قائمة التشغيل بنجاح",
+  "toast_update_failed": "فشل تحديث قائمة التشغيل",
+  "toast_deleted": "تم حذفها بنجاح",
+  "toast_delete_failed": "فشل حذف قائمة التشغيل",
+  "toast_assigned": "تم تعيين قائمة التشغيل بنجاح",
+  "toast_assign_failed": "فشل تعيين قائمة التشغيل"
+},
   "transaction": {
     "transaction_history": "سجل المعاملات",
     "id": "المعرف",
@@ -315,7 +536,7 @@
     "next": "التالي",
     "search_placeholder": "ابحث في المعاملات...",
     "filters": "الفلاتر",
-     "subtitle": "عرض وإدارة معاملاتك"
+    "subtitle": "عرض وإدارة معاملاتك"
   },
   "purchaseCredit": {
     "exclusive_bulk_offer": "عرض حصري للكميات الكبيرة!",
@@ -336,9 +557,22 @@
     "reseller_pricing": "تسعير البائعين",
     "quantity_codes": "الكمية (الرموز)",
     "unit_price": "سعر الوحدة",
-    "contact_for_bulk_bonus": "تواصل للحصول على مكافأة الكميات"
+    "contact_for_bulk_bonus": "تواصل للحصول على مكافأة الكميات",
+    "min_coins_error": "يجب أن تكون الأرصدة 10 على الأقل",
+"purchase_failed_default": "فشل بدء عملية الدفع",
+"rate_label": "السعر:",
+"per_coin": "لكل رصيد",
+"badge_standard": "قياسي",
+"badge_starter": "مبتدئ",
+"badge_pro": "احترافي",
+"badge_elite": "النخبة",
+"badge_wholesale": "جملة",
+"badge_mega": "ميغا",
+"badge_enterprise": "مؤسسة"
   },
   "contact_Page": {
+    "whatsapp_support": "دعم واتساب",
+"whatsapp_support_desc": "تحدث معنا مباشرة · +212 777-754774",
     "contact_support_center": "مركز الدعم",
     "contact_header_1": "كيف يمكننا",
     "contact_header_2": "المساعدة؟",
@@ -390,6 +624,129 @@
   },
   "payment_success_redirecting": "تم الدفع بنجاح، سيتم تحويلك إلى لوحة التحكم قريبًا",
   "total_users": "إجمالي المستخدمين",
+
+"privacy": {
+  "legal": "قانوني",
+  "title": "سياسة الخصوصية",
+
+  "hero": {
+    "title": "خصوصيتك",
+    "matters": "تهمنا",
+    "description": "نحن ملتزمون بحماية معلوماتك الشخصية وحقك في الخصوصية. تعرف على كيفية جمع بياناتك واستخدامها وحمايتها."
+  },
+
+  "effective_date": "تاريخ السريان: 8 يونيو 2026",
+
+  "welcome": {
+    "title": "مرحبًا بك في Wise Player",
+    "description": "يعمل Wise Player (\"نحن\" أو \"لنا\") على تشغيل تطبيق Wise Player للهواتف المحمولة. توضح سياسة الخصوصية هذه كيفية جمع معلوماتك واستخدامها والإفصاح عنها وحمايتها عند استخدام تطبيقنا. يرجى قراءتها بعناية — فهذا أمر مهم."
+  },
+
+  "stats": {
+    "aes": "تشفير AES",
+    "secure_transfer": "نقل آمن",
+    "compliant": "متوافق",
+    "data_sold": "البيانات المباعة"
+  },
+
+  "sections": {
+    "information_collect": {
+      "title": "المعلومات التي نجمعها",
+      "items": [
+        "معرّفات افتراضية للجهاز مشتقة من معلومات غير حساسة عن الجهاز.",
+        "عناوين URL لقوائم تشغيل M3U/IPTV المشفرة للمزامنة ووظائف البث.",
+        "التفضيلات المخزنة محليًا، بما في ذلك اللغة والمفضلة وإعدادات التشغيل.",
+        "بيانات تشخيص واستخدام مجهولة المصدر لتحسين الموثوقية والأداء."
+      ]
+    },
+
+    "how_use": {
+      "title": "كيفية استخدام معلوماتك",
+      "items": [
+        "المصادقة والتحقق من الأجهزة المصرح بها.",
+        "توفير تطبيق Wise Player والحفاظ عليه.",
+        "تمكين مزامنة قوائم التشغيل وميزات البث.",
+        "تحسين الأداء وتجربة المستخدم.",
+        "منع سوء الاستخدام وتشخيص المشكلات التقنية."
+      ]
+    },
+
+    "data_sharing": {
+      "title": "مشاركة البيانات والإفصاح عنها",
+      "items": [
+        "نحن لا نبيع معلوماتك أو نتاجر بها مطلقًا.",
+        "قد تتم مشاركة المعلومات عندما يكون ذلك مطلوبًا قانونيًا.",
+        "قد يعمل مقدمو الخدمات الموثوقون على معالجة البيانات بموجب التزامات السرية.",
+        "قد يتم الإفصاح عن المعلومات لحماية السلامة والأمان."
+      ]
+    },
+
+    "data_security": {
+      "title": "أمان البيانات",
+      "items": [
+        "يتم تشفير المعلومات الحساسة.",
+        "تستخدم جميع الطلبات المدعومة اتصال HTTPS آمنًا.",
+        "يتم تطبيق إجراءات حماية وفقًا لمعايير الصناعة لحماية البيانات."
+      ]
+    },
+
+    "data_deletion": {
+      "title": "حذف البيانات",
+      "items": [
+        "تتم معالجة طلبات الحذف عادةً خلال 30 يومًا.",
+        "يمكن إزالة البيانات المحلية عن طريق إلغاء تثبيت التطبيق.",
+        "قد يتم الاحتفاظ بالبيانات لفترة إضافية عندما يكون ذلك مطلوبًا قانونيًا."
+      ]
+    },
+
+    "children_privacy": {
+      "title": "خصوصية الأطفال",
+      "items": [
+        "Wise Player غير مخصص للأطفال الذين تقل أعمارهم عن 13 عامًا.",
+        "نحن لا نجمع معلومات من الأطفال عن علم."
+      ]
+    },
+
+    "gdpr": {
+      "title": "اللائحة العامة لحماية البيانات والحقوق الدولية",
+      "items": [
+        "الوصول إلى بياناتك.",
+        "تصحيح المعلومات غير الدقيقة.",
+        "طلب حذف بياناتك.",
+        "تقييد المعالجة أو الاعتراض عليها.",
+        "سحب الموافقة عند الاقتضاء.",
+        "طلب نقل بياناتك."
+      ]
+    },
+
+    "iptv_disclaimer": {
+      "title": "إخلاء المسؤولية عن محتوى IPTV",
+      "items": [
+        "Wise Player هو تطبيق لتشغيل الوسائط فقط.",
+        "نحن لا نقدم أو نوزع اشتراكات أو محتوى IPTV.",
+        "يتحمل المستخدمون وحدهم مسؤولية قانونية مصادر قوائم التشغيل الخاصة بهم."
+      ]
+    },
+
+    "changes_policy": {
+      "title": "التغييرات على هذه السياسة",
+      "items": [
+        "قد نقوم بتحديث سياسة الخصوصية هذه بشكل دوري.",
+        "يشكل الاستمرار في استخدام التطبيق قبولًا للتحديثات."
+      ]
+    }
+  },
+
+  "contact": {
+    "title": "اتصل بنا",
+    "description": "هل لديك أسئلة حول سياسة الخصوصية هذه؟ نحن هنا لمساعدتك.",
+    "developer": "المطور",
+    "team": "فريق Wise Player",
+    "email": "البريد الإلكتروني"
+  }
+},
+
+
   "active_subs": "الاشتراكات النشطة",
   "pending_req": "الطلبات المعلقة",
   "total_coins": "إجمالي العملات",
@@ -408,7 +765,7 @@
   "success_redirecting": "تم بنجاح! جاري التحويل...",
   "invalid_credentials": "بيانات الدخول غير صحيحة",
   "reset_link_sent": "تم إرسال رابط الاستعادة!",
-    "reg_hello": "مرحباً،",
+  "reg_hello": "مرحباً،",
   "reg_welcome": "أهلاً بك",
   "reg_signup_badge": "تسجيل الموزع",
   "reg_fullname": "الاسم الكامل",
@@ -421,5 +778,19 @@
   "reg_already_member": "هل لديك حساب بالفعل؟",
   "reg_login_now": "سجّل الدخول الآن",
    "your_balance": "رصيدك",
-   "transfer_credits": "تحويل الرصيد"
+   "transfer_credits": "تحويل الرصيد",
+   "login_secure_reseller": "بوابة موزعين آمنة",
+"login_full_dashboard": "وصول كامل إلى لوحة التحكم",
+"login_premium_tools": "أدوات بث مميزة",
+"login_username_placeholder": "اسم المستخدم أو البريد الإلكتروني",
+"login_password_placeholder": "أدخل كلمة المرور",
+"verify_email_continue": "يرجى التحقق من بريدك الإلكتروني للمتابعة.",
+"valid_email_required": "يرجى إدخال عنوان بريد إلكتروني صالح.",
+"recovery_email_failed": "فشل إرسال بريد استعادة الحساب.",
+"email_address": "عنوان البريد الإلكتروني",
+"email_placeholder": "you@example.com",
+"check_inbox": "تحقق من صندوق الوارد",
+"reset_link_sent_to": "لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى",
+"reset_link_instruction": "انقر على الرابط الموجود في البريد الإلكتروني لتعيين كلمة مرور جديدة. ستنتهي صلاحية الرابط بعد فترة قصيرة لأمانك.",
+"premium_access": "وصول مميز"
 }

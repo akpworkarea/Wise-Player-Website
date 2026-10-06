@@ -1,24 +1,29 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
+  const { t } = useTranslation();
+
   const footerLinks = [
     {
-      label: "Privacy Policy",
+      label: t("footer.privacy_policy"),
       path: "/privacy-policy",
     },
     {
-      label: "Contact Us",
+      label: t("footer.contact_us"),
       path: "/contact",
     },
   ];
 
   return (
-    <footer className="w-full py-3 px-42">
+    <footer className="w-full py-3 px-4 sm:px-8 lg:px-42">
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+
         {/* Copyright */}
         <p className="text-xs text-gray-400 font-medium text-center sm:text-left">
-          © {new Date().getFullYear()} Wise Player. All rights reserved.
+          © {new Date().getFullYear()} Wise Player.{" "}
+          {t("footer.all_rights_reserved")}
         </p>
 
         {/* Navigation Links */}
@@ -33,6 +38,7 @@ const Footer = () => {
             </Link>
           ))}
         </div>
+
       </div>
     </footer>
   );
