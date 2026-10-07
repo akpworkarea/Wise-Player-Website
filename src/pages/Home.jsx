@@ -1,15 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  Flame, ShieldCheck, Zap, Monitor, CheckCircle,
-  Smartphone, ArrowRight, Phone, Instagram, Twitter, AlertTriangle,
-  Tv, FileText, Headphones, Lock, XCircle
-} from 'lucide-react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { validateDevice, fetchPublicPlans } from '../auth/apiservice';
-import { resolveDeviceAccess, DEVICE_ACCESS } from '../utils/deviceUtils';
-import { startCheckout } from '../utils/checkoutFlow';
+  Flame,
+  ShieldCheck,
+  Zap,
+  Monitor,
+  CheckCircle,
+  Smartphone,
+  ArrowRight,
+  Phone,
+  Instagram,
+  Twitter,
+  AlertTriangle,
+  Tv,
+  FileText,
+  Headphones,
+  Lock,
+  XCircle,
+} from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { validateDevice, fetchPublicPlans } from "../auth/apiservice";
+import { resolveDeviceAccess, DEVICE_ACCESS } from "../utils/deviceUtils";
+import { startCheckout } from "../utils/checkoutFlow";
 
 // ─── MAC auto-formatter — same pattern as Activation.jsx / UploadList.jsx ──
 // Strips anything that isn't 0-9/A-F, caps at 12 hex chars, inserts colons
@@ -18,16 +31,19 @@ import { startCheckout } from '../utils/checkoutFlow';
 // to Payment" to fail on ACTIVE devices: the raw unformatted input passed
 // validateDevice's loose regex but didn't match what checkout expected.
 const formatMac = (raw) => {
-  const hex = raw.replace(/[^0-9a-fA-F]/g, '').toUpperCase().slice(0, 12);
-  return hex.match(/.{1,2}/g)?.join(':') ?? '';
+  const hex = raw
+    .replace(/[^0-9a-fA-F]/g, "")
+    .toUpperCase()
+    .slice(0, 12);
+  return hex.match(/.{1,2}/g)?.join(":") ?? "";
 };
 
 const isMacComplete = (mac) => /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(mac);
 
 // The social links used to be href="#", i.e. two dead buttons in the footer.
 const SOCIAL_LINKS = {
-  instagram: 'https://www.instagram.com/wiseplayer',
-  twitter: 'https://x.com/wiseplayer',
+  instagram: "https://www.instagram.com/wiseplayer",
+  twitter: "https://x.com/wiseplayer",
 };
 
 // ─── Typewriter ──────────────────────────────────────────────────────────────
@@ -48,7 +64,7 @@ const Typewriter = ({ texts }) => {
     }
     const timeout = setTimeout(
       () => setSubIndex((prev) => prev + (reverse ? -1 : 1)),
-      reverse ? 75 : 150
+      reverse ? 75 : 150,
     );
     return () => clearTimeout(timeout);
   }, [subIndex, index, reverse, texts]);
@@ -73,28 +89,28 @@ const fadeUp = {
 const STATUS_CONFIG = {
   ACTIVE: {
     icon: CheckCircle,
-    wrapClass: 'bg-green-50 text-green-800 border-green-200',
-    labelKey: 'home.status_active',
+    wrapClass: "bg-green-50 text-green-800 border-green-200",
+    labelKey: "home.status_active",
   },
   INACTIVE_NEW: {
     icon: Zap,
-    wrapClass: 'bg-amber-50 text-amber-800 border-amber-200',
-    labelKey: 'home.status_inactive',
+    wrapClass: "bg-amber-50 text-amber-800 border-amber-200",
+    labelKey: "home.status_inactive",
   },
   INACTIVE_EXPIRED: {
     icon: Lock,
-    wrapClass: 'bg-red-50 text-red-700 border-red-200',
-    labelKey: 'home.status_expired',
+    wrapClass: "bg-red-50 text-red-700 border-red-200",
+    labelKey: "home.status_expired",
   },
   NOT_FOUND: {
     icon: XCircle,
-    wrapClass: 'bg-red-50 text-red-700 border-red-200',
-    labelKey: 'home.status_not_found',
+    wrapClass: "bg-red-50 text-red-700 border-red-200",
+    labelKey: "home.status_not_found",
   },
   BLOCKED: {
     icon: AlertTriangle,
-    wrapClass: 'bg-red-50 text-red-700 border-red-200',
-    labelKey: 'home.status_blocked',
+    wrapClass: "bg-red-50 text-red-700 border-red-200",
+    labelKey: "home.status_blocked",
   },
 };
 
@@ -104,34 +120,35 @@ const WisePlayerHome = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const getApiMessageKey = (msg = '') => {
+  const getApiMessageKey = (msg = "") => {
     const normalized = msg.toLowerCase();
 
-    if (normalized.includes('device not found')) return 'home.api.device_not_found';
-    if (normalized.includes('invalid device')) return 'home.api.invalid_device';
-    if (normalized.includes('payment')) return 'home.api.payment_failed';
-    if (normalized.includes('plan')) return 'home.api.plans_error';
+    if (normalized.includes("device not found"))
+      return "home.api.device_not_found";
+    if (normalized.includes("invalid device")) return "home.api.invalid_device";
+    if (normalized.includes("payment")) return "home.api.payment_failed";
+    if (normalized.includes("plan")) return "home.api.plans_error";
 
-    return 'home.api.something_wrong';
+    return "home.api.something_wrong";
   };
 
   const [showModal, setShowModal] = useState(false);
   const [toast, setToast] = useState(null);
-  const [mac, setMac] = useState('');
-  const [statusMsg, setStatusMsg] = useState('');
+  const [mac, setMac] = useState("");
+  const [statusMsg, setStatusMsg] = useState("");
   // null | 'ACTIVE' | 'INACTIVE_NEW' | 'INACTIVE_EXPIRED' | 'NOT_FOUND' | 'BLOCKED'
   const [deviceStatus, setDeviceStatus] = useState(null);
   const [plans, setPlans] = useState([]);
-  const planRef = useRef('ANNUAL');
+  const planRef = useRef("ANNUAL");
   // Guards against a double-tap creating two checkout sessions.
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const [posterIndex, setPosterIndex] = useState(0);
 
   const posters = [
-    'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=1200&auto=format&fit=crop',
+    "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=1200&auto=format&fit=crop",
   ];
 
   useEffect(() => {
@@ -141,7 +158,7 @@ const WisePlayerHome = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const showToast = (msg, type = 'info') => {
+  const showToast = (msg, type = "info") => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3000);
   };
@@ -150,12 +167,18 @@ const WisePlayerHome = () => {
     const loadPlans = async () => {
       try {
         const data = await fetchPublicPlans();
-        setPlans(Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : []);
+        setPlans(
+          Array.isArray(data)
+            ? data
+            : Array.isArray(data?.data)
+              ? data.data
+              : [],
+        );
       } catch (err) {
-        console.error('ERROR:', err);
+        console.error("ERROR:", err);
         setPlans([]);
         const apiMsg = err.response?.data?.message;
-        showToast(t(getApiMessageKey(apiMsg || 'plans_error')), 'error');
+        showToast(t(getApiMessageKey(apiMsg || "plans_error")), "error");
       }
     };
     loadPlans();
@@ -167,16 +190,19 @@ const WisePlayerHome = () => {
     if (!state) return;
 
     if (state.mac) {
-      const hex = String(state.mac).replace(/[^0-9a-fA-F]/g, '').toUpperCase().slice(0, 12);
+      const hex = String(state.mac)
+        .replace(/[^0-9a-fA-F]/g, "")
+        .toUpperCase()
+        .slice(0, 12);
       if (hex.length === 12) setMac(formatMac(hex));
     }
 
     if (state.plan) planRef.current = state.plan;
 
-    if (state.scrollTo === 'pricing') {
-      const el = document.getElementById('pricing-section');
+    if (state.scrollTo === "pricing") {
+      const el = document.getElementById("pricing-section");
       if (el) {
-        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 100);
+        setTimeout(() => el.scrollIntoView({ behavior: "smooth" }), 100);
       }
     }
   }, [location.state]);
@@ -188,25 +214,33 @@ const WisePlayerHome = () => {
 
   // ── Device status check — one oracle, shared with UploadList/Activation ──
   const handleSubmit = async () => {
-    if (!mac) { showToast(t('home.enter_mac'), 'warning'); return; }
-    if (!isMacComplete(mac)) { showToast(t('home.invalid_mac'), 'warning'); return; }
+    if (!mac) {
+      showToast(t("home.enter_mac"), "warning");
+      return;
+    }
+    if (!isMacComplete(mac)) {
+      showToast(t("home.invalid_mac"), "warning");
+      return;
+    }
 
     try {
       const res = await validateDevice(mac);
 
       if (!res.success || !res.data) {
         setDeviceStatus(DEVICE_ACCESS.NOT_FOUND);
-        setStatusMsg(t('home.status_not_found'));
+        setStatusMsg(t("home.status_not_found"));
         return;
       }
 
       const access = resolveDeviceAccess(res.data);
       setDeviceStatus(access.code);
-      setStatusMsg(t(STATUS_CONFIG[access.code]?.labelKey ?? 'home.status_not_found'));
+      setStatusMsg(
+        t(STATUS_CONFIG[access.code]?.labelKey ?? "home.status_not_found"),
+      );
     } catch (err) {
       console.error(err);
       const apiMsg = err.response?.data?.message;
-      showToast(t(getApiMessageKey(apiMsg)), 'error');
+      showToast(t(getApiMessageKey(apiMsg)), "error");
     }
   };
 
@@ -219,17 +253,20 @@ const WisePlayerHome = () => {
     if (deviceStatus === DEVICE_ACCESS.EXPIRED) {
       setIsCheckingOut(true);
       try {
-        const result = await startCheckout({ deviceId: mac, planName: planRef.current });
+        const result = await startCheckout({
+          deviceId: mac,
+          planName: planRef.current,
+        });
         if (result.ok) return; // browser is navigating to PayPal
 
-        if (result.error === 'needs_plan_choice') {
-          showToast(t('home.api.choose_plan'), 'error');
+        if (result.error === "needs_plan_choice") {
+          showToast(t("home.api.choose_plan"), "error");
           return;
         }
-        showToast(t(getApiMessageKey(result.error)), 'error');
+        showToast(t(getApiMessageKey(result.error)), "error");
       } catch (err) {
         const apiMsg = err.response?.data?.message;
-        showToast(t(getApiMessageKey(apiMsg)), 'error');
+        showToast(t(getApiMessageKey(apiMsg)), "error");
       } finally {
         setIsCheckingOut(false);
       }
@@ -238,56 +275,69 @@ const WisePlayerHome = () => {
 
     if (deviceStatus === DEVICE_ACCESS.NEEDS_ACTIVATION) {
       setShowModal(false);
-      navigate('/activation', { state: { mac, isExpired: false } });
+      navigate("/activation", { state: { mac, isExpired: false } });
     }
     // ACTIVE / BLOCKED / NOT_FOUND → no checkout from here
   };
 
   const resetModal = () => {
-    setStatusMsg('');
+    setStatusMsg("");
     setDeviceStatus(null);
     setIsCheckingOut(false);
-    setMac('');
+    setMac("");
   };
 
   // ─── Features data ──────────────────────────────────────────────────────────
   const features = [
-    { icon: <Zap size={36} />, title: t('home.features.0.title'), desc: t('home.features.0.desc') },
-    { icon: <ShieldCheck size={36} />, title: t('home.features.1.title'), desc: t('home.features.1.desc') },
-    { icon: <Monitor size={36} />, title: t('home.features.2.title'), desc: t('home.features.2.desc') }
+    {
+      icon: <Zap size={36} />,
+      title: t("home.features.0.title"),
+      desc: t("home.features.0.desc"),
+    },
+    {
+      icon: <ShieldCheck size={36} />,
+      title: t("home.features.1.title"),
+      desc: t("home.features.1.desc"),
+    },
+    {
+      icon: <Monitor size={36} />,
+      title: t("home.features.2.title"),
+      desc: t("home.features.2.desc"),
+    },
   ];
 
   const currentStatusConfig = deviceStatus ? STATUS_CONFIG[deviceStatus] : null;
   const StatusIcon = currentStatusConfig?.icon;
 
   const proceedButtonLabel = () => {
-    if (isCheckingOut) return t('home.redirecting_to_payment');
-    if (deviceStatus === DEVICE_ACCESS.EXPIRED) return t('home.renew_plan');
-    if (deviceStatus === DEVICE_ACCESS.NEEDS_ACTIVATION) return t('home.activate_now');
-    return '';
+    if (isCheckingOut) return t("home.redirecting_to_payment");
+    if (deviceStatus === DEVICE_ACCESS.EXPIRED) return t("home.renew_plan");
+    if (deviceStatus === DEVICE_ACCESS.NEEDS_ACTIVATION)
+      return t("home.activate_now");
+    return "";
   };
 
   return (
     <div className="bg-[#f4f4f7] text-[#1a1a1a] overflow-x-hidden min-h-screen font-sans">
-
       {/* ══════════════════════════════════════════
           HERO
       ══════════════════════════════════════════ */}
       <section className="py-8 sm:py-10 md:py-14 bg-[#f4f4f7]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-12">
-
             <motion.div
               className="w-full lg:w-[55%] flex flex-col items-center lg:items-start text-center lg:text-left"
               initial="initial"
               whileInView="whileInView"
               viewport={{ once: true }}
-              variants={{ whileInView: { transition: { staggerChildren: 0.12 } } }}
+              variants={{
+                whileInView: { transition: { staggerChildren: 0.12 } },
+              }}
             >
               <motion.div variants={fadeUp} className="mb-4">
                 <span className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-white border border-black/10 text-[11px] sm:text-sm font-bold tracking-widest text-[#1a1a1a] shadow-sm">
                   <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#800000] animate-pulse" />
-                  {t('home.system_online')}
+                  {t("home.system_online")}
                 </span>
               </motion.div>
 
@@ -295,14 +345,14 @@ const WisePlayerHome = () => {
                 variants={fadeUp}
                 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight uppercase mb-4"
               >
-                {t('home.futureIs')}
+                {t("home.futureIs")}
                 <br className="hidden sm:block" />
                 <span className="block mt-2">
                   <Typewriter
                     texts={[
-                      t('home.type_ultra_fast'),
-                      t('home.type_crystal_clear'),
-                      t('home.type_wise_player')
+                      t("home.type_ultra_fast"),
+                      t("home.type_crystal_clear"),
+                      t("home.type_wise_player"),
                     ]}
                   />
                 </span>
@@ -312,23 +362,24 @@ const WisePlayerHome = () => {
                 variants={fadeUp}
                 className="text-gray-500 text-sm sm:text-base md:text-lg mb-6 sm:mb-7 max-w-md"
               >
-                {t('home.headExperienceText')}
+                {t("home.headExperienceText")}
               </motion.p>
 
               <motion.div
                 variants={fadeUp}
                 className="flex flex-col sm:flex-row w-full sm:w-auto gap-3"
               >
-                <a href="https://play.google.com/store/apps/details?id=com.pearl.wisePlayer"
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.pearl.wisePlayer"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl font-bold text-sm sm:text-base text-white bg-[#800000] hover:bg-[#6a0000] active:scale-95 transition-all duration-200 shadow-sm text-center"
                 >
-                  {t('home.headFreeTrial')}
+                  {t("home.headFreeTrial")}
                 </a>
 
                 <button className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl font-bold text-sm sm:text-base border-2 border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white active:scale-95 transition-all duration-200">
-                  {t('home.headTutorial')}
+                  {t("home.headTutorial")}
                 </button>
               </motion.div>
             </motion.div>
@@ -338,7 +389,7 @@ const WisePlayerHome = () => {
               initial={{ opacity: 0, scale: 0.92 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.7, type: 'spring', stiffness: 80 }}
+              transition={{ duration: 0.7, type: "spring", stiffness: 80 }}
             >
               <div className="w-full max-w-sm sm:max-w-md lg:max-w-full">
                 <div className="bg-[#111] p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-white/10 shadow-2xl">
@@ -351,7 +402,7 @@ const WisePlayerHome = () => {
                         initial={{ opacity: 0, scale: 1.04 }}
                         animate={{ opacity: 0.85, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.98 }}
-                        transition={{ duration: 0.9, ease: 'easeInOut' }}
+                        transition={{ duration: 0.9, ease: "easeInOut" }}
                         className="absolute inset-0 w-full h-full object-cover"
                       />
                     </AnimatePresence>
@@ -361,14 +412,18 @@ const WisePlayerHome = () => {
                     <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10">
                       <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                       <span className="text-[9px] sm:text-[10px] font-bold tracking-widest text-white uppercase">
-                        {t('home.live_badge')}
+                        {t("home.live_badge")}
                       </span>
                     </div>
 
                     <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-20 flex items-center gap-2">
-                      <Flame size={20} className="text-[#800000] sm:w-6 sm:h-6" fill="#800000" />
+                      <Flame
+                        size={20}
+                        className="text-[#800000] sm:w-6 sm:h-6"
+                        fill="#800000"
+                      />
                       <span className="font-black tracking-[2px] sm:tracking-[3px] text-[11px] sm:text-sm text-white uppercase drop-shadow">
-                        {t('home.brand_name')}
+                        {t("home.brand_name")}
                       </span>
                     </div>
 
@@ -376,9 +431,9 @@ const WisePlayerHome = () => {
                       <motion.div
                         key={`bar-${posterIndex}`}
                         className="h-full bg-[#800000]"
-                        initial={{ width: '0%' }}
-                        animate={{ width: '100%' }}
-                        transition={{ duration: 3.2, ease: 'linear' }}
+                        initial={{ width: "0%" }}
+                        animate={{ width: "100%" }}
+                        transition={{ duration: 3.2, ease: "linear" }}
                       />
                     </div>
 
@@ -390,7 +445,6 @@ const WisePlayerHome = () => {
                 <div className="w-12 sm:w-16 h-1 bg-[#1a1a1a] mx-auto rounded-full mt-0.5 opacity-30" />
               </div>
             </motion.div>
-
           </div>
         </div>
       </section>
@@ -400,23 +454,42 @@ const WisePlayerHome = () => {
       ══════════════════════════════════════════ */}
       <section className="py-8 md:py-10 bg-[#f4f4f7]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.h2 {...fadeUp} className="text-center text-xl sm:text-2xl md:text-3xl font-extrabold tracking-wide mb-3">
-            {t('home.disclaimerHeading')}
+          <motion.h2
+            {...fadeUp}
+            className="text-center text-xl sm:text-2xl md:text-3xl font-extrabold tracking-wide mb-3"
+          >
+            {t("home.disclaimerHeading")}
           </motion.h2>
 
           <motion.p
             {...fadeUp}
             className="text-center text-sm sm:text-base text-gray-500 leading-relaxed max-w-xl mx-auto mb-8 sm:mb-10"
           >
-            {t('home.disclaimerText1')}
+            {t("home.disclaimerText1")}
           </motion.p>
 
           <div className="flex flex-wrap justify-around items-start gap-y-8">
             {[
-              { icon: <Tv size={20} />, label: t('home.disclaimerLabel1'), key: 1 },
-              { icon: <ShieldCheck size={20} />, label: t('home.disclaimerLabel2'), key: 2 },
-              { icon: <FileText size={20} />, label: t('home.disclaimerLabel3'), key: 3 },
-              { icon: <Headphones size={20} />, label: t('home.disclaimerLabel4'), key: 4 },
+              {
+                icon: <Tv size={20} />,
+                label: t("home.disclaimerLabel1"),
+                key: 1,
+              },
+              {
+                icon: <ShieldCheck size={20} />,
+                label: t("home.disclaimerLabel2"),
+                key: 2,
+              },
+              {
+                icon: <FileText size={20} />,
+                label: t("home.disclaimerLabel3"),
+                key: 3,
+              },
+              {
+                icon: <Headphones size={20} />,
+                label: t("home.disclaimerLabel4"),
+                key: 4,
+              },
             ].map(({ icon, label, key }, i) => (
               <motion.div
                 key={key}
@@ -446,10 +519,10 @@ const WisePlayerHome = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <p className="text-[#800000] font-bold tracking-[3px] text-xs uppercase mb-2">
-              {t('home.featureHeadingParent')}
+              {t("home.featureHeadingParent")}
             </p>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1a1a1a]">
-              {t('home.featureHeadingChild')}
+              {t("home.featureHeadingChild")}
             </h2>
           </div>
 
@@ -464,8 +537,12 @@ const WisePlayerHome = () => {
                 <div className="mb-4 flex justify-center text-[#800000] group-hover:scale-110 transition-transform duration-300">
                   {item.icon}
                 </div>
-                <h5 className="font-bold text-[#1a1a1a] text-lg mb-2">{item.title}</h5>
-                <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+                <h5 className="font-bold text-[#1a1a1a] text-lg mb-2">
+                  {item.title}
+                </h5>
+                <p className="text-gray-500 text-sm leading-relaxed">
+                  {item.desc}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -488,15 +565,23 @@ const WisePlayerHome = () => {
             <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-[#800000] opacity-[0.06] blur-3xl pointer-events-none" />
 
             <div className="text-center md:text-left z-10">
-              <h2 className="text-xl md:text-2xl font-bold text-[#1a1a1a] mb-1">{t('home.cta_dive_in')}</h2>
-              <h4 className="text-lg md:text-xl font-bold text-[#800000]">{t('home.cta_trial_text')}</h4>
+              <h2 className="text-xl md:text-2xl font-bold text-[#1a1a1a] mb-1">
+                {t("home.cta_dive_in")}
+              </h2>
+              <h4 className="text-lg md:text-xl font-bold text-[#800000]">
+                {t("home.cta_trial_text")}
+              </h4>
             </div>
 
             <div className="flex items-center gap-3 z-10 shrink-0">
               <Flame size={40} className="text-[#800000]" fill="#800000" />
               <div className="leading-tight">
-                <span className="block text-sm font-light text-gray-400 tracking-widest">{t('home.brand_small')}</span>
-                <span className="block text-2xl font-extrabold text-[#1a1a1a] tracking-tight">{t('home.brand_big')}</span>
+                <span className="block text-sm font-light text-gray-400 tracking-widest">
+                  {t("home.brand_small")}
+                </span>
+                <span className="block text-2xl font-extrabold text-[#1a1a1a] tracking-tight">
+                  {t("home.brand_big")}
+                </span>
               </div>
             </div>
           </motion.div>
@@ -509,13 +594,17 @@ const WisePlayerHome = () => {
       <section id="pricing-section" className="py-8 bg-[#eaebee]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <p className="text-[#800000] font-bold tracking-[3px] text-xs uppercase mb-2">{t('home.plans')}</p>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1a1a1a]">{t('home.choose_access')}</h2>
+            <p className="text-[#800000] font-bold tracking-[3px] text-xs uppercase mb-2">
+              {t("home.plans")}
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1a1a1a]">
+              {t("home.choose_access")}
+            </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {plans.map((plan) => {
-              const isLifetime = plan.name === 'LIFETIME';
+              const isLifetime = plan.name === "LIFETIME";
               return (
                 <motion.div
                   key={plan.id}
@@ -523,19 +612,22 @@ const WisePlayerHome = () => {
                   className={`
                     h-full flex flex-col items-center text-center p-7 md:p-8 rounded-2xl border transition-all duration-300
                     hover:shadow-lg hover:-translate-y-1.5
-                    ${isLifetime
-                      ? 'bg-[#111] text-white border-white/10'
-                      : 'bg-white text-[#1a1a1a] border-black/[0.06]'
+                    ${
+                      isLifetime
+                        ? "bg-[#111] text-white border-white/10"
+                        : "bg-white text-[#1a1a1a] border-black/[0.06]"
                     }
                   `}
                 >
                   {isLifetime && (
                     <span className="self-start mb-3 px-3 py-1 text-xs font-bold rounded-full bg-[#800000] text-white tracking-wider">
-                      {t('price_lifetime_badge')}
+                      {t("price_lifetime_badge")}
                     </span>
                   )}
 
-                  <h5 className={`font-extrabold uppercase tracking-widest text-sm mb-1 ${isLifetime ? 'text-gray-300' : 'text-gray-500'}`}>
+                  <h5
+                    className={`font-extrabold uppercase tracking-widest text-sm mb-1 ${isLifetime ? "text-gray-300" : "text-gray-500"}`}
+                  >
                     {plan.name}
                   </h5>
 
@@ -543,32 +635,46 @@ const WisePlayerHome = () => {
                     €{plan.price?.toFixed(2)}
                   </h2>
 
-                  <p className={`text-sm mb-5 leading-relaxed ${isLifetime ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p
+                    className={`text-sm mb-5 leading-relaxed ${isLifetime ? "text-gray-400" : "text-gray-500"}`}
+                  >
                     {plan.description}
                   </p>
 
                   <ul className="space-y-2.5 mb-8 flex-1 w-full">
                     <li className="flex items-center justify-center gap-2.5 text-sm">
-                      <CheckCircle size={16} className="text-[#800000] shrink-0" />
-                      <span>{plan.durationDays} {t('home.days_access')}</span>
+                      <CheckCircle
+                        size={16}
+                        className="text-[#800000] shrink-0"
+                      />
+                      <span>
+                        {plan.durationDays} {t("home.days_access")}
+                      </span>
                     </li>
                     <li className="flex items-center justify-center gap-2.5 text-sm">
-                      <CheckCircle size={16} className="text-[#800000] shrink-0" />
-                      <span>{t('home.instant_activation')}</span>
+                      <CheckCircle
+                        size={16}
+                        className="text-[#800000] shrink-0"
+                      />
+                      <span>{t("home.instant_activation")}</span>
                     </li>
                   </ul>
 
                   <button
-                    onClick={() => { planRef.current = plan.name; setShowModal(true); }}
+                    onClick={() => {
+                      planRef.current = plan.name;
+                      setShowModal(true);
+                    }}
                     className={`
                       w-full py-3.5 rounded-full font-bold text-sm tracking-wide transition-all duration-200 active:scale-95
-                      ${isLifetime
-                        ? 'bg-[#800000] hover:bg-[#6a0000] text-white'
-                        : 'border-2 border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white'
+                      ${
+                        isLifetime
+                          ? "bg-[#800000] hover:bg-[#6a0000] text-white"
+                          : "border-2 border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white"
                       }
                     `}
                   >
-                    {t('home.check_status')}
+                    {t("home.check_status")}
                   </button>
                 </motion.div>
               );
@@ -583,13 +689,19 @@ const WisePlayerHome = () => {
       <section className="py-8 md:py-10 bg-[#f4f4f7]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-center font-extrabold text-2xl sm:text-3xl text-[#1a1a1a] mb-10">
-            {t('home.faq_title')}
+            {t("home.faq_title")}
           </h2>
 
           <div className="space-y-3">
             {[
-              { title: t('home.faq_mac_title'), answer: t('home.faq_mac_answer') },
-              { title: t('home.faq_transfer_title'), answer: t('home.faq_transfer_answer') },
+              {
+                title: t("home.faq_mac_title"),
+                answer: t("home.faq_mac_answer"),
+              },
+              {
+                title: t("home.faq_transfer_title"),
+                answer: t("home.faq_transfer_answer"),
+              },
             ].map((faq, i) => (
               <FaqItem key={i} title={faq.title} answer={faq.answer} />
             ))}
@@ -601,16 +713,18 @@ const WisePlayerHome = () => {
           >
             <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
               <div className="text-center sm:text-left">
-                <h4 className="font-bold text-lg text-[#1a1a1a] mb-1">{t('home.still_questions')}</h4>
+                <h4 className="font-bold text-lg text-[#1a1a1a] mb-1">
+                  {t("home.still_questions")}
+                </h4>
                 <p className="text-sm text-gray-500">
-                  {t('home.still_questions_desc')}
+                  {t("home.still_questions_desc")}
                 </p>
               </div>
               <Link
                 to="/contact"
                 className="shrink-0 px-6 py-3 rounded-xl font-bold text-sm bg-[#800000] text-white hover:bg-[#6a0000] active:scale-95 transition-all duration-200 text-center"
               >
-                {t('home.contact_support')}
+                {t("home.contact_support")}
               </Link>
             </div>
           </motion.div>
@@ -623,14 +737,13 @@ const WisePlayerHome = () => {
       <footer className="py-14 bg-white border-t border-black/[0.06]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-
             <div>
               <div className="flex items-center gap-2 font-extrabold text-lg tracking-wide mb-4">
                 <Flame size={26} className="text-[#800000]" fill="#800000" />
-                {t('home.brand_upper')}
+                {t("home.brand_upper")}
               </div>
               <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
-                {t('home.footerBrandText')}
+                {t("home.footerBrandText")}
               </p>
             </div>
 
@@ -638,10 +751,12 @@ const WisePlayerHome = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-gray-100">
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                    {t('home.customerSupport')}
+                    {t("home.customerSupport")}
                   </span>
-                  <a href="https://wa.me/212777754774"
-                    target="_blank" rel="noreferrer"
+                  <a
+                    href="https://wa.me/212777754774"
+                    target="_blank"
+                    rel="noreferrer"
                     className="flex items-center gap-2 text-sm font-bold text-[#1a1a1a] hover:text-[#800000] transition-colors"
                   >
                     <Phone size={14} className="text-green-500" />
@@ -655,9 +770,11 @@ const WisePlayerHome = () => {
                   >
                     {t("home.privacyPolicy")}
                   </Link>
-                  <Link to="/contact"
-                    className="text-sm text-gray-500 font-semibold hover:text-[#800000] transition-colors">
-                    {t('home.contactUs')}
+                  <Link
+                    to="/contact"
+                    className="text-sm text-gray-500 font-semibold hover:text-[#800000] transition-colors"
+                  >
+                    {t("home.contactUs")}
                   </Link>
                 </div>
               </div>
@@ -665,12 +782,20 @@ const WisePlayerHome = () => {
 
             <div className="lg:text-right">
               <h6 className="font-bold mb-5 uppercase text-[10px] tracking-[3px] text-gray-400">
-                {t('home.socialMedia')}
+                {t("home.socialMedia")}
               </h6>
               <div className="flex gap-3 lg:justify-end">
                 {[
-                  { icon: Instagram, label: t('home.instagram'), href: SOCIAL_LINKS.instagram },
-                  { icon: Twitter, label: t('home.twitter'), href: SOCIAL_LINKS.twitter },
+                  {
+                    icon: Instagram,
+                    label: t("home.instagram"),
+                    href: SOCIAL_LINKS.instagram,
+                  },
+                  {
+                    icon: Twitter,
+                    label: t("home.twitter"),
+                    href: SOCIAL_LINKS.twitter,
+                  },
                 ].map(({ icon, label, href }) => {
                   const Icon = icon;
                   return (
@@ -687,13 +812,11 @@ const WisePlayerHome = () => {
                   );
                 })}
               </div>
-
             </div>
-
           </div>
 
           <div className="mt-10 pt-6 border-t border-black/[0.06] text-center text-xs font-bold tracking-[2px] text-gray-400 uppercase">
-            © 2026 WISEPLAYER — {t('home.beyondTheScreen')}
+            © 2026 WISEPLAYER — {t("home.beyondTheScreen")}
           </div>
         </div>
       </footer>
@@ -713,7 +836,7 @@ const WisePlayerHome = () => {
               initial={{ scale: 0.92, y: 20, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.92, y: 20, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
               className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
             >
               <div className="h-1.5 bg-[#800000] w-full" />
@@ -724,10 +847,10 @@ const WisePlayerHome = () => {
                     <Smartphone size={28} className="text-[#800000]" />
                   </div>
                   <h3 className="text-xl font-extrabold text-[#1a1a1a] tracking-wide mb-1">
-                    {t('home.device_activation')}
+                    {t("home.device_activation")}
                   </h3>
                   <p className="text-sm text-gray-500">
-                    {t('home.enter_mac_desc')}
+                    {t("home.enter_mac_desc")}
                   </p>
                 </div>
 
@@ -750,11 +873,15 @@ const WisePlayerHome = () => {
                       exit={{ opacity: 0 }}
                       className="mb-5"
                     >
-                      <div className={`
+                      <div
+                        className={`
                         flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold border
                         ${currentStatusConfig.wrapClass}
-                      `}>
-                        {StatusIcon && <StatusIcon size={18} className="shrink-0" />}
+                      `}
+                      >
+                        {StatusIcon && (
+                          <StatusIcon size={18} className="shrink-0" />
+                        )}
                         {statusMsg}
                       </div>
 
@@ -762,12 +889,15 @@ const WisePlayerHome = () => {
                           said ACTIVE but the only button (checkout) was gated
                           behind the expired/inactive branches. Give them a way
                           through to their playlists. */}
-                      {deviceStatus === DEVICE_ACCESS.ACTIVE && (
+                      {deviceStatus === DEVICE_ACCESS.NEEDS_ACTIVATION && (
                         <button
-                          onClick={() => { setShowModal(false); navigate('/upload-playlist', { state: { mac } }); }}
+                          onClick={() => {
+                            setShowModal(false);
+                            navigate("/upload-playlist", { state: { mac } });
+                          }}
                           className="mt-3 w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#1a1a1a] hover:bg-[#111] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
                         >
-                          {t('home.go_to_playlists')}
+                          {t("home.go_to_playlists")}
                           <ArrowRight size={16} />
                         </button>
                       )}
@@ -802,14 +932,16 @@ const WisePlayerHome = () => {
                       onClick={handleSubmit}
                       className="flex-1 py-3.5 rounded-xl font-bold text-sm text-white bg-[#1a1a1a] hover:bg-[#111] active:scale-[0.98] transition-all duration-200"
                     >
-                      {t('home.check_status')}
+                      {t("home.check_status")}
                     </button>
                   )}
                   <button
-                    onClick={() => statusMsg ? resetModal() : setShowModal(false)}
+                    onClick={() =>
+                      statusMsg ? resetModal() : setShowModal(false)
+                    }
                     className="flex-1 py-3.5 rounded-xl font-bold text-sm text-gray-500 hover:text-[#800000] hover:bg-gray-50 border border-gray-200 transition-all duration-200"
                   >
-                    {statusMsg ? t('home.try_another_mac') : t('home.cancel')}
+                    {statusMsg ? t("home.try_another_mac") : t("home.cancel")}
                   </button>
                 </div>
               </div>
@@ -831,7 +963,7 @@ const WisePlayerHome = () => {
               transition={{ duration: 0.25 }}
               className={`
                 pointer-events-auto px-6 py-3 rounded-xl font-bold text-sm text-white shadow-lg
-                ${toast.type === 'error' ? 'bg-red-600' : 'bg-amber-500'}
+                ${toast.type === "error" ? "bg-red-600" : "bg-amber-500"}
               `}
             >
               {toast.msg}
@@ -839,7 +971,6 @@ const WisePlayerHome = () => {
           </div>
         )}
       </AnimatePresence>
-
     </div>
   );
 };
@@ -853,13 +984,17 @@ const FaqItem = ({ title, answer }) => {
         className="w-full flex items-center justify-between px-5 py-4 font-bold text-[#1a1a1a] text-left hover:bg-gray-50 transition-colors duration-150"
       >
         <span>{title}</span>
-        <span className={`text-[#800000] text-lg transition-transform duration-200 ${open ? 'rotate-45' : ''}`}>+</span>
+        <span
+          className={`text-[#800000] text-lg transition-transform duration-200 ${open ? "rotate-45" : ""}`}
+        >
+          +
+        </span>
       </button>
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
+            animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.22 }}
             className="overflow-hidden"
