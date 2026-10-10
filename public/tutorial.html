@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WisePlayer interactive manual</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f4f7;--card:#fff;--ink:#1a1a1a;--mute:#6b7080;--line:#e4e4ea;--acc:#800000;--acc-h:#6a0000;--on:#fff;--acc2:#fbeeee;--ok:#15803d;--dk:#1a1a1a;--halo:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111114;--card:#1a1a1d;--ink:#f3f3f5;--mute:#a0a0ad;--line:#2d2d34;--acc:#d9484e;--acc-h:#e8666b;--on:#111;--acc2:#2c1517;--ok:#4ade80;--dk:#0b0b0d;--halo:#1a1a1d}}
+:root[data-theme="dark"]{--bg:#111114;--card:#1a1a1d;--ink:#f3f3f5;--mute:#a0a0ad;--line:#2d2d34;--acc:#d9484e;--acc-h:#e8666b;--on:#111;--acc2:#2c1517;--ok:#4ade80;--dk:#0b0b0d;--halo:#1a1a1d}
+*{box-sizing:border-box}html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 84px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.01em;line-height:1.15}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;gap:14px;align-items:center}
+.brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800;letter-spacing:.02em;text-transform:uppercase}.brand b{color:var(--acc)}
+.search{flex:1;max-width:380px;margin-left:auto;padding:9px 16px;border:2px solid var(--line);border-radius:12px;background:var(--bg);outline:0}.search:focus{border-color:var(--acc)}
+.wrap{display:grid;grid-template-columns:250px 1fr;gap:24px;max-width:1120px;margin:0 auto;padding:24px 16px 80px}
+nav{position:sticky;top:90px;align-self:start;background:var(--dk);color:#fff;border-radius:18px;padding:16px 10px}
+nav a{display:flex;gap:10px;align-items:center;padding:9px 10px;border-radius:10px;color:#a9aab6;text-decoration:none;font-weight:600;font-size:15px}
+nav a:hover{color:#fff}nav a.on{background:rgba(255,255,255,.1);color:#fff}
+nav a i{width:20px;height:20px;border-radius:50%;border:2px solid #4a4a55;flex:none;font-style:normal;font-size:11px;display:grid;place-items:center}
+nav a.done i{background:#c0272d;border-color:#c0272d;color:#fff}
+.bar{height:6px;background:#33333b;border-radius:9px;margin:6px 10px 14px;overflow:hidden}.bar b{display:block;height:100%;width:0;background:linear-gradient(90deg,#c0272d,#800000);transition:width .3s}
+.pl{font-size:12px;color:#a9aab6;margin:0 10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase}
+section{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px;margin-bottom:20px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+section h2{font-size:clamp(24px,3.5vw,32px)}
+.eyebrow{margin:0 0 4px;color:var(--acc);font-weight:700;letter-spacing:3px;font-size:12px;text-transform:uppercase}
+.lead{color:var(--mute);margin:8px 0 16px}
+.hero{display:flex;align-items:center;gap:24px;justify-content:space-between;background:var(--bg);border:0;box-shadow:none;padding:12px 4px 20px}
+.pill{display:inline-flex;gap:8px;align-items:center;padding:6px 16px;border-radius:99px;background:var(--card);border:1px solid var(--line);font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--acc);animation:pulse 1.6s infinite}
+.hero h1{font-size:clamp(32px,6vw,56px);font-weight:900;text-transform:uppercase;margin:16px 0 12px}.hero h1 span{color:var(--acc)}
+.hero .btns{display:flex;gap:12px;flex-wrap:wrap}
+.hero svg.big{flex:none;width:min(220px,28vw);height:auto}
+.bx.an{transform-box:fill-box;transform-origin:center;animation:wave 1.1s ease-in-out infinite}
+@keyframes wave{0%,100%{transform:scaleY(1)}25%{transform:scaleY(.35)}55%{transform:scaleY(.8)}80%{transform:scaleY(.2)}}
+@keyframes pulse{50%{opacity:.35}}
+.btn{background:var(--acc);color:var(--on);border:2px solid var(--acc);border-radius:12px;padding:11px 24px;font-weight:700;transition:transform .15s,background .15s}
+.btn:hover{background:var(--acc-h)}.btn:active{transform:scale(.97)}
+.ghost{background:none;border:2px solid var(--acc);color:var(--acc);border-radius:12px;padding:9px 20px;font-weight:700}.ghost:hover{background:var(--acc);color:var(--on)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0;background:var(--bg);padding:5px;border-radius:14px;width:fit-content;max-width:100%}
+.tabs button{border:0;background:none;border-radius:10px;padding:8px 18px;font-weight:600;color:var(--mute)}
+.tabs button[aria-selected="true"]{background:var(--card);color:var(--acc);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+label{display:block;font-weight:700;font-size:13px;margin:14px 0 5px}
+.in{width:100%;padding:11px 14px;border:2px solid var(--line);border-radius:12px;background:var(--bg);outline:0}.in:focus{border-color:var(--acc)}
+.panel{background:var(--bg);border-radius:14px;padding:6px 18px 18px;margin-top:6px}
+.ok{color:var(--ok);font-weight:700;margin-top:12px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-top:14px}
+.tile{border-radius:14px;padding:44px 12px 12px;background:linear-gradient(160deg,var(--acc2),var(--bg));border:1px solid var(--line);font-weight:700;font-size:14px;min-height:104px}
+.tile small{display:block;color:var(--acc);font-weight:600;font-size:12px}
+.player{background:var(--dk);border-radius:18px;padding:16px;color:#fff;margin-top:8px}
+.screen{margin:0 auto;background:linear-gradient(135deg,#c0272d,#4a0c10);border-radius:10px;display:grid;place-items:center;text-align:center;transition:all .3s;height:200px;font-weight:700}
+.screen.r169{width:356px;max-width:100%}.screen.r43{width:266px}.screen.fill{width:100%}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+.ctl button,.ctl select{background:#2a2a31;color:#fff;border:1px solid #44444d;border-radius:10px;padding:8px 14px;font-weight:600}
+.ctl button:hover{background:#800000;border-color:#800000}.ctl .fav.on{color:#ff7b95}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.row small{display:block;color:var(--mute)}
+.sw{width:48px;height:27px;border-radius:99px;border:0;background:var(--line);position:relative;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:left .2s}
+.sw[aria-checked="true"]{background:var(--acc)}.sw[aria-checked="true"]::after{left:24px}
+input[type=range]{accent-color:var(--acc)}
+details{border:1px solid var(--line);border-radius:14px;padding:12px 18px;margin-top:10px;background:var(--card)}details[open]{border-color:var(--acc)}summary{font-weight:700;cursor:pointer}
+.done-row{display:flex;align-items:center;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.hide{display:none!important}
+.disc{text-align:center;color:var(--mute);font-size:13px;margin-top:28px}
+@media(max-width:800px){.wrap{grid-template-columns:1fr}nav{position:static;display:flex;overflow-x:auto;gap:4px;padding:8px}nav a{white-space:nowrap}.bar,.pl{display:none}.brand{font-size:16px}.hero svg.big{display:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="top"><span class="brand"><svg class="" width="34" height="34" viewBox="0 0 100 100" role="img" aria-label="WisePlayer logo"><defs><linearGradient id="g34" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#c0272d"/><stop offset="1" stop-color="#800000"/></linearGradient></defs><rect class="bx" style="animation-delay:0.00s" x="2" y="32" width="9" height="36" rx="4.5" fill="#c0272d"/><rect class="bx" style="animation-delay:0.13s" x="12.5" y="23" width="9" height="54" rx="4.5" fill="#991c22"/><rect class="bx" style="animation-delay:0.26s" x="23" y="16" width="9" height="68" rx="4.5" fill="#6e1216"/><rect class="bx" style="animation-delay:0.39s" x="33.5" y="10" width="9" height="80" rx="4.5" fill="#4a0c10"/><rect class="bx" style="animation-delay:0.52s" x="57.5" y="10" width="9" height="80" rx="4.5" fill="#4a0c10"/><rect class="bx" style="animation-delay:0.65s" x="68" y="16" width="9" height="68" rx="4.5" fill="#6e1216"/><rect class="bx" style="animation-delay:0.78s" x="78.5" y="23" width="9" height="54" rx="4.5" fill="#991c22"/><rect class="bx" style="animation-delay:0.91s" x="89" y="32" width="9" height="36" rx="4.5" fill="#c0272d"/><polygon points="34,16 34,84 93,50" style="fill:var(--halo)"/><polygon points="38,20 38,80 89,50" fill="url(#g34)"/><polygon points="41,23 41,50 65,37" fill="rgba(255,255,255,.2)"/></svg><span>Wise<b>Player</b></span></span><input id="q" class="search" type="search" placeholder="Search the manual…" aria-label="Search the manual"></header>
+<div class="wrap">
+<nav id="nav" aria-label="Manual sections">
+<div class="pl" id="pl">0 of 5 steps done</div><div class="bar"><b id="pb"></b></div>
+</nav>
+<main>
+<section class="hero" id="s0" data-t="welcome start overview"><div><span class="pill">Tutorial</span><h1>Start watching in <span>5 steps</span></h1><p class="lead">Try every control right here, then mark each step done. Your progress is saved in this browser.</p><div class="btns"><button class="btn" onclick="go('s1')">Start with step 1</button><button class="ghost" onclick="go('s6')">Get help</button></div></div><svg class="big" width="220" height="220" viewBox="0 0 100 100" role="img" aria-label="WisePlayer logo"><defs><linearGradient id="g220" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#c0272d"/><stop offset="1" stop-color="#800000"/></linearGradient></defs><rect class="bx an" style="animation-delay:0.00s" x="2" y="32" width="9" height="36" rx="4.5" fill="#c0272d"/><rect class="bx an" style="animation-delay:0.13s" x="12.5" y="23" width="9" height="54" rx="4.5" fill="#991c22"/><rect class="bx an" style="animation-delay:0.26s" x="23" y="16" width="9" height="68" rx="4.5" fill="#6e1216"/><rect class="bx an" style="animation-delay:0.39s" x="33.5" y="10" width="9" height="80" rx="4.5" fill="#4a0c10"/><rect class="bx an" style="animation-delay:0.52s" x="57.5" y="10" width="9" height="80" rx="4.5" fill="#4a0c10"/><rect class="bx an" style="animation-delay:0.65s" x="68" y="16" width="9" height="68" rx="4.5" fill="#6e1216"/><rect class="bx an" style="animation-delay:0.78s" x="78.5" y="23" width="9" height="54" rx="4.5" fill="#991c22"/><rect class="bx an" style="animation-delay:0.91s" x="89" y="32" width="9" height="36" rx="4.5" fill="#c0272d"/><polygon points="34,16 34,84 93,50" style="fill:var(--bg)"/><polygon points="38,20 38,80 89,50" fill="url(#g220)"/><polygon points="41,23 41,50 65,37" fill="rgba(255,255,255,.2)"/></svg></section>
+
+<section id="s1" data-step data-name="Getting started" data-t="getting started first time playlist m3u xtream codes">
+<p class="eyebrow">Step 1</p><h2>Getting started</h2>
+<p class="lead">The first time you open WisePlayer, it is empty. Add a playlist to start watching. These formats work:</p>
+<div class="tabs" role="tablist" id="fmt"></div>
+<div id="fmtinfo" class="panel"></div>
+</section>
+
+<section id="s2" data-step data-name="Add a playlist" data-t="add playlist m3u url xtream local file save server username password">
+<p class="eyebrow">Step 2</p><h2>Add a playlist</h2>
+<p class="lead">Open <b>Playlists</b> from the main menu, press <b>+ Add Playlist</b>, and pick a type. Try the form below.</p>
+<div class="tabs" role="tablist" id="ptabs"></div>
+<div class="panel" id="pform"></div>
+</section>
+
+<section id="s3" data-step data-name="Browse content" data-t="navigate browse live tv movies series search channels">
+<p class="eyebrow">Step 3</p><h2>Browse content</h2>
+<p class="lead">Your playlist is sorted into three areas. Switch between them and use search to filter.</p>
+<div class="tabs" role="tablist" id="ctabs"></div>
+<input id="cs" class="in" placeholder="Search this category…" aria-label="Search this category">
+<div class="tiles" id="tiles"></div>
+</section>
+
+<section id="s4" data-step data-name="Play content" data-t="playing pause play aspect ratio audio subtitles favorites heart">
+<p class="eyebrow">Step 4</p><h2>Play content</h2>
+<p class="lead">Click or tap any channel or movie to start. Try the controls on this demo player.</p>
+<div class="player">
+<div class="screen r169" id="scr"><div><div style="font-size:36px" id="pi">▶</div><div id="pt">Playing</div><small id="pm">16:9 · English · Subtitles off</small></div></div>
+<div class="ctl">
+<button id="pp">Pause</button>
+<button id="ar">Aspect ratio: 16:9</button>
+<select id="au" aria-label="Audio track"><option>Audio: English</option><option>Audio: Spanish</option><option>Audio: Hindi</option></select>
+<select id="su" aria-label="Subtitles"><option>Subtitles: off</option><option>Subtitles: English</option><option>Subtitles: Spanish</option></select>
+<button class="fav" id="fv" aria-pressed="false">♡ Favorite</button>
+</div></div>
+<p class="lead" style="margin-top:10px">Audio and subtitle choices appear only when the stream provides them.</p>
+</section>
+
+<section id="s5" data-step data-name="Settings" data-t="settings customization appearance light dark mode player buffer hardware acceleration parental control pin">
+<p class="eyebrow">Step 5</p><h2>Settings and customization</h2>
+<p class="lead">Open <b>Settings</b> to tune WisePlayer. These switches work on this page too.</p>
+<div class="row"><div><b>Appearance</b><small>Switch between light and dark mode</small></div><button class="sw" role="switch" aria-checked="false" aria-label="Dark mode" id="dk"></button></div>
+<div class="row"><div><b>Hardware acceleration</b><small>Smoother playback on supported devices</small></div><button class="sw" role="switch" aria-checked="true" aria-label="Hardware acceleration" id="hw"></button></div>
+<div class="row"><div><b>Buffer size</b><small>Larger buffers reduce stalls but start slower</small></div><div><input type="range" min="1" max="30" value="10" id="bf" aria-label="Buffer size"> <b id="bv">10 s</b></div></div>
+<div class="row" style="border:0;display:block"><b>Parental control</b><small>Set a 4-digit PIN to lock categories or channels</small>
+<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><input class="in" id="pin" inputmode="numeric" maxlength="4" placeholder="4-digit PIN" style="max-width:160px" aria-label="PIN"><button class="btn" id="pinb">Lock</button></div><div id="pinm" class="ok"></div></div>
+</section>
+
+<section id="s6" data-t="help troubleshoot problems issues vpn buffering not loading playlist link internet">
+<p class="eyebrow">Support</p><h2>Need help?</h2>
+<p class="lead">Pick what you are seeing.</p>
+<details><summary>My playlist will not load</summary><p>Check that the playlist link is still active and typed correctly. For Xtream Codes, confirm the server URL, username and password with your provider.</p></details>
+<details><summary>Playback keeps stopping</summary><p>Make sure your internet connection is stable. You can also raise the buffer size in Settings → Player.</p></details>
+<details><summary>A channel works for others but not for me</summary><p>Some streams are limited by region and may need a VPN.</p></details>
+</section>
+<p class="disc">Wise Player does not host any content. Use only playlists you are allowed to watch.</p></main></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+let done={};try{done=JSON.parse(localStorage.getItem('wp_done')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('wp_done',JSON.stringify(done))}catch(e){}};
+function go(id){document.getElementById(id).scrollIntoView()}
+/* nav + progress */
+const steps=$$('[data-step]');
+steps.forEach(s=>{const a=document.createElement('a');a.href='#'+s.id;a.dataset.for=s.id;a.innerHTML='<i></i>'+s.dataset.name;$('#nav').appendChild(a);
+const d=document.createElement('div');d.className='done-row';d.innerHTML='<button class="ghost" data-d="'+s.id+'"></button>';s.appendChild(d);});
+function prog(){const n=steps.filter(s=>done[s.id]).length;$('#pb').style.width=n/steps.length*100+'%';$('#pl').textContent=n+' of '+steps.length+' steps done';
+steps.forEach(s=>{$('nav a[data-for="'+s.id+'"]').classList.toggle('done',!!done[s.id]);$('nav a[data-for="'+s.id+'"] i').textContent=done[s.id]?'✓':'';
+const b=$('[data-d="'+s.id+'"]');b.textContent=done[s.id]?'✓ Done — undo':'Mark step done';});}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(b){done[b.dataset.d]=!done[b.dataset.d];save();prog();}});
+prog();
+const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting)$$('nav a').forEach(a=>a.classList.toggle('on',a.dataset.for===en.target.id))}),{rootMargin:'-30% 0px -60% 0px'});
+steps.forEach(s=>io.observe(s));
+/* tab helper */
+function tabs(el,items,fn){el.innerHTML='';items.forEach((t,i)=>{const b=document.createElement('button');b.role='tab';b.textContent=t;b.onclick=()=>{[...el.children].forEach(c=>c.setAttribute('aria-selected',c===b));fn(i)};el.appendChild(b)});el.children[0].click()}
+/* s1 */
+const F=[['M3U links','A direct link to an .m3u or .m3u8 file from your provider.'],['Xtream Codes API','A server URL, username and password from your IPTV provider.'],['Local file','An M3U file saved on your device.']];
+tabs($('#fmt'),F.map(f=>f[0]),i=>$('#fmtinfo').innerHTML='<p><b>'+F[i][0]+'</b><br>'+F[i][1]+'</p>');
+/* s2 */
+const P=[['M3U URL','<label>Playlist URL</label><input class="in" placeholder="https://example.com/list.m3u8">'],['Xtream Codes','<label>Server URL</label><input class="in" placeholder="http://server:8080"><label>Username</label><input class="in"><label>Password</label><input class="in" type="password">'],['Local File','<label>M3U file</label><input class="in" type="file" accept=".m3u,.m3u8">']];
+tabs($('#ptabs'),P.map(p=>p[0]),i=>{$('#pform').innerHTML=P[i][1]+'<label>Playlist name</label><input class="in" id="pn" placeholder="e.g. Home TV"><br><button class="btn" id="sv">Save</button><div id="svm"></div>';
+$('#sv').onclick=()=>{const n=$('#pn').value.trim();if(!n){$('#svm').innerHTML='<p style="color:#d6336c">Give your playlist a name first.</p>';return}
+$('#svm').innerHTML='<p>Loading channels and VODs…</p>';setTimeout(()=>$('#svm').innerHTML='<p class="ok">✓ “'+n.replace(/</g,'&lt;')+'” saved: 248 channels, 112 movies, 36 series.</p>',900)}});
+/* s3 */
+const C={'Live TV':['News 24','Sports One','Music Hub','Kids Zone','Nature HD','Cinema Live'],'Movies':['Night Train','Paper Moon','The Long Road','Echo Valley','Last Harbor','Summer Heist'],'Series':['Detective Row','Lab Partners','Kitchen Wars','Deep Blue','Small Town','Orbit']};
+let cat='Live TV';const draw=()=>{const q=$('#cs').value.toLowerCase();$('#tiles').innerHTML=C[cat].filter(x=>x.toLowerCase().includes(q)).map(x=>'<div class="tile">'+x+'<small>'+cat+'</small></div>').join('')||'<p class="lead">No match. Try a shorter search.</p>'};
+tabs($('#ctabs'),Object.keys(C),i=>{cat=Object.keys(C)[i];draw()});$('#cs').oninput=draw;
+/* s4 */
+let play=true,ai=0;const R=[['16:9','r169'],['4:3','r43'],['Fill','fill']];
+const info=()=>$('#pm').textContent=R[ai][0]+' · '+$('#au').value.replace('Audio: ','')+' · '+$('#su').value.replace('Subtitles: ','Subtitles ');
+$('#pp').onclick=()=>{play=!play;$('#pp').textContent=play?'Pause':'Play';$('#pi').textContent=play?'▶':'❚❚';$('#pt').textContent=play?'Playing':'Paused'};
+$('#ar').onclick=()=>{ai=(ai+1)%3;$('#scr').className='screen '+R[ai][1];$('#ar').textContent='Aspect ratio: '+R[ai][0];info()};
+$('#au').onchange=info;$('#su').onchange=info;
+$('#fv').onclick=()=>{const on=$('#fv').classList.toggle('on');$('#fv').setAttribute('aria-pressed',on);$('#fv').textContent=on?'♥ Favorited':'♡ Favorite'};
+/* s5 */
+const sw=(el,fn)=>el.onclick=()=>{const v=el.getAttribute('aria-checked')!=='true';el.setAttribute('aria-checked',v);fn&&fn(v)};
+sw($('#dk'),v=>document.documentElement.dataset.theme=v?'dark':'light');sw($('#hw'));
+if(matchMedia('(prefers-color-scheme:dark)').matches){$('#dk').setAttribute('aria-checked','true')}
+$('#bf').oninput=()=>$('#bv').textContent=$('#bf').value+' s';
+$('#pinb').onclick=()=>{const p=$('#pin').value;$('#pinm').style.color=/^\d{4}$/.test(p)?'':'#d6336c';$('#pinm').textContent=/^\d{4}$/.test(p)?'✓ PIN set. Locked categories now ask for it.':'Enter exactly 4 digits.'};
+/* search */
+const secs=$$('main section'),orig=new Map();
+$('#q').oninput=e=>{const q=e.target.value.trim().toLowerCase();let n=0;secs.forEach(s=>{const hit=!q||(s.dataset.t+' '+s.textContent).toLowerCase().includes(q);s.classList.toggle('hide',!hit);n+=hit});
+if(q&&!n)$('#nf')||(()=>{const p=document.createElement('p');p.id='nf';p.className='lead';p.textContent='No section matches. Try “playlist”, “subtitles” or “PIN”.';$('main').appendChild(p)})();
+else if($('#nf'))$('#nf').remove();if(q&&!n)$('#nf')&&($('#nf').hidden=false)};
+</script>
+</body>
+</html>

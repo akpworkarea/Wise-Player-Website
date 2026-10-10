@@ -378,7 +378,10 @@ const WisePlayerHome = () => {
                   {t("home.headFreeTrial")}
                 </a>
 
-                <button className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl font-bold text-sm sm:text-base border-2 border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white active:scale-95 transition-all duration-200">
+                <button
+                  onClick={() => window.open("/tutorial.html", "_blank")}
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl font-bold text-sm sm:text-base border-2 border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white active:scale-95 transition-all duration-200"
+                >
                   {t("home.headTutorial")}
                 </button>
               </motion.div>
@@ -612,10 +615,9 @@ const WisePlayerHome = () => {
                   className={`
                     h-full flex flex-col items-center text-center p-7 md:p-8 rounded-2xl border transition-all duration-300
                     hover:shadow-lg hover:-translate-y-1.5
-                    ${
-                      isLifetime
-                        ? "bg-[#111] text-white border-white/10"
-                        : "bg-white text-[#1a1a1a] border-black/[0.06]"
+                    ${isLifetime
+                      ? "bg-[#111] text-white border-white/10"
+                      : "bg-white text-[#1a1a1a] border-black/[0.06]"
                     }
                   `}
                 >
@@ -667,10 +669,9 @@ const WisePlayerHome = () => {
                     }}
                     className={`
                       w-full py-3.5 rounded-full font-bold text-sm tracking-wide transition-all duration-200 active:scale-95
-                      ${
-                        isLifetime
-                          ? "bg-[#800000] hover:bg-[#6a0000] text-white"
-                          : "border-2 border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white"
+                      ${isLifetime
+                        ? "bg-[#800000] hover:bg-[#6a0000] text-white"
+                        : "border-2 border-[#800000] text-[#800000] hover:bg-[#800000] hover:text-white"
                       }
                     `}
                   >
