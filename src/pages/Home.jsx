@@ -765,12 +765,14 @@ const WisePlayerHome = () => {
                   </a>
                 </div>
                 <div className="flex gap-5 pt-1">
-                  <Link
-                    to="/privacy-policy"
+                  <a
+                    href="/privacy-policy.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-sm font-semibold text-gray-500 transition-colors hover:text-[#800000]"
                   >
                     {t("home.privacyPolicy")}
-                  </Link>
+                  </a>
                   <Link
                     to="/contact"
                     className="text-sm text-gray-500 font-semibold hover:text-[#800000] transition-colors"
