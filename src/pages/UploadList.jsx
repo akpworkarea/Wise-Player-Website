@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ChevronRight, Flame } from 'lucide-react';
+import { ChevronRight, Flame, Lock } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { validateDevice } from '../auth/apiservice';
-import { checkPlanExpired } from '../utils/deviceUtils';
+import { resolveDeviceAccess, DEVICE_ACCESS } from '../utils/deviceUtils';
+import { startCheckout, resolveRenewPlanName, getPublicPlans } from '../utils/checkoutFlow';
 import { useTranslation } from 'react-i18next';
 import Footer from '../component/Footer';
 
@@ -28,6 +29,9 @@ const WiseplayerUpload = () => {
   const [uploadPin, setUploadPin] = useState('');
   const [statusError, setStatusError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  // Set when the device is INACTIVE with a lapsed plan — the user is being sent
+  // straight to PayPal, so the card needs to say so instead of looking broken.
+  const [renewNotice, setRenewNotice] = useState('');
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
@@ -39,17 +43,20 @@ const WiseplayerUpload = () => {
 
   const handleMacChange = (e) => {
     if (statusError) setStatusError('');
+    setRenewNotice('');
     setUploadMac(formatMac(e.target.value));
   };
 
   const handlePinChange = (e) => {
     if (statusError) setStatusError('');
+    setRenewNotice('');
     setUploadPin(formatPin(e.target.value));
   };
 
   const handleConfigure = async () => {
     setIsLoading(true);
     setStatusError('');
+    setRenewNotice('');
     // If the user never set a device pin, fall back to the default "0000"
     // — matches the API's own default, so playlists still resolve correctly.
     const pinToUse = uploadPin.trim() ? uploadPin.trim() : DEFAULT_PIN;
@@ -57,36 +64,52 @@ const WiseplayerUpload = () => {
     try {
       const res = await validateDevice(uploadMac);
       if (!res.success || !res.data) {
-        setStatusError('Device is not registered.');
+        setStatusError(t('uploadlist.device_not_registered'));
         return;
       }
 
-      const { status, allowed, subscriptionType, expiresAt, expiredAt, expiry } = res.data;
+      const access = resolveDeviceAccess(res.data);
 
-      if (status === 'ACTIVE' && allowed) {
+      if (access.code === DEVICE_ACCESS.ACTIVE) {
         navigate('/upload-playlist', { state: { mac: uploadMac, pin: pinToUse } });
         return;
       }
 
-      if (status === 'INACTIVE') {
-        const planExpiry = expiresAt ?? expiredAt ?? expiry ?? '';
-        const expired = checkPlanExpired(subscriptionType, planExpiry, status);
+      if (access.code === DEVICE_ACCESS.EXPIRED) {
+        // A lapsed plan ALWAYS goes to the payment gateway. It used to be
+        // bounced to /activation, whose renew card only linked back to the
+        // pricing table — so an expired device could never reach PayPal from
+        // here without re-entering its MAC twice.
+        setRenewNotice(t('uploadlist.plan_expired_redirecting'));
 
-        if (expired) {
-          // Plan lapsed — send to Activation's renew flow, carrying pin along
-          // so the user lands back on their playlists after renewing.
-          navigate('/activation', { state: { mac: uploadMac, pin: pinToUse, isExpired: true } });
-        } else {
-          // Registered but never activated — send to Activation's key-entry flow
-          navigate('/activation', { state: { mac: uploadMac, pin: pinToUse, isExpired: false } });
+        let planName = null;
+        try {
+          planName = resolveRenewPlanName(access.plan, await getPublicPlans());
+        } catch {
+          planName = null;
         }
+
+        if (planName) {
+          const result = await startCheckout({ deviceId: uploadMac, planName });
+          if (result.ok) return; // browser is navigating to PayPal
+        }
+
+        // Could not charge blind (no plan catalog / checkout failed). Fall back
+        // to the pricing table with the MAC carried over, so the buyer only has
+        // to pick a plan.
+        navigate('/home', { state: { scrollTo: 'pricing', mac: uploadMac, pin: pinToUse } });
         return;
       }
 
-      // Any other status (or ACTIVE-but-not-allowed edge case)
-      setStatusError('Device is not registered.');
+      if (access.code === DEVICE_ACCESS.NEEDS_ACTIVATION) {
+        // Registered but never activated — free key, no card required.
+        navigate('/activation', { state: { mac: uploadMac, pin: pinToUse, isExpired: false } });
+        return;
+      }
+
+      setStatusError(t('uploadlist.device_not_registered'));
     } catch {
-      setStatusError('Connection error. Please try again.');
+      setStatusError(t('uploadlist.connection_error'));
     } finally {
       setIsLoading(false);
     }
@@ -184,6 +207,14 @@ const WiseplayerUpload = () => {
           <p className="text-sm font-semibold text-red-600 text-center mt-2.5">
             {statusError}
           </p>
+        )}
+
+        {/* Expired — being handed off to the payment gateway */}
+        {renewNotice && (
+          <div className="flex items-center justify-center gap-2 mt-2.5 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-semibold">
+            <Lock size={15} className="shrink-0" />
+            {renewNotice}
+          </div>
         )}
 
         {/* Button */}

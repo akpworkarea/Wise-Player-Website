@@ -7,8 +7,9 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { validateDevice, checkoutPayment, fetchPublicPlans } from '../auth/apiservice';
-import { checkPlanExpired } from '../utils/deviceUtils';
+import { validateDevice, fetchPublicPlans } from '../auth/apiservice';
+import { resolveDeviceAccess, DEVICE_ACCESS } from '../utils/deviceUtils';
+import { startCheckout } from '../utils/checkoutFlow';
 
 // ─── MAC auto-formatter — same pattern as Activation.jsx / UploadList.jsx ──
 // Strips anything that isn't 0-9/A-F, caps at 12 hex chars, inserts colons
@@ -22,6 +23,12 @@ const formatMac = (raw) => {
 };
 
 const isMacComplete = (mac) => /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(mac);
+
+// The social links used to be href="#", i.e. two dead buttons in the footer.
+const SOCIAL_LINKS = {
+  instagram: 'https://www.instagram.com/wiseplayer',
+  twitter: 'https://x.com/wiseplayer',
+};
 
 // ─── Typewriter ──────────────────────────────────────────────────────────────
 const Typewriter = ({ texts }) => {
@@ -84,6 +91,11 @@ const STATUS_CONFIG = {
     wrapClass: 'bg-red-50 text-red-700 border-red-200',
     labelKey: 'home.status_not_found',
   },
+  BLOCKED: {
+    icon: AlertTriangle,
+    wrapClass: 'bg-red-50 text-red-700 border-red-200',
+    labelKey: 'home.status_blocked',
+  },
 };
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -107,11 +119,12 @@ const WisePlayerHome = () => {
   const [toast, setToast] = useState(null);
   const [mac, setMac] = useState('');
   const [statusMsg, setStatusMsg] = useState('');
-  const [isActiveDevice, setIsActiveDevice] = useState(null);
-  // null | 'ACTIVE' | 'INACTIVE_NEW' | 'INACTIVE_EXPIRED' | 'NOT_FOUND'
+  // null | 'ACTIVE' | 'INACTIVE_NEW' | 'INACTIVE_EXPIRED' | 'NOT_FOUND' | 'BLOCKED'
   const [deviceStatus, setDeviceStatus] = useState(null);
   const [plans, setPlans] = useState([]);
   const planRef = useRef('ANNUAL');
+  // Guards against a double-tap creating two checkout sessions.
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const [posterIndex, setPosterIndex] = useState(0);
 
@@ -137,9 +150,10 @@ const WisePlayerHome = () => {
     const loadPlans = async () => {
       try {
         const data = await fetchPublicPlans();
-        setPlans(data);
+        setPlans(Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : []);
       } catch (err) {
         console.error('ERROR:', err);
+        setPlans([]);
         const apiMsg = err.response?.data?.message;
         showToast(t(getApiMessageKey(apiMsg || 'plans_error')), 'error');
       }
@@ -147,10 +161,19 @@ const WisePlayerHome = () => {
     loadPlans();
   }, []);
 
-  // ── Scroll to pricing when redirected from Activation.jsx renew flow ──────
+  // ── Pre-fill the MAC + jump to pricing when bounced back from renewals ──
   useEffect(() => {
     const state = location.state;
-    if (state?.scrollTo === 'pricing') {
+    if (!state) return;
+
+    if (state.mac) {
+      const hex = String(state.mac).replace(/[^0-9a-fA-F]/g, '').toUpperCase().slice(0, 12);
+      if (hex.length === 12) setMac(formatMac(hex));
+    }
+
+    if (state.plan) planRef.current = state.plan;
+
+    if (state.scrollTo === 'pricing') {
       const el = document.getElementById('pricing-section');
       if (el) {
         setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 100);
@@ -163,7 +186,7 @@ const WisePlayerHome = () => {
     setMac(formatMac(e.target.value));
   };
 
-  // ── 3-branch device status check ───────────────────────────────────────────
+  // ── Device status check — one oracle, shared with UploadList/Activation ──
   const handleSubmit = async () => {
     if (!mac) { showToast(t('home.enter_mac'), 'warning'); return; }
     if (!isMacComplete(mac)) { showToast(t('home.invalid_mac'), 'warning'); return; }
@@ -172,33 +195,14 @@ const WisePlayerHome = () => {
       const res = await validateDevice(mac);
 
       if (!res.success || !res.data) {
-        setDeviceStatus('NOT_FOUND');
-        setIsActiveDevice(false);
+        setDeviceStatus(DEVICE_ACCESS.NOT_FOUND);
         setStatusMsg(t('home.status_not_found'));
         return;
       }
 
-      const status  = res.data?.status ?? '';
-      const allowed = res.data?.allowed ?? false;
-      const plan    = res.data?.subscriptionType ?? '';
-      const expiry  = res.data?.expiresAt ?? res.data?.expiredAt ?? res.data?.expiry ?? '';
-
-      if (status === 'ACTIVE' && allowed) {
-        setDeviceStatus('ACTIVE');
-        setIsActiveDevice(true);
-        setStatusMsg(t('home.status_active'));
-      } else {
-        const expired = checkPlanExpired(plan, expiry, status);
-        if (expired) {
-          setDeviceStatus('INACTIVE_EXPIRED');
-          setIsActiveDevice(false);
-          setStatusMsg(t('home.status_expired'));
-        } else {
-          setDeviceStatus('INACTIVE_NEW');
-          setIsActiveDevice(false);
-          setStatusMsg(t('home.status_inactive'));
-        }
-      }
+      const access = resolveDeviceAccess(res.data);
+      setDeviceStatus(access.code);
+      setStatusMsg(t(STATUS_CONFIG[access.code]?.labelKey ?? 'home.status_not_found'));
     } catch (err) {
       console.error(err);
       const apiMsg = err.response?.data?.message;
@@ -207,35 +211,42 @@ const WisePlayerHome = () => {
   };
 
   // ── Proceed navigation ─────────────────────────────────────────────────────
-  // ACTIVE and INACTIVE_EXPIRED both go straight to checkout — an expired
-  // device just needs to pay again, no new activation key required. Only a
-  // brand-new, never-activated device needs the /activation detour.
+  // An expired device goes straight to the payment gateway. Only a brand-new,
+  // never-activated device needs the /activation detour.
   const handleProceed = async () => {
-    if (deviceStatus === 'ACTIVE' || deviceStatus === 'INACTIVE_EXPIRED') {
+    if (isCheckingOut) return;
+
+    if (deviceStatus === DEVICE_ACCESS.EXPIRED) {
+      setIsCheckingOut(true);
       try {
-        const successUrl = `${window.location.origin}/invoice?paymentStatus=success`;
-        const cancelUrl  = `${window.location.origin}/home?paymentStatus=cancel`;
-        const res = await checkoutPayment({ deviceId: mac, planName: planRef.current, successUrl, cancelUrl });
-        if (res.success && res.data?.checkoutUrl) {
-          window.location.href = res.data.checkoutUrl;
-        } else {
-          showToast(t(getApiMessageKey(res.message)), 'error');
+        const result = await startCheckout({ deviceId: mac, planName: planRef.current });
+        if (result.ok) return; // browser is navigating to PayPal
+
+        if (result.error === 'needs_plan_choice') {
+          showToast(t('home.api.choose_plan'), 'error');
+          return;
         }
+        showToast(t(getApiMessageKey(result.error)), 'error');
       } catch (err) {
         const apiMsg = err.response?.data?.message;
         showToast(t(getApiMessageKey(apiMsg)), 'error');
+      } finally {
+        setIsCheckingOut(false);
       }
-    } else if (deviceStatus === 'INACTIVE_NEW') {
+      return;
+    }
+
+    if (deviceStatus === DEVICE_ACCESS.NEEDS_ACTIVATION) {
       setShowModal(false);
       navigate('/activation', { state: { mac, isExpired: false } });
     }
-    // NOT_FOUND → no proceed button rendered, nothing to do
+    // ACTIVE / BLOCKED / NOT_FOUND → no checkout from here
   };
 
   const resetModal = () => {
     setStatusMsg('');
-    setIsActiveDevice(null);
     setDeviceStatus(null);
+    setIsCheckingOut(false);
     setMac('');
   };
 
@@ -249,9 +260,10 @@ const WisePlayerHome = () => {
   const currentStatusConfig = deviceStatus ? STATUS_CONFIG[deviceStatus] : null;
   const StatusIcon = currentStatusConfig?.icon;
 
-   const proceedButtonLabel = () => {
-    if (deviceStatus === 'INACTIVE_EXPIRED') return t('home.renew_plan');
-    if (deviceStatus === 'INACTIVE_NEW') return t('home.activate_now');
+  const proceedButtonLabel = () => {
+    if (isCheckingOut) return t('home.redirecting_to_payment');
+    if (deviceStatus === DEVICE_ACCESS.EXPIRED) return t('home.renew_plan');
+    if (deviceStatus === DEVICE_ACCESS.NEEDS_ACTIVATION) return t('home.activate_now');
     return '';
   };
 
@@ -657,19 +669,25 @@ const WisePlayerHome = () => {
               </h6>
               <div className="flex gap-3 lg:justify-end">
                 {[
-                  { Icon: Instagram, label: t('home.instagram') },
-                  { Icon: Twitter, label: t('home.twitter') },
-                ].map(({ Icon, label }) => (
-                  
-                    <a key={label}
-                    href="#"
-                    aria-label={label}
-                    className="w-11 h-11 flex items-center justify-center rounded-xl bg-[#f4f4f7] text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white hover:-translate-y-1 transition-all duration-200"
-                  >
-                    <Icon size={18} />
-                  </a>
-                ))}
+                  { icon: Instagram, label: t('home.instagram'), href: SOCIAL_LINKS.instagram },
+                  { icon: Twitter, label: t('home.twitter'), href: SOCIAL_LINKS.twitter },
+                ].map(({ icon, label, href }) => {
+                  const Icon = icon;
+                  return (
+                    <a
+                      key={label}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      className="w-11 h-11 flex items-center justify-center rounded-xl bg-[#f4f4f7] text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white hover:-translate-y-1 transition-all duration-200"
+                    >
+                      <Icon size={18} />
+                    </a>
+                  );
+                })}
               </div>
+
             </div>
 
           </div>
@@ -740,7 +758,32 @@ const WisePlayerHome = () => {
                         {statusMsg}
                       </div>
 
-                      {(deviceStatus === 'INACTIVE_EXPIRED' || deviceStatus === 'INACTIVE_NEW') && (
+                      {/* ACTIVE devices used to hit a dead end here — the badge
+                          said ACTIVE but the only button (checkout) was gated
+                          behind the expired/inactive branches. Give them a way
+                          through to their playlists. */}
+                      {deviceStatus === DEVICE_ACCESS.ACTIVE && (
+                        <button
+                          onClick={() => { setShowModal(false); navigate('/upload-playlist', { state: { mac } }); }}
+                          className="mt-3 w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#1a1a1a] hover:bg-[#111] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
+                        >
+                          {t('home.go_to_playlists')}
+                          <ArrowRight size={16} />
+                        </button>
+                      )}
+
+                      {deviceStatus === DEVICE_ACCESS.EXPIRED && (
+                        <button
+                          onClick={handleProceed}
+                          disabled={isCheckingOut}
+                          className="mt-3 w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#800000] hover:bg-[#6a0000] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                          {proceedButtonLabel()}
+                          <ArrowRight size={16} />
+                        </button>
+                      )}
+
+                      {deviceStatus === DEVICE_ACCESS.NEEDS_ACTIVATION && (
                         <button
                           onClick={handleProceed}
                           className="mt-3 w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#1a1a1a] hover:bg-[#111] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"

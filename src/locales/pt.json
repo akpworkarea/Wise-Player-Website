@@ -27,7 +27,22 @@
     "activationFailed": "Falha na ativação",
     "macPlaceholder": "00:00:00:00:00:00",
     "footer": "Wise Player · Todos os direitos reservados",
-    "goToHome": "Ir para a página inicial"
+    "goToHome": "Ir para a página inicial",
+    "checkingStatus": "A verificar o estado do dispositivo…",
+    "deviceAlreadyActive": "Este dispositivo já está ativo — não precisa de ativação.",
+    "statusCheckFailed": "Não foi possível verificar o estado do dispositivo. Tente novamente.",
+    "planExpiredTitle": "O seu plano expirou",
+    "planExpiredDesc": "Renove agora para restaurar as suas playlists imediatamente. Será redirecionado para o pagamento seguro.",
+    "deviceLabel": "Dispositivo",
+    "pinLabel": "PIN",
+    "planLabel": "Último plano",
+    "payNow": "Pagar e renovar",
+    "viewPlansRenew": "Ver todos os planos",
+    "activateDifferentDevice": "Ativar outro dispositivo",
+    "redirectingToPayment": "A redirecionar para o pagamento seguro…",
+    "paymentFailed": "Não foi possível iniciar o pagamento. Tente novamente.",
+    "enterValidMacFirst": "Introduza primeiro um ID de dispositivo válido.",
+    "continueToPlaylists": "Continuar para as minhas playlists"
   },
   "home": {
     "headExperienceText": "Experimente reprodução premium sem buffering. Otimizado para Smart TVs de alto desempenho.",
@@ -50,7 +65,7 @@
     "disclaimerLabel3": "Termos",
     "disclaimerLabel4": "Suporte",
     "live_badge": "Ao vivo",
-     "contactUs": "Contate-nos",
+    "contactUs": "Contate-nos",
     "system_online": "SYSTEM ONLINE V2.0",
     "type_ultra_fast": "Ultra Rápido",
     "type_crystal_clear": "Alta Clareza",
@@ -126,8 +141,15 @@
       "invalid_device": "Dispositivo inválido",
       "payment_failed": "Falha no pagamento",
       "something_wrong": "Algo deu errado",
-      "plans_error": "Não foi possível carregar os planos"
-    }
+      "plans_error": "Não foi possível carregar os planos",
+      "choose_plan": "Escolha um plano para continuar."
+    },
+    "status_expired": "Estado: PLANO EXPIRADO",
+    "status_not_found": "Estado: NÃO REGISTADO",
+    "status_blocked": "Estado: BLOQUEADO",
+    "renew_plan": "Renovar plano",
+    "go_to_playlists": "Ir para as minhas playlists",
+    "redirecting_to_payment": "A redirecionar para o pagamento…"
   },
   "navbar": {
     "logo": {
@@ -174,7 +196,11 @@
     "enter_device_mac": "Digite o endereço MAC do seu dispositivo para continuar",
     "device_id_label": "ID do dispositivo / Endereço MAC",
     "validate_btn": "Validar",
-    "checking_status": "Verificando status..."
+    "checking_status": "Verificando status...",
+    "device_not_registered": "O dispositivo não está registado.",
+    "connection_error": "Erro de ligação. Tente novamente.",
+    "device_pin_label": "PIN do dispositivo",
+    "plan_expired_redirecting": "O seu plano expirou — a levar ao pagamento…"
   },
   "resellerpage": {
     "reseller_badge": "Torne-se parceiro",
@@ -258,7 +284,10 @@
     "cancel": "Cancelar",
     "yes_confirm": "Sim, confirmar",
     "mac_address": "Endereço MAC",
-    "filters": "Filtros"
+    "filters": "Filtros",
+    "activate_plan": "Ativar plano",
+    "detach": "Desassociar",
+    "invalid_mac": "ID de dispositivo inválido. Formato esperado: AA:BB:CC:DD:EE:FF"
   },
   "subreseller_management": "Gerenciamento de Subrevendedores",
   "manage_subreseller": "Gerenciar subrevendedores e contas",
@@ -303,7 +332,7 @@
     "select_plan": "Selecionar Plano",
     "submit": "Enviar",
     "cancel": "Cancelar",
-     "admin_notes": "Notas do administrador",
+    "admin_notes": "Notas do administrador",
     "mac_address": "Endereço MAC",
     "filters": "Filtros",
     "manage_activation_requests": "Gerenciar solicitações de ativação",
@@ -321,7 +350,7 @@
     "page": "Página",
     "of": "de",
     "next": "Próximo",
-      "subtitle": "Visualize e gerencie suas transações",
+    "subtitle": "Visualize e gerencie suas transações",
     "search_placeholder": "Pesquisar transações...",
     "filters": "Filtros"
   },
@@ -401,14 +430,14 @@
   "active_subs": "Assinaturas Ativas",
   "pending_req": "Solicitações Pendentes",
   "total_coins": "Total de Moedas",
-   "reseller_portal": "Portal de Revendedor",
+  "reseller_portal": "Portal de Revendedor",
   "sign_in_title": "Entrar",
   "sign_in_subtitle": "Faça login na sua conta para continuar.",
   "forgot_password": "Esqueceu a senha?",
   "Sign_in": "Entrar",
   "Register": "Registrar-se",
   "back_to_signin": "Voltar ao login",
-  "recover_password": "Recuperar Senha",
+  "recover_password": "Recuperar palavra-passe",
   "recover_subtitle": "Digite seu nome de usuário para receber um link de recuperação.",
   "btn_send_recovery": "Enviar Link de Recuperação",
   "dont_have_account": "Não tem uma conta?",
@@ -416,7 +445,7 @@
   "success_redirecting": "Sucesso! Redirecionando...",
   "invalid_credentials": "Credenciais inválidas",
   "reset_link_sent": "Link de recuperação enviado!",
-   "reg_hello": "Olá,",
+  "reg_hello": "Olá,",
   "reg_welcome": "Bem-vindo",
   "reg_signup_badge": "Registro de Revendedor",
   "reg_fullname": "Nome completo",
@@ -428,6 +457,24 @@
   "reg_create_btn": "Criar conta",
   "reg_already_member": "Já tem uma conta?",
   "reg_login_now": "Entrar agora",
-   "your_balance": "Seu saldo",
-   "transfer_credits": "Transferir créditos"
+  "your_balance": "Seu saldo",
+  "transfer_credits": "Transferir créditos",
+  "paymentStatus": {
+    "successTitle": "Pagamento bem-sucedido",
+    "successDesc": "O seu plano está ativo novamente. Pode voltar às suas playlists.",
+    "cancelledTitle": "Pagamento cancelado",
+    "cancelledDesc": "Não foi efetuado nenhum débito.",
+    "processingTitle": "A confirmar o seu pagamento",
+    "processingDesc": "Um momento — estamos a aguardar a confirmação do prestador de pagamentos.",
+    "invoiceLabel": "Fatura",
+    "deviceLabel": "Dispositivo",
+    "continueToPlaylists": "Continuar para as minhas playlists",
+    "backHome": "Voltar ao início"
+  },
+  "coins": "Moedas",
+  "delete": "Eliminar",
+  "filters": "Filtros",
+  "search_placeholder": "Pesquisar por nome, utilizador ou ID",
+  "playlist_management": "Gestão de playlists",
+  "reg_email": "Endereço de e-mail"
 }
